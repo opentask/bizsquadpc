@@ -28,6 +28,7 @@
     "@angular/platform-browser-dynamic": "7.2.0",
     "@ionic-native/core": "~4.19.0",
     "@swimlane/ngx-datatable": "^14.0.0",
+    "electron-builder-squirrel-windows": "^20.38.5",
     "electron-log": "^3.0.1",
     "electron-updater": "^4.0.6",
     "firebase": "^5.7.2",
