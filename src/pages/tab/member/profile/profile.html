@@ -1,0 +1,104 @@
+
+  <ion-navbar style="min-height: 30px;">
+    <ion-buttons end> 
+      <button ion-button icon-only clear small color="black" (click)="closePopover()">
+        <ion-icon name="md-close" style="font-size: 20px;"></ion-icon>
+      </button> 
+    </ion-buttons>
+  </ion-navbar>
+
+<ion-content no-padding>
+
+  <!-- 프로필 뷰 -->
+  <ion-list *ngIf="!editProfile" no-margin>
+    <ion-item no-lines text-center>
+      <!-- 프로필 사진이 있으면 -->
+      <ion-avatar *ngIf="targetValue && targetValue.photoURL">
+          <img class="photoURL" src="{{ imageSrc }}">
+      </ion-avatar>
+      <!-- 프로필 사진이 없으면 -->
+      <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.photoURL == null">
+          <span class="displayName">{{ notImg }}</span>
+      </ion-avatar> 
+    </ion-item>
+    <h2 *ngIf="targetValue.displayName != null" class="user-name" text-center>{{ targetValue.displayName }}</h2>
+    <h2 *ngIf="targetValue.displayName == null" class="user-notName" text-center>No nickname</h2>
+    <ion-grid>
+      <ion-row>
+        <ion-col class="profileTitle" col-3 offset-1>Mobile</ion-col>
+        <ion-col col-8>{{ targetValue.phoneNumber }}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col class="profileTitle" col-3 offset-1>Email</ion-col>
+        <ion-col col-8>{{ targetValue.email }}</ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col class="profileTitle" col-3 offset-1>auth</ion-col>
+        <ion-col col-8 *ngIf="checkManager">Manager</ion-col>
+        <ion-col col-8 *ngIf="!checkManager && !partner">Member</ion-col>
+        <ion-col col-8 *ngIf="!checkManager && partner">Partner</ion-col>
+      </ion-row>
+      <ion-row *ngIf="who">
+        <ion-col col-6 offset-3>
+            <button class="profile_button" ion-button round full (click)="editProfileShow()">edit Profile</button>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="!who">
+        <ion-col col-6 offset-3>
+            <button class="profile_button" ion-button round full>1:1 Chat</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+
+  <!-- 프로필 수정 뷰 -->
+  <ion-list *ngIf="editProfile" no-margin>
+    <input type="file" style="display: none;" #fileAttach (change)="editPhoto($event)">
+    <form [formGroup]="editProfileForm"> 
+      <ion-item no-lines text-center>
+        <!-- 프로필 사진이 있으면 -->
+        <ion-avatar *ngIf="targetValue && targetValue.photoURL">
+            <img class="photoURL" src="{{ imageSrc }}">
+        </ion-avatar>
+        <!-- 프로필 사진이 없으면 -->
+        <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.photoURL == null">
+            <span class="displayName">{{ notImg }}</span>
+        </ion-avatar> 
+        <ion-avatar class="icon-camera" (click)="fileAttach.click()">
+            <img width="40px" height="40px" src="imgs/icon_camera.svg">
+        </ion-avatar>
+      </ion-item>
+      <input type="text" formControlName="displayName" id="displayName" />
+      <!-- <h2 *ngIf="targetValue.displayName != null" class="user-name" text-center>{{ targetValue.displayName }}</h2> -->
+      <ion-grid>
+        <ion-row>
+          <ion-col class="profileTitle" col-3 offset-1>Mobile</ion-col>
+          <ion-col col-8>
+            <input type="text" formControlName="phoneNumber" id="profileinfo" />
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col class="profileTitle" col-3 offset-1>Email</ion-col>
+          <!-- <ion-col col-8>{{ targetValue.email }}</ion-col> -->
+          <ion-col col-8>
+            <input type="text" formControlName="email" id="profileinfo" readonly/>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col class="profileTitle" col-3 offset-1>auth</ion-col>
+          <ion-col col-8 *ngIf="checkManager">Manager</ion-col>
+          <ion-col col-8 *ngIf="!checkManager">Member</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-5 offset-1>
+              <button class="profile_button" ion-button round full (click)="editSubmit()">ok</button>
+          </ion-col>
+          <ion-col col-5>
+              <button class="profile_button" ion-button round full (click)="cancelEdit()">cancel</button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </ion-list>
+</ion-content>
+ 

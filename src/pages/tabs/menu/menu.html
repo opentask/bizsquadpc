@@ -1,0 +1,52 @@
+<ion-content no-padding class="content-color">
+  <ion-list class="listHeight" [ngClass]="{'listHeightAuto': !isListShown}">
+    <ion-item class="group-list-item" no-lines>
+      <ion-avatar class="all_notify_button" item-start (click)="showAllNotify()">
+        all
+        <ion-badge *ngIf="badgeVisible" id="groupBadge">{{ badgeCount }}</ion-badge>
+      </ion-avatar>
+    </ion-item>
+    <ng-container *ngFor="let group of groups;"> 
+      <ion-item class="group-list-item" no-lines *ngIf="eachGroups[group.gid]">
+        <ion-avatar class="hoverAvatar" item-start *ngIf="!group.data.photoURL" [style.background-color]="group.data.team_color" (click)="showNotify(group)">
+          {{group.data.team_icon}}
+          <ion-badge *ngIf="eachGroups[group.gid]" id="groupBadge">{{ eachGroups[group.gid].length }}</ion-badge>
+        </ion-avatar>
+        <ion-avatar class="hoverAvatar" *ngIf="group.data.photoURL" item-start [style.background-color]="group.data.team_color" (click)="showNotify(group)">
+            <img style="border-radius: 15%;" src="{{ group.data.photoURL }}">
+          <ion-badge *ngIf="eachGroups[group.gid]" id="groupBadge">{{ eachGroups[group.gid].length }}</ion-badge>
+        </ion-avatar>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+  <section id="cd-timeline" class="cd-container">
+    <button class="isListShown-button" ion-button color="dark" clear icon-only (click)="toggleList()">
+        <ion-icon [name]="isListShown ? 'ios-arrow-down' : 'ios-arrow-up'"></ion-icon>
+    </button>
+    <!-- 아래 div에 ngFor 입력 -->
+    <div *ngFor="let msg of messages">
+      <div class="cd-timeline-block">
+        <div class="cd-timeline-picture text-center white" *ngIf="msg.data.sender.photoURL != null">
+            <img src="{{ msg.data.sender.photoURL }}"> 
+        </div>
+        <ion-avatar class="cd-timeline-picture text-center notPhoto" item-start *ngIf="msg.data.sender.photoURL == null">
+            <span class="displayName">{{ msg.data.sender.displayName | slice:0:2 }}</span>
+        </ion-avatar>
+        <div class="cd-timeline-content padding white" (click)="ipc.send('loadGH',msg.path);">
+            <p class="cd-author marginTop5 marginBottom5">{{msg.data.created * 1000 | date: 'MM-dd HH:mm'}}</p>
+            <p class="timelineText marginBottom5 marginTop5">
+              <span class="notifyType" *ngIf="msg.data.type === 'invitation'">[{{ msg.data.invitation.what }}]</span>
+              <span class="notifyType" *ngIf="msg.data.type === 'notify'">[{{ msg.data.notify.type }}]</span>
+            <!-- make msg notify service -->
+                {{msg.text}}
+            </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</ion-content>
+<div class="noNotify" *ngIf="noNotify">
+    <img src="imgs/none_alarm.svg">
+    <p>No new notifications</p>
+</div> 
+

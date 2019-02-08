@@ -1,0 +1,63 @@
+page-member {
+    ion-avatar{
+        border-radius: 100%;
+        cursor: pointer;
+    }
+
+    // scroll bar
+
+    .scrollable{
+        height: 100%;
+        white-space: nowrap;
+        overflow: auto !important;
+    }
+    ::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+        display: inherit;
+    }
+    ::-webkit-scrollbar-track {
+        // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
+        border-radius: 8px!important;
+        background-color: #f6f6f6!important;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px!important;
+        background-color: #f6f6f6!important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        border-radius: 8px!important;
+        // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)!important;
+        background-color: #62a8ea!important;
+    }
+    // end
+
+    .list{
+        color:#62a8ea;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .notPhoto{
+        background-color:#c96a5c;
+        text-align: center;
+    }
+    .displayName{
+        font-weight: bold;
+        color:white;
+        line-height: 2.5;
+    }
+    .user-name{
+        line-height: 2;
+        font-size: 14px;
+    }
+    .userList:hover {
+        background-color: rgba(91, 156, 237, 0.1);
+    }
+    .cococo{
+        color:#6E6E6E;
+    }
+    .listBorder{
+        border-bottom: 1px solid #e0e0e0 !important;
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "bizsquad-electron",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

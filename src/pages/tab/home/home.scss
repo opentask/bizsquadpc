@@ -1,0 +1,192 @@
+page-home {
+    ion-content{
+        position: absolute;
+    }
+    ion-avatar{
+        border-radius: 100%;
+    }
+
+    .padding-left-20{
+        padding-left:20px !important; 
+    }
+    .notice-desc{
+        color:#444;
+        line-height: 2.4; 
+        height: 30px;
+    }
+    .notice-grid{
+        display:inline-block !important;
+        background-color: white;
+        color:#888;
+        font-size: 13px;
+    }
+    .long-title{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        padding-right: 7px !important;
+    }
+    .ion-badge-cursor{
+        cursor: pointer;
+        margin-right:4%;
+    }
+    .no-notice{
+        color: #777;
+    }
+    
+    .notPhoto{
+        background-color:#c96a5c;
+        text-align: center;
+    }
+    .displayName{
+        font-weight: bold;
+        color:white;
+        line-height: 2.5;
+    }
+    .user-name{
+        line-height: 2;
+    }
+
+    .list{
+        font-size: 13px;
+        display: inline-block;
+        margin-left: 20px;
+    }
+
+    .notice-title{
+        font-size: 13px;
+        display: inline-block;
+        margin-left: 20px;
+    }
+
+    #appSelectArea {
+        width: 100%;
+        margin-top: 10px;
+        background-color: white;
+        margin-bottom: 10px;
+        /*height: 125px;*/
+        position: initial;
+        top: -55px;
+    }
+    
+    #appSelectArea > span {
+        /* color: #5B9CED; */
+        font-size: 13px;
+        margin-left: 20px;
+        height: 27px;
+        display: inline-block;
+        /* vertical-align: middle; */
+        padding-top: 14px;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+    }
+    
+    #moreSection button.more_toggle {
+        position: absolute;
+        right: 10px;
+        top: 21px;
+        width: 9px;
+        height: 9px;
+    }
+    
+    div.teamSelectArea button.more_toggle {
+        top: 10px !important;
+    }
+    
+    #moreSection button.more_toggle img {
+        width: 9px;
+    }
+    
+    #moreSection button.more_toggle img.close {
+        transform: rotate(180deg)
+    }
+    
+    #appSelectArea ul {
+        margin-left: -1px;
+        height: 174px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    
+    
+    #appSelectArea li {
+        width: 25%;
+        height: 88px;
+        float: left;
+        border-bottom: 1px solid #E4EAEC;
+        border-left: 1px solid #E4EAEC;
+        border-top: 1px solid #E4EAEC;
+        margin-top: -1px;
+        margin-left: -1px;
+    }
+    
+    #appSelectArea button {
+        background: none;
+        border: none;
+        text-align: center;
+        height: 92px;
+        position: relative;
+        width: 100%;
+        opacity: 1;
+    }
+    
+    #appSelectArea button:disabled {
+        opacity: 0.4;
+    }
+    
+    #appSelectArea button img {
+        width: 30px;
+        height: 30px;
+        margin-top: -20px;
+    }
+    
+    #appSelectArea button span.title {
+            /* bottom: 12px; */
+            font-size: 11px;
+            /* margin-top: 52px; */
+            position: absolute;
+            /* margin: 0 auto; */
+            left: 0;
+            right: 0;
+            top: 55px;
+    }
+    #popup {
+        width: 93px;
+        font-family: 'Noto Sans KR';
+        font-size: 12px;
+        color: #434343;
+        background-color: white;
+        border: 1px solid #E2E4E5;
+        border-radius: 2px;
+        // display: none;
+        position: absolute;
+        z-index: 1;
+        right:25px;
+        top:45px;
+    }
+    
+    #popup ul, li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    #popup ul {
+        margin: 4px;
+    }
+    
+    #popup li {
+        height: 23px;
+        text-align: left;
+        padding-top: 3px;
+        padding-left: 5px;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+    }
+    
+    #popup li:hover {
+        background-color: rgba(91, 156, 237, 0.1)
+    }
+}

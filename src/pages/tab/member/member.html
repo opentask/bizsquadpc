@@ -1,0 +1,60 @@
+<ion-content no-padding class="content-color" overflow-scroll = "true">
+<ion-scroll class="scrollable" scrollY="true">
+<ion-searchbar no-padding [(ngModel)]="serachValue" (ionInput)="getItems($event)" style="padding-bottom:5px;"></ion-searchbar>
+        <ion-list>
+        <ion-item style="background-color: #f6f6f6" no-lines> 
+            <span class="list">Me</span>
+        </ion-item>
+        <ion-list style="margin-bottom:0;">
+            <ion-item class="userList" no-lines>
+                <!-- 프로필 사진이 있으면 -->
+                <ion-avatar item-start *ngIf="currentUser && currentUser.photoURL" (click)="clickAvatar($event,currentUser)">
+                    <img class="photoURL" src="{{currentUser.photoURL}}">
+                </ion-avatar>
+                <!-- 프로필 사진이 없으면 -->
+                <ion-avatar class="notPhoto" item-start *ngIf="currentUser && currentUser.photoURL == null" (click)="clickAvatar($event,currentUser)">
+                    <span class="displayName">{{ displayName }}</span>
+                </ion-avatar>
+                <h2 class="user-name" *ngIf="currentUser.displayName !=null">{{ fullName }}
+                    <button end ion-button icon-only clear [style.color]="myStatus"  style="float: right" (click)="onlineStatus()" title="{{ myStatus_title }}">
+                        <ion-icon name="happy"></ion-icon>
+                    </button>
+                </h2>
+                <h2 class="user-name" *ngIf="currentUser.displayName ==null">{{ currentUser.email }}
+                    <button end ion-button icon-only clear [style.color]="myStatus"  style="float: right" (click)="onlineStatus()" title="{{ myStatus_title }}">
+                        <ion-icon name="happy"></ion-icon>
+                    </button>
+                </h2>
+            </ion-item>
+        </ion-list>
+        <ion-item style="background-color: #f6f6f6" no-lines>
+            <span class="list">List <span class="cococo">&nbsp;{{ memberCount }}</span></span>
+        </ion-item>
+        <ion-list>
+            <ng-container *ngFor="let user of allCollectedUsers;">
+                <ion-item class="userList listBorder" no-lines
+                *ngIf="!serachValue || user.data.displayName.indexOf(serachValue.trim())>-1"> 
+                    <!-- 프로필 사진이 있으면 -->
+                    <ion-avatar item-start *ngIf="user && user.data.photoURL" (click)="clickAvatar($event,user)">
+                        <img class="photoURL" src="{{ user.data.photoURL }}">
+                    </ion-avatar>
+                    <!-- 프로필 사진이 없으면 -->
+                    <ion-avatar class="notPhoto" item-start *ngIf="user && user.data.photoURL == null" (click)="clickAvatar($event,user)">
+                        <span class="displayName">{{ user.data.user_icon }}</span>
+                    </ion-avatar>
+                    <h2 class="user-name" *ngIf="user.data.displayName != null">{{ user.data.displayName }}
+                        <button end ion-button icon-only clear [style.color]="user.data.user_onlineColor" style="float: right" [title]="user.data.user_statusTooltip">
+                            <ion-icon name="happy"></ion-icon> 
+                        </button> 
+                    </h2>  
+                    <h2 class="user-name" *ngIf="user.data.displayName == null">{{ user.data.email }}
+                        <button end ion-button icon-only clear [style.color]="user.data.user_onlineColor" style="float: right" [title]="user.data.user_statusTooltip">
+                            <ion-icon name="happy"></ion-icon>
+                        </button>
+                    </h2>
+                </ion-item>
+            </ng-container>
+        </ion-list>
+    </ion-list>
+        </ion-scroll>
+</ion-content>  

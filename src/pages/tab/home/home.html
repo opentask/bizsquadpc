@@ -1,0 +1,135 @@
+<ion-content no-padding class="content-color">
+  <ion-item no-lines>
+    <!-- 프로필 사진이 있으면 -->
+    <ion-avatar item-start *ngIf="currentUser && currentUser.photoURL">
+        <img class="photoURL" src="{{currentUser.photoURL}}">
+    </ion-avatar>
+    <!-- 프로필 사진이 없으면 -->
+    <ion-avatar class="notPhoto" item-start *ngIf="currentUser && currentUser.photoURL == null && displayName != null">
+        <span class="displayName">{{ displayName }}</span>
+    </ion-avatar>
+    <h2 class="user-name" *ngIf="currentUser.displayName != null">{{ fullName }}
+      <button end ion-button icon-only clear color="dark" style="float: right" (click)="showMenu()">
+        <ion-icon name="more"></ion-icon>
+      </button>
+    </h2>
+    <h2 class="user-name" *ngIf="currentUser.displayName == null">{{ currentUser.email }}
+        <button end ion-button icon-only clear color="dark" style="float: right" (click)="showMenu()">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </h2>
+  </ion-item>
+  <div id="popup" *ngIf="menuShow">
+    <ul> 
+        <li id="profileSetting" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/account')">My Account</li>
+        <li id="signoutBtn" (click)="signOut()">Sign out</li>
+        <li id="exitBtn" (click)="windowClose()">Exit</li>
+    </ul>
+  </div>
+  <div id="appSelectArea">
+    <span>Apps</span>
+    <ul>
+      <li>
+          <button id="extMember" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid);">
+              <img src="imgs/member.svg"> 
+              <span class="title">Member</span> 
+          </button>
+      </li>
+      <li>
+          <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid);">
+              <img src="imgs/notice.svg">
+              <span class="title">Notice</span>
+          </button>
+      </li>
+      <li>
+          <button disabled id="extMail">
+              <img src="imgs/mail.svg">
+              <span class="title">Mail</span>
+          </button>
+      </li>
+      <li>
+          <button disabled id="extApproval">
+              <img src="imgs/approval.svg">
+              <span class="title">Apporoval</span>
+          </button>
+      </li>
+      <li>
+          <button disabled id="extStorage">
+              <img src="imgs/cloud.svg">
+              <span class="title">Storage</span>
+          </button>
+      </li>
+      <li>
+          <button disabled id="extEstablishment">
+              <img src="imgs/establishment.svg">
+              <span class="title">establishment</span>
+          </button>
+      </li>
+      <li>
+          <button disabled id="extDocument">
+              <img src="imgs/document.svg">
+              <span class="title">Document</span>
+          </button>
+      </li>
+      <li>
+          <button [disabled]="!manager"  id="extTeammanage" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid);">
+              <img src="imgs/setting.svg">
+              <span class="title">Management</span>
+          </button>
+      </li>
+    </ul>
+  </div>  
+
+  <ion-item no-padding style="top:1px;">
+    <span class="list">Recent Notice</span>
+    <ion-badge *ngIf="!isPartner" class="ion-badge-cursor" item-end (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid);">view</ion-badge>
+  </ion-item>
+  <ion-grid no-padding *ngIf="!noBbs && !isPartner" class="notice-grid">
+    <!-- noice title -->
+    <ion-row style="padding-top:8px; padding-bottom: 8px;">
+      <ion-col col-6 class="padding-left-20">
+          Title
+      </ion-col>
+      <ion-col col-3>
+          Writer
+      </ion-col>
+      <ion-col col-3>
+          Created
+      </ion-col>
+    </ion-row>
+    <!-- 가장 최신 공지 3개만 출력하는 반복문 시작 ng-for  -->
+    <ion-row *ngFor="let msg of messages">
+        <ion-col col-6 class="padding-left-20 notice-desc long-title">
+            {{ msg.data.title }}
+        </ion-col>
+        <ion-col col-3 class="notice-desc long-title">
+            {{ msg.data.senderName }}
+        </ion-col>
+        <ion-col col-3 class="notice-desc">
+            {{ msg.data.created * 1000 | date: 'HH:mm MM/dd' }}
+        </ion-col>
+    </ion-row>
+  <!-- 공지글이 한개도 없을 때 -->
+  </ion-grid>
+  <ion-grid *ngIf="noBbs && !isPartner" style="background-color:white">
+    <ion-row style="padding-bottom:5px;">
+        <ion-col text-center col-12 class="no-notice">
+            <p style="font-size: 13px;">
+                There are no notice.<br><br>
+                Click the <ion-badge style="background: #999">view</ion-badge> Button to write or view previous posts.
+            </p>
+        </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!-- 사용자 권한이 파트너 일때 -->
+  <ion-grid *ngIf="isPartner" style="background-color:white">
+        <ion-row style="padding-bottom:5px;">
+            <ion-col text-center col-12 class="no-notice">
+                <p style="font-size: 13px;">
+                    You do not have permission.<br><br>
+                    Please contact the <span style="color:#62a8ea">manager</span> of that group.
+                </p>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

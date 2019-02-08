@@ -1,0 +1,78 @@
+page-squad {
+    .scrollable{
+        height: 100%;
+        white-space: nowrap;
+        overflow: auto !important;
+    }
+    .segment-padding {
+        padding: 4px;
+    }
+    .list{
+        color:#62a8ea;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .label-md{
+        margin:0 !important;
+        line-height: 2.5;
+    }
+    .squadList-button{
+        bottom:3px;
+        position: absolute;
+        right: 20px;
+    }
+    .squadList-button-folder{
+        bottom:3px;
+        position: absolute;
+        right: 27px;
+    }
+    .privateSquadName{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: block;
+        width: 220px;
+        white-space: nowrap;
+    }
+    .squadList-item{
+        font-size: 15px;
+        color:#222;
+    }
+
+    .squadList-item:hover {
+        background-color: rgba(91, 156, 237, 0.1);
+    }
+    .folder-item{
+        font-size: 15px;
+        margin:0;
+        line-height: 2.5;
+        color:#222;
+    }
+    .folder-squad-length{
+        font-size: 11px;
+    }
+    .chat_img{
+        width: 20px;
+        height: 25px;
+    }
+
+    ::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+        display: inherit;
+    }
+    ::-webkit-scrollbar-track {
+        // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
+        border-radius: 8px!important;
+        background-color: #f6f6f6!important;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px!important;
+        background-color: #f6f6f6!important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        border-radius: 8px!important;
+        // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)!important;
+        background-color: #62a8ea!important;
+    }
+}

@@ -1,0 +1,283 @@
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+::-webkit-scrollbar {
+    width: 10px;
+    -webkit-app-region: no-drag;
+}
+
+::-webkit-scrollbar-thumb {
+    height: 6px;
+    border: 2px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    -webkit-border-radius: 7px;
+    background-color: #E4E4E4;
+    -webkit-app-region: no-drag;
+}
+
+::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+* {
+    outline: none;
+}
+html {
+    height: 100%;
+    -webkit-text-size-adjust: antialiased;
+    text-shadow: 0 0 0.5px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    margin: 0px;
+    height: 100%;
+    background-color: #f6f6f6;
+    border: 1px solid #cecece;
+    overflow: hidden;
+    -webkit-app-region: drag;
+}
+button, a, input, select, ul.datalist, textarea, label, .gutter {
+    -webkit-app-region: no-drag;
+}
+
+#title-bar button {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    margin-left: 10px;
+    position: relative;
+}
+#title-bar img {
+    display: block;
+    position: absolute;
+    bottom: 0;
+}
+#title-bar-btns {
+    position: absolute;
+    top: 10px;
+    right: 13px;
+    /* display: none; */
+}
+
+body.win32 #title-bar-btns {
+    display: block;
+}
+
+#min-btn {
+    width: 10px;
+    height: 10px;
+}
+
+#max-btn {
+    width: 10px;
+    height: 10px;
+}
+
+#close-btn {
+    width: 10px;
+    height: 10px;
+}
+button {
+    background: none;
+    border: none;
+}
+button:focus {
+    outline: none;
+}
+a, button {
+    cursor: pointer;
+}
+#wrapper {
+    width: 100%;
+    height: 100%;   
+}
+header {
+    width: 100%;
+    height: 70px;
+    background-color: white;
+}
+body.darwin header {
+    padding-top: 20px;
+}
+header div.avatar {
+    margin-left: 11px;
+    margin-top: 10px;
+    margin-right: 13px;
+}
+
+.avatar * {
+    width: 48px;
+    height: 48px;
+    display: table-cell;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 15%;
+}
+header div.avatar {
+    margin-left: 11px;
+    margin-top: 10px;
+    margin-right: 13px;
+}
+.left {
+    float: left;
+}
+header canvas {
+    width: 50px;
+    height: 50px;
+    background-color: skyblue;
+}
+
+#title {
+    font-family: 'Noto Sans KR';
+    font-weight: bold;
+    font-size: 15px;
+    color: #434343;
+    padding-top: 14px;
+}
+#title span {
+    width: calc(100% - 200px);
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#userCount {
+    font-family: 'Noto Sans KR';
+    font-size: 12px;
+    color: #989898;
+    margin-top: -5px;
+    font-weight: 300;
+}
+#topBtn {
+    height: 30px;
+    position: absolute;
+    top: 35px;
+    right: 14px;
+    width: 94px;
+}
+#topBtn button {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #E2E4E5;
+    border-radius: 50%;
+}
+#topBtn button.select {
+    background-color: #f6f6f6;
+}
+#topBtn button img {
+    font-size: 14px;
+    margin-top: 1px;
+    display: inline-block;
+}
+.hide {
+    display: none !important;
+}
+.icon {
+    font-size: 18px;
+    margin-right:4px;
+}
+
+#popup {
+    width: 93px;
+    font-family: 'Noto Sans KR';
+    font-size: 12px;
+    color: #434343;
+    background-color: white;
+    border: 1px solid #E2E4E5;
+    border-radius: 2px;
+    display: none;
+    position: relative;
+    z-index: 1;
+}
+
+#popup ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#popup ul {
+    margin: 4px;
+}
+
+#popup li {
+    height: 23px;
+    text-align: left;
+    padding-top: 3px;
+    padding-left: 5px;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+}
+
+#popup li:hover {
+    background-color: rgba(91, 156, 237, 0.1)
+}
+
+#splitWrapper {
+    position: relative;
+    height: calc(100% - 70px)
+}
+#messageBody {
+    height: 85%;
+    flex:1;
+}
+#messageBody ul.datalist {
+    overflow-y: auto;
+    border-top: 1px solid #EAEEF0;
+    height: calc(100vh - 200px);
+}
+#messageBody ul, #messageBody li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#messageBody > ul {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#messageBody > ul li {
+    margin-bottom: 10px;
+    float: left;
+    position: relative;
+}
+ul.datalist > li {
+    width: 100%;
+}
+.systemMessage {
+    margin-bottom: 11px;
+    text-align: center;
+    font-family: 'Noto Sans KR';
+    font-size: 11px;
+    color: #434343;
+    font-weight: 300;
+}
+.youMessage .messageBox {
+    max-width: calc(100% - 60px);
+    margin-left: 10px;
+    width: 100%;
+}
+.meMessage .messageBox {
+    max-width: 100%;
+    width: 100%;
+}
+.meMessage .avatar, .meMessage div.sender {
+    display: none;
+}
+.sender {
+    font-family: 'Noto Sans KR';
+    font-size: 11px;
+    color: #434343;
+    margin-bottom: 5px;
+}
