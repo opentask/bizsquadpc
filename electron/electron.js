@@ -1,7 +1,7 @@
 'use strict';
 const electron = require('electron');
-const { ipcMain,Menu } = require('electron');
-const { shell,autoUpdater } = require('electron');
+const { ipcMain,dialog } = require('electron');
+const { shell } = require('electron');
 const url = require('url');
 const path = require('path');
 // const {dialog} = require('electron');
@@ -9,6 +9,9 @@ const path = require('path');
 const { app } = electron;
 // Module to create native browser window.
 const { BrowserWindow } = electron;
+
+// auto update //
+const { autoUpdater } = require("electron-updater");
 
 let win;
 let chatRoom;
@@ -90,25 +93,39 @@ ipcMain.on('giveMeSquadValue', (event,text) => {
     event.sender.send('selectSquad',selectSquad);
 })
 
+// autoUpdater.on('checking-for-update', () => {
+//     sendStatusToWindow('Checking for update...');
+// })
+// autoUpdater.on('update-available', (info) => {
+//     sendStatusToWindow('Update available.');
+// })
+// autoUpdater.on('update-not-available', (info) => {
+//     sendStatusToWindow('Update not available.');
+// })
+// autoUpdater.on('error', (err) => {
+//     sendStatusToWindow('Error in auto-updater. ' + err);
+// })
+// autoUpdater.on('download-progress', (progressObj) => {
+// let log_message = "Download speed: " + progressObj.bytesPerSecond;
+// log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+// log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+//     sendStatusToWindow(log_message);
+// })
+autoUpdater.on('update-downloaded', (event) => {
 
-setInterval(() => {
-    autoUpdater.checkForUpdates();
-}, 60000)
-
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     const dialogOpts = {
-      type: 'info',
-      buttons: ['Restart', 'Later'],
-      title: 'Application Update',
-      message: process.platform === 'win32' ? releaseNotes : releaseName,
-      detail: '새로운 버전이 다운로드 되었습니다. 애플리케이션을 재시작하여 업데이트를 적용해 주세요.'
-    }
-  
+        type: 'info',
+        buttons: ['Restart', 'Later'],
+        title: 'Application Update',
+        message: "The new version has been updated.",
+        detail: 'Do you want to restart now?'
+        }
+
     dialog.showMessageBox(dialogOpts, (response) => {
-      if (response === 0) autoUpdater.quitAndInstall()
-    })
-})
-autoUpdater.on('error', message => {
-    console.error('애플리케이션을 업데이트하는 도중 오류가 발생하였습니다.')
-    console.error(message)
-  })
+        if (response === 0) autoUpdater.quitAndInstall();
+        })
+});
+
+app.on('ready', function(){
+    autoUpdater.checkForUpdatesAndNotify();
+});
