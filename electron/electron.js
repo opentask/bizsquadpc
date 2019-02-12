@@ -51,9 +51,6 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function(){
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
-
     createWindow();
 });
 // 모든 창이 닫히면 애플리케이션 종료.
