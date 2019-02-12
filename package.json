@@ -69,10 +69,23 @@
       ],
       "icon": "build/logo512.png"
     },
-    "win": {
-      "target":"nsis",
-      "perMachine": true,
+    "win": {      
+      "target": [{
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+    }],
       "icon": "build/logo512.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "language": 1042,
+      "include": "build/installer.nsh",
+      "shortcutName": "Bizsquad"
     },
     "asar": true,
     "files": [
