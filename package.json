@@ -69,7 +69,7 @@
       ],
       "icon": "build/logo512.png"
     },
-    "nsis": {
+    "win": {
       "target":"nsis",
       "perMachine": true,
       "icon": "build/logo512.png"
