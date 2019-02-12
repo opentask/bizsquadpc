@@ -1,6 +1,6 @@
 {
   "name": "bizsquad-electron",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -69,8 +69,8 @@
       ],
       "icon": "build/logo512.png"
     },
-    "win": {
-      "target": "nsis",
+    "nsis": {
+      "perMachine": true,
       "icon": "build/logo512.png"
     },
     "asar": true,
