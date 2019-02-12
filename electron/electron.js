@@ -12,40 +12,6 @@ const { BrowserWindow } = electron;
 
 // auto update //
 const { autoUpdater } = require("electron-updater");
-const log = require('electron-log');
-
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-log.info('App starting...');
-// end //
-
-let template = []
-if (process.platform === 'darwin') {
-  // OS X
-  const name = app.getName();
-  template.unshift({
-    label: name,
-    submenu: [
-      {
-        label: 'About ' + name,
-        role: 'about'
-      },
-      {
-        label: 'Quit',
-        accelerator: 'Command+Q',
-        click() { app.quit(); }
-      },
-    ]
-  })
-}
-
-// auto update //
-
-function sendStatusToWindow(text) {
-    log.info(text);
-    win.webContents.send('message', text);
-}
-
 
 let win;
 let chatRoom;
@@ -87,6 +53,7 @@ function createWindow() {
 app.on('ready', function(){
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
+
     createWindow();
 });
 // 모든 창이 닫히면 애플리케이션 종료.
@@ -129,28 +96,26 @@ ipcMain.on('giveMeSquadValue', (event,text) => {
     event.sender.send('selectSquad',selectSquad);
 })
 
-
-
-autoUpdater.on('checking-for-update', () => {
-    sendStatusToWindow('Checking for update...');
-})
-autoUpdater.on('update-available', (info) => {
-    sendStatusToWindow('Update available.');
-})
-autoUpdater.on('update-not-available', (info) => {
-    sendStatusToWindow('Update not available.');
-})
-autoUpdater.on('error', (err) => {
-    sendStatusToWindow('Error in auto-updater. ' + err);
-})
-autoUpdater.on('download-progress', (progressObj) => {
-let log_message = "Download speed: " + progressObj.bytesPerSecond;
-log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-    sendStatusToWindow(log_message);
-})
+// autoUpdater.on('checking-for-update', () => {
+//     sendStatusToWindow('Checking for update...');
+// })
+// autoUpdater.on('update-available', (info) => {
+//     sendStatusToWindow('Update available.');
+// })
+// autoUpdater.on('update-not-available', (info) => {
+//     sendStatusToWindow('Update not available.');
+// })
+// autoUpdater.on('error', (err) => {
+//     sendStatusToWindow('Error in auto-updater. ' + err);
+// })
+// autoUpdater.on('download-progress', (progressObj) => {
+// let log_message = "Download speed: " + progressObj.bytesPerSecond;
+// log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+// log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+//     sendStatusToWindow(log_message);
+// })
 autoUpdater.on('update-downloaded', (info) => {
-    // 5초 후 자동 종료됩니다.
+  // 5초 후 자동 종료후 인스톨 됩니다.
   setTimeout(function() {
     autoUpdater.quitAndInstall();  
   }, 5000)

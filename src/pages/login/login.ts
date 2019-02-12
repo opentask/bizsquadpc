@@ -6,7 +6,7 @@ import { LoadingProvider,BizFireService } from './../../providers';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
- 
+import * as electron from 'electron';
 @IonicPage({  
   name: 'page-login',
   segment: 'login',
@@ -64,6 +64,10 @@ export class LoginPage implements OnInit {
             //this.bizFire.signOut();
         }
     });
+
+    electron.ipcRenderer.on('message',function(text) {
+      console.log(text);
+    })
   }
 
   ngOnDestroy(): void {
