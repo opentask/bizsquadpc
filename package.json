@@ -80,6 +80,7 @@
       "target": [
         "nsis"
       ],
+      "forceCodeSigningVerification": false,
       "icon": "build/logo512.png",
       "publisherName": "Bizsquad"
     },
