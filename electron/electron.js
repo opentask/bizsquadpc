@@ -11,7 +11,8 @@ const { app } = electron;
 const { BrowserWindow } = electron;
 
 // auto update //
-const { autoUpdater } = require("electron-updater")
+const { autoUpdater } = require("electron-updater");
+
 
 let win;
 let chatRoom;

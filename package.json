@@ -1,6 +1,6 @@
 {
   "name": "bizsquad-electron",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -61,6 +61,13 @@
     "ionic_webpack": "./config/webpack.config.js"
   },
   "build": {
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "opentask",
+        "repo": "bizsquadpc"
+      }
+    ],
     "appId": "com.bizsquad.ionic-electron",
     "mac": {
       "target": [
@@ -69,16 +76,18 @@
       ],
       "icon": "build/logo512.png"
     },
-    "win": {      
-      "target": [{
-        "target": "nsis",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-    }],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
       "icon": "build/logo512.png",
-      "publisherName":"Bizsquad"
+      "publisherName": "Bizsquad"
     },
     "nsis": {
       "oneClick": false,
