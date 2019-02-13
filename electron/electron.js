@@ -12,7 +12,12 @@ const { BrowserWindow } = electron;
 
 // auto update //
 const { autoUpdater } = require("electron-updater");
+const logger = require('electron-log');
 
+autoUpdater.logger = logger;
+autoUpdater.logger["transports"].file.level = "info";
+
+logger.info('App starting...');
 
 let win;
 let chatRoom;
@@ -112,6 +117,28 @@ ipcMain.on('giveMeSquadValue', (event,text) => {
 // log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
 //     sendStatusToWindow(log_message);
 // })
+autoUpdater.on('checking-for-update', function () {
+    sendStatusToWindow('Checking for update...');
+});
+
+autoUpdater.on('update-available', function (info) {
+    sendStatusToWindow('Update available.');
+});
+
+autoUpdater.on('update-not-available', function (info) {
+    sendStatusToWindow('Update not available.');
+});
+
+autoUpdater.on('error', function (err) {
+    sendStatusToWindow('Error in auto-updater.');
+});
+
+autoUpdater.on('download-progress', function (progressObj) {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + parseInt(progressObj.percent) + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    sendStatusToWindow(log_message);
+});
 autoUpdater.on('update-downloaded', (event) => {
 
     const dialogOpts = {
@@ -127,6 +154,10 @@ autoUpdater.on('update-downloaded', (event) => {
         })
 });
 
-app.on('ready', function(){
-    autoUpdater.checkForUpdatesAndNotify();
-});
+
+autoUpdater.checkForUpdatesAndNotify();
+
+function sendStatusToWindow(message) {
+    logger.info(message);
+    console.log(message);
+}

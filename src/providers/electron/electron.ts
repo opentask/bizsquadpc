@@ -40,4 +40,5 @@ export class Electron {
     // 그리고 현재 디렉터리의 html을 로드합니다.
     // win.loadURL(url);
   }
+
 }

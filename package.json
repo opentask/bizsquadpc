@@ -1,6 +1,6 @@
 {
   "name": "bizsquad-electron",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -36,8 +36,8 @@
     "@ionic-native/status-bar": "~4.19.0",
     "@ionic/storage": "2.2.0",
     "@swimlane/ngx-datatable": "^14.0.0",
-    "electron-updater": "^4.0.6",
     "electron-log": "^3.0.1",
+    "electron-updater": "^4.0.6",
     "firebase": "^5.7.2",
     "ionic-angular": "3.9.2",
     "ionicons": "4.5.1",
@@ -78,13 +78,7 @@
     },
     "win": {
       "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        }
+        "nsis"
       ],
       "icon": "build/logo512.png",
       "publisherName": "Bizsquad"
