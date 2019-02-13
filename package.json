@@ -15,7 +15,7 @@
     "build": "ionic-app-scripts build",
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "ionic-app-scripts serve",
-    "publish": "build --mac --win -p always",
+    "publish": "build --win -p always",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist-all": "electron-builder -mw"
@@ -81,8 +81,7 @@
       "target": [
         "nsis"
       ],
-      "icon": "build/logo512.png",
-      "publisherName": "Bizsquad"
+      "icon": "build/logo512.png"
     },
     "nsis": {
       "oneClick": false,
