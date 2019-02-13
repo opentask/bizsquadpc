@@ -1,6 +1,6 @@
 {
   "name": "bizsquad-electron",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -80,7 +80,6 @@
       "target": [
         "nsis"
       ],
-      "forceCodeSigningVerification": false,
       "icon": "build/logo512.png",
       "publisherName": "Bizsquad"
     },
