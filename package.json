@@ -1,6 +1,6 @@
 {
   "name": "bizsquad-electron",
-  "version": "1.5.9",
+  "version": "1.6.0",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -15,7 +15,7 @@
     "build": "ionic-app-scripts build",
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "ionic-app-scripts serve",
-    "publish": "build --win -p always",
+    "publish": "build --mac --win -p always",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist-all": "electron-builder -mw"
