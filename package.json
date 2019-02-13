@@ -77,7 +77,8 @@
           "ia32"
         ]
     }],
-      "icon": "build/logo512.png"
+      "icon": "build/logo512.png",
+      "publisherName":"Bizsquad"
     },
     "nsis": {
       "oneClick": false,
