@@ -142,24 +142,23 @@ autoUpdater.on('download-progress', function (progressObj) {
     log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
     sendStatusToWindow(log_message);
 });
-autoUpdater.on('update-downloaded', (event) => {
+autoUpdater.on('update-downloaded', (event,releaseName) => {
 
-    let releaseNotes ='Release notes:\n';
-    releaseNotes += 
-    "\
-        첫번째항목\n\
-        두번째항목\n\
-    ";
-    if(app.getName() && app.getVersion()){
-        releaseNotes += app.getName() + "\n" + app.getVersion();
+    // git의 버전을 담습니다.
+    const releaseNameG;
+    if(releaseName){
+        releaseNameG = 'There is a new BizSquad version ' + releaseName; 
+    } else {
+        releaseNameG = 'There is a new BizSquad version';
     }
     
     const dialogOpts = {
         type: 'question',
         buttons: ['Install and Relaunch', 'Later'],
         title: 'Application Update',
-        message: 'A new Bizsquad version has been released.',
-        detail: releaseNotes,
+        message: releaseNameG,
+        detail: 'Would you like to download it now?',
+        icon: path.join(__dirname, 'logo512.png'),
         noLink : true
     }
     dialog.showMessageBox(dialogOpts, (response) => {
