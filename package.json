@@ -1,6 +1,6 @@
 {
   "name": "bizsquad-electron",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -87,7 +87,7 @@
       "oneClick": false,
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
-      "language": 1042,
+      "language": 1032,
       "shortcutName": "Bizsquad"
     },
     "asar": true,

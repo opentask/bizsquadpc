@@ -6,13 +6,16 @@ const url = require('url');
 const path = require('path');
 // const {dialog} = require('electron');
 // Module to control application life.
-const { app } = electron;
+const { app,Notification } = electron;
 // Module to create native browser window.
 const { BrowserWindow } = electron;
 
 // auto update //
 const { autoUpdater } = require("electron-updater");
 const logger = require('electron-log');
+
+app.setAppUserModelId("com.bizsquad.ionic-electron");
+app.setAsDefaultProtocolClient('bizsquad');
 
 autoUpdater.logger = logger;
 autoUpdater.logger["transports"].file.level = "info";

@@ -15,9 +15,9 @@
                 <ng-container *ngIf="!isPartner">
                     <ion-item no-lines class="squadList-item" *ngFor="let squad of publicSquads" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
                         <span>{{squad.data.name}}</span>
-                        <!-- <button class="squadList-button" ion-button clear icon-only (click)="onSquadChat($event,squad)">
+                        <button class="squadList-button" ion-button clear icon-only (click)="onSquadChat($event,squad)">
                             <img class="chat_img"src="imgs/chat_deactive.svg"> 
-                        </button> -->
+                        </button>
                     </ion-item >
                     <ion-item class="squadList-folder-item" no-lines *ngFor="let folder of folders; let i=index" text-wrap (click)="toggleGroup(i)" [ngClass]="{active: isGroupShown(i)}">
                         <h3 class="folder-item">
@@ -28,9 +28,9 @@
                         <div *ngIf="isGroupShown(i)">
                             <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
                                 <span>{{squad.data.name}}</span>
-                                <!-- <button class="squadList-button-folder" ion-button clear icon-only (click)="onSquadChat($event,squad)">
+                                <button class="squadList-button-folder" ion-button clear icon-only (click)="onSquadChat($event,squad)">
                                     <img class="chat_img"src="imgs/chat_deactive.svg">
-                                </button> -->
+                                </button>
                             </ion-item>
                         </div>
                     </ion-item>
@@ -42,9 +42,9 @@
                 <!-- 권한이 필요한 스쿼드 출력 -->
                 <ion-item no-lines class="squadList-item" *ngFor="let squad of privateSquads" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
                     <span class="privateSquadName" (click)="kimtaehwan(squad)">{{squad.data.name}}</span> 
-                    <!-- <button class="squadList-button" ion-button clear icon-only (click)="onSquadChat($event,squad)">
+                    <button class="squadList-button" ion-button clear icon-only (click)="onSquadChat($event,squad)">
                         <img class="chat_img"src="imgs/chat_deactive.svg">
-                    </button>  -->
+                    </button> 
                 </ion-item>
                 <ion-item class="squadList-folder-item" no-lines *ngFor="let folder of privateFolders; let s=index" text-wrap (click)="togglePrivateGroup(s)" [ngClass]="{active: isPrivateGroupShown(s)}">
                     <h3 class="folder-item">
@@ -55,9 +55,9 @@
                     <div *ngIf="isPrivateGroupShown(s)">
                         <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
                             <span (click)="kimtaehwan(squad)">{{ squad.data.name }}</span>
-                            <!-- <button class="squadList-button-folder" ion-button clear icon-only (click)="onSquadChat($event,squad)">
+                            <button class="squadList-button-folder" ion-button clear icon-only (click)="onSquadChat($event,squad)">
                                 <img class="chat_img"src="imgs/chat_deactive.svg">
-                            </button> -->
+                            </button>
                         </ion-item>
                     </div>
                 </ion-item>
