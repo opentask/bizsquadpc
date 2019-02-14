@@ -152,6 +152,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         releaseNameG = 'There is a new BizSquad version.';
     }
     
+
     const dialogOpts = {
         type: 'question',
         buttons: ['Install and Relaunch', 'Later'],
