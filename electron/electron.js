@@ -144,26 +144,21 @@ autoUpdater.on('download-progress', function (progressObj) {
 });
 autoUpdater.on('update-downloaded', (event) => {
 
-    let message = app.getName()+' '+ app.getVersion() + ' is now available. It will be installed the next time you restart the application.';
-    let releaseNotes = "첫번째항목\n두번째항목";
-    if(releaseNotes){
-        const splitNotes = releaseNotes.split(/[^\r]\n/);
-        message += '\n\nRelease notes:\n';
-        splitNotes.forEach(notes => {
-            message += notes + '\n\n';
-        });
-    }
+    let releaseNotes ='Release notes:\n';
+    releaseNotes += 
+    "\
+        첫번째항목\n\
+        두번째항목\n\
+    ";
     const dialogOpts = {
         type: 'question',
         icon: path.join(__dirname, '../build/logo512.png'),
         buttons: ['Install and Relaunch', 'Later'],
-        defaultId: 0,
         title: 'Application Update',
-        message: 'A new version of ' + app.getName() + ' has been downloaded',
-        detail: message,
-        noLink :  true
-        }
-
+        message: 'A new Bizsquad version has been released.',
+        detail: releaseNotes,
+        noLink : true
+    }
     dialog.showMessageBox(dialogOpts, (response) => {
         if (response === 0) autoUpdater.quitAndInstall();
         })
