@@ -144,6 +144,8 @@ autoUpdater.on('download-progress', function (progressObj) {
 });
 autoUpdater.on('update-downloaded', (event) => {
 
+    // sendNotification("Application Update","The new version has been updated.");
+
     const dialogOpts = {
         type: 'info',
         buttons: ['Restart', 'Later'],
@@ -163,4 +165,11 @@ autoUpdater.checkForUpdatesAndNotify();
 function sendStatusToWindow(message) {
     logger.info(message);
     console.log(message);
+}
+
+function sendNotification(title,body){
+    new Notification(title,{
+        body: body,
+        icon: path.join(__dirname, '../build/logo512.png')
+    }).show();
 }
