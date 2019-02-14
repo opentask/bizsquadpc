@@ -161,7 +161,7 @@ autoUpdater.on('update-downloaded', (event) => {
         title: 'Application Update',
         message: 'A new version of ' + app.getName() + ' has been downloaded',
         detail: message,
-        
+        noLink :  true
         }
 
     dialog.showMessageBox(dialogOpts, (response) => {
