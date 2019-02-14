@@ -145,11 +145,11 @@ autoUpdater.on('download-progress', function (progressObj) {
 autoUpdater.on('update-downloaded', (event,releaseName) => {
 
     // git의 버전을 담습니다.
-    const releaseNameG;
+    const releaseNameG = "";
     if(releaseName){
-        releaseNameG = 'There is a new BizSquad version ' + releaseName; 
+        releaseNameG = 'There is a new BizSquad version ' + releaseName +'.'; 
     } else {
-        releaseNameG = 'There is a new BizSquad version';
+        releaseNameG = 'There is a new BizSquad version.';
     }
     
     const dialogOpts = {
@@ -157,7 +157,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         buttons: ['Install and Relaunch', 'Later'],
         title: 'Application Update',
         message: releaseNameG,
-        detail: 'Would you like to download it now?',
+        detail: 'Would you like to download it now?\nWhen you quit the app,it will automatically start the installation.',
         icon: path.join(__dirname, 'logo512.png'),
         noLink : true
     }
