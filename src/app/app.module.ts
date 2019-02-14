@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
-
 //electron
 import { Electron } from '../providers/electron/electron';
 
@@ -39,7 +38,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     Electron,
     LoadingProvider,
     BizFireService,
-    AlertProvider
+    AlertProvider,
   ]
 })
 export class AppModule {}

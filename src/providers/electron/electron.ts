@@ -4,8 +4,6 @@ import { BizFireService } from '../biz-fire/biz-fire';
 @Injectable()
 export class Electron {
 
-  sharedObject = electron.remote.getGlobal('sharedObject');
-
   // electron 에서 a링크 사용하기 위한..
   ipc : any;
   onlineStatus : boolean = true;

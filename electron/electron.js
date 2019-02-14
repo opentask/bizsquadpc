@@ -46,7 +46,7 @@ function createWindow() {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
     
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -145,13 +145,12 @@ autoUpdater.on('download-progress', function (progressObj) {
 autoUpdater.on('update-downloaded', (event,releaseName) => {
 
     // git의 버전을 담습니다.
-    const releaseNameG = "";
+    let releaseNameG = "";
     if(releaseName){
-        releaseNameG = 'There is a new BizSquad version ' + releaseName +'.'; 
+        releaseNameG = 'There is a new BizSquad version '+releaseName+'.'; 
     } else {
         releaseNameG = 'There is a new BizSquad version.';
     }
-    
 
     const dialogOpts = {
         type: 'question',

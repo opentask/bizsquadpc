@@ -1,12 +1,13 @@
 import { Electron } from './../../providers/electron/electron';
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { LoadingProvider,BizFireService } from './../../providers';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
+
 @IonicPage({  
   name: 'page-login',
   segment: 'login',
@@ -20,6 +21,7 @@ export class LoginPage implements OnInit {
 
   autoLogin : boolean;
   loginForm: FormGroup;
+  version: any;
 
   // 새 창으로 열기위해..
   ipc: any;
@@ -53,6 +55,10 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit() { 
+
+    // 버전 가져오기
+    this.version = electron.remote.app.getVersion();
+
     // test...중복 로그인 중...
     this.bizFire.authState
     .pipe(takeUntil(this._unsubscribeAll))
