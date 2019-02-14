@@ -144,14 +144,24 @@ autoUpdater.on('download-progress', function (progressObj) {
 });
 autoUpdater.on('update-downloaded', (event) => {
 
-    // sendNotification("Application Update","The new version has been updated.");
-
+    let message = app.getName()+' '+ app.getVersion() + ' is now available. It will be installed the next time you restart the application.';
+    let releaseNotes = "첫번째항목\n두번째항목";
+    if(releaseNotes){
+        const splitNotes = releaseNotes.split(/[^\r]\n/);
+        message += '\n\nRelease notes:\n';
+        splitNotes.forEach(notes => {
+            message += notes + '\n\n';
+        });
+    }
     const dialogOpts = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
+        type: 'question',
+        icon: path.join(__dirname, '../build/logo512.png'),
+        buttons: ['Install and Relaunch', 'Later'],
+        defaultId: 0,
         title: 'Application Update',
-        message: "The new version has been updated.",
-        detail: 'Do you want to restart now?'
+        message: 'A new version of ' + app.getName() + ' has been downloaded',
+        detail: message,
+        
         }
 
     dialog.showMessageBox(dialogOpts, (response) => {
@@ -165,11 +175,4 @@ autoUpdater.checkForUpdatesAndNotify();
 function sendStatusToWindow(message) {
     logger.info(message);
     console.log(message);
-}
-
-function sendNotification(title,body){
-    new Notification(title,{
-        body: body,
-        icon: path.join(__dirname, '../build/logo512.png')
-    }).show();
 }
