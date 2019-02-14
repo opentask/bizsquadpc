@@ -150,9 +150,12 @@ autoUpdater.on('update-downloaded', (event) => {
         첫번째항목\n\
         두번째항목\n\
     ";
+    if(app.getName() && app.getVersion()){
+        releaseNotes += app.getName() + "\n" + app.getVersion();
+    }
+    
     const dialogOpts = {
         type: 'question',
-        icon: path.join(__dirname, '../build/logo512.png'),
         buttons: ['Install and Relaunch', 'Later'],
         title: 'Application Update',
         message: 'A new Bizsquad version has been released.',
