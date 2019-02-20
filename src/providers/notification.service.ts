@@ -1,10 +1,20 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, Subscription } from 'rxjs';
 import { INotification, INotificationData, IUser } from '../_models/message';
 import { BizFireService, IBizGroup } from './biz-fire/biz-fire';
 import { switchMap, takeUntil, map } from 'rxjs/operators';
 import { ISquad } from './squad.service';
 
+export interface IAlarm {
+    all: boolean,
+    groupInvite: boolean,
+    squadInvite: boolean,
+    squadInOut:boolean,
+    post: boolean,
+    comment:boolean,
+    schedule:boolean,
+    bbs:boolean
+}
 
 @Injectable({
     providedIn: 'root'
@@ -13,10 +23,15 @@ export class NotificationService {
 
     onUnfinishedNotices = new BehaviorSubject<any>([]); // not using...
     onNotifications = new BehaviorSubject<INotification[]>([]);
-    
+
+    private oldAlarmSub: Subscription;
+    private oldUserUID: string;
+
+    // alarm send by SettingComponent
+    onAlarmChanged = new BehaviorSubject<IAlarm>(null);
+
     private _notification: Observable<INotification[]>;
-
-
+    
     constructor(private bizFire: BizFireService) {
 
         // delete all notifications
@@ -24,6 +39,45 @@ export class NotificationService {
 
             this.onUnfinishedNotices.next([]);
             this.onNotifications.next([]);
+
+            // restart monitor
+            if(this.oldAlarmSub != null){
+                this.oldAlarmSub.unsubscribe();
+                this.oldAlarmSub = null;
+            }
+        });
+
+        // allTime alarm monitor.
+        this.bizFire.currentUser.subscribe(user => {
+
+            if(user.uid !== this.oldUserUID){
+
+                // restart monitor
+                if(this.oldAlarmSub != null){
+                    this.oldAlarmSub.unsubscribe();
+                    this.oldAlarmSub = null;
+                }
+            }
+
+            this.oldAlarmSub = this.bizFire.afStore.doc(this.getAlarmPath())
+                .valueChanges()
+                .pipe(takeUntil(this.bizFire.onUserSignOut))
+                .subscribe((userData: any) => {
+
+                    let alarm: IAlarm;
+                    if(userData.alarm == null){
+                        // set to default
+                        alarm = {all: true, groupInvite: true, squadInOut: true, squadInvite: true, schedule: true, post: true,
+                            comment: true, bbs: true};
+
+                        this.updateAlarmStatus(alarm);
+                    } else {
+
+                        alarm = userData.alarm as IAlarm;
+                    }
+
+                    this.onAlarmChanged.next(alarm);
+                });
         });
 
         this._notification = this.bizFire.currentUser
@@ -40,10 +94,109 @@ export class NotificationService {
                 )));
         }));
 
-        combineLatest(this._notification, this.bizFire.onLang)
-        //.pipe(takeUntil(this.bizFire.onUserSignOut))
-        .subscribe(([msgs]) => {
-            this.onNotifications.next(msgs);
+        combineLatest(this._notification,this.onAlarmChanged)
+            //.pipe(filter(([n, l, a]) => a!=null))
+            .subscribe(([msgs,alarm]) => {
+                // save multi lang. Every time language changed, Re load firestore.
+                // msg filter
+                if(alarm != null){
+
+                    let alarmsToDelete = [];
+                    let leftAlarms = [];
+                    if(alarm.all === false){
+                        alarmsToDelete = msgs;
+                    } else {
+                        msgs.forEach(m => {
+                            let added = false;
+                            if(alarm.groupInvite === true){
+                                // invite
+                                if(m.data.type === 'invitation' && m.data.invitation != null && m.data.invitation.type ==='group' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                                // but remove user from group must be
+                                // caught here
+                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='group' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                            }
+
+                            if(alarm.squadInvite === true){
+                                // add biz
+                                if(m.data.type === 'invitation' && m.data.invitation != null && m.data.invitation.type ==='squad' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                            }
+                            if(alarm.squadInOut === true){
+                                // add biz
+                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='squad' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                            }
+                            if(alarm.post === true){
+                                // add biz
+                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='post' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                            }
+                            if(alarm.comment === true){
+                                // add biz
+                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='comment' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                            }
+                            if(alarm.schedule === true){
+                                // add biz
+                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='schedule' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                            }
+                            if(alarm.bbs === true){
+                                // add biz
+                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='bbs' ){
+                                    // ok
+                                    leftAlarms.push(m);
+                                    added = true;
+                                }
+                            }
+                            if(added === false){
+                                alarmsToDelete.push(m);
+                            }
+                        });
+                    }
+                    this.onNotifications.next(leftAlarms);
+
+                    // delete all alarms
+                    if(alarmsToDelete.length > 0){
+                        alarmsToDelete.forEach(msg => {
+                           //this.deleteNotification(msg);
+                           //console.log('delete', msg.data.type);
+                        });
+                    }
+                    // do nothing.
+                    // wait for alarm coming.
+                }
+            });
+    }
+    private getAlarmPath(): string{
+        return `users/${this.bizFire.currentUID}`;
+    }
+    updateAlarmStatus(alarm: IAlarm){
+        return this.bizFire.afStore.doc(this.getAlarmPath()).update({
+            alarm: alarm
         });
     }
 

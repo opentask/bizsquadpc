@@ -1,6 +1,5 @@
 
 import { Component } from '@angular/core';
-import { Platform } from 'ionic-angular';
 import * as electron from 'electron';
 
 @Component({
@@ -8,13 +7,20 @@ import * as electron from 'electron';
 })
 export class MyApp {
 
-  rootPage:any = 'page-login';
+  rootPage:any ="page-login";
 
   constructor() {
+    electron.ipcRenderer.send('giveMeSquadValue', 'ping');
+    electron.ipcRenderer.on('selectSquad', (event, data) => {
+      if(data != null){
+        this.rootPage = 'page-squad-chat';
+        console.log(data); // "squad" 출력)
+      }
+    })
   }
   
   ngOnInit(): void {
-
   }
+
 }
 

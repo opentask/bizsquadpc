@@ -90,7 +90,7 @@ ipcMain.on('createChatRoom', (event, squad) => {
         titleBarStyle: 'hidden-inset',
     });
     chatRoom.loadURL(url.format({
-        pathname: path.join(__dirname,'../src/pages/tab/squad/chat-room/chat-room.html'),
+        pathname: path.join(__dirname,'../www/index.html'),
         protocol: 'file:',
         slashes: true,
     }))
