@@ -553,12 +553,12 @@ time {
 
 .icon-folder_open {
     font-size: 17px;
-    color:#828c90;
+    color:#62a8ea;
 }
 
 .icon-folder_close {
     font-size: 17px;
-    color:#a9b4b7;
+    color:#62a8ea;
 }
 
 #mainBtnRight {
@@ -590,6 +590,7 @@ time {
     width: 70px;
     height: 56px;
     color: black;
+    font-weight: bold;
     border: none
 }
 
