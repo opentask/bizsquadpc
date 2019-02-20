@@ -142,6 +142,9 @@ header canvas {
     color: #434343;
     padding-top: 14px;
 }
+.title_div{
+    padding-left: 10px;
+}
 #title span {
     width: calc(100% - 200px);
     display: inline-block;
@@ -275,9 +278,616 @@ ul.datalist > li {
 .meMessage .avatar, .meMessage div.sender {
     display: none;
 }
+.avatar * {
+    width: 48px;
+    height: 48px;
+    display: table-cell;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 50%;
+}
 .sender {
     font-family: 'Noto Sans KR';
     font-size: 11px;
     color: #434343;
     margin-bottom: 5px;
+}
+.message {
+    position: relative;
+    font-family: 'Noto Sans KR';
+    font-size: 13px;
+    color: #434343;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+div.textMessageBox {
+    border: 1px solid #EBEBDF;
+    border-radius: 9.5px;
+    padding: 10px 12px;
+    float: left;
+    line-height: 1.4;
+    font-weight: 300;
+}
+
+div.textMessageBox div.fileBox {
+    padding: 5px 0 0 3px;
+    width: 100%;
+}
+div.textMessageBox div.fileBox::before {
+    content: url(../image/ico_ppt.svg);
+    width: 24px;
+    height: 28px;
+    display: inline-block;
+    float: left;
+    margin-right: 5px;
+}
+
+div.textMessageBox div.fileBox div {
+    max-width: calc(100% - 30px);
+    margin-top: -3px;
+}
+div.textMessageBox span.fileName {
+    display: block;
+    float: left;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    max-width: calc(100vw - 180px);
+}
+
+.youMessage div.textMessageBox span.fileName {
+    max-width: calc(100vw - 245px);
+}
+
+div.textMessageBox span.fileSize {
+    color: #B3B9BD;
+    font-size: 12px;
+    display: block;
+}
+
+.youMessage .message div.textMessageBox {
+    background-color: #FFF9B2;
+}
+
+.youMessage .message.firstMessage div.textMessageBox {
+    border-bottom-left-radius: 0;
+    position: relative;
+}
+
+.youMessage .message.firstMessage div.textMessageBox::before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -10px;
+    bottom: -1px;
+    border: 5px solid;
+    border-color: transparent #EBEBDF #EBEBDF transparent;
+}
+
+.youMessage .message.firstMessage div.textMessageBox::after {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -8px;
+    bottom: 0;
+    border: 5px solid;
+    border-color: transparent #FFF9B2 #FFF9B2 transparent;
+}
+
+.meMessage .message div.textMessageBox {
+    background-color: white;
+}
+
+.meMessage .message.firstMessage div.textMessageBox {
+    border-bottom-right-radius: 0;
+}
+
+.meMessage .message.firstMessage div.textMessageBox::before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    right: -10px;
+    bottom: -1px;
+    border: 5px solid;
+    border-color: transparent transparent #EBEBDF #EBEBDF;
+}
+
+.meMessage .message.firstMessage div.textMessageBox::after {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    right: -8px;
+    bottom: 0;
+    border: 5px solid;
+    border-color: transparent transparent white white;
+}
+.messageInfo {
+    font-family: 'Noto Sans KR';
+    font-size: 10px;
+    margin-left: 5px;
+    bottom: 0;
+    height: 100%;
+    position: absolute;
+    display: inline-block;
+}
+.messageTime {
+    position: absolute;
+    bottom: 0;
+}
+
+.messageTime.save {
+    position: absolute;
+    bottom: 18px;
+}
+img.messageImg + .messageInfo {
+    right: -58px;
+}
+
+.meMessage .messageInfo {
+    float: right;
+    position: initial;
+    margin-right: 30px;
+}
+
+img.messageImg {
+    max-width: 250px;
+    max-height: 300px;
+    min-width: 5px;
+    min-height: 5px;
+}
+
+.unread {
+    font-family: 'Noto Sans KR';
+    font-size: 10px;
+    color: #5B9CED;
+}
+
+.meMessage .unread {
+    text-align: right;
+}
+
+time {
+    font-family: 'Noto Sans KR';
+    font-size: 10px;
+    color: #B3B9BD;
+    font-weight: 300;
+}
+
+.save {
+    font-size: 11px;
+    color: #B3B9BD;
+    font-family: 'Noto Sans KR';
+    font-weight: 300;
+}
+.save span {
+    display: inline-block;
+    margin-top: 3px;
+}
+
+
+.messageDownloadProgress {
+    width: 85px;
+    float: right;
+    margin: 0 5px;
+}
+
+.youMessage .messageDownloadProgress {
+    float: left;
+}
+
+.messageDownloadProgress div {
+    float: right;
+    width: 85px;
+    position: absolute;
+    bottom: 18px;
+}
+
+.messageDownloadProgress progress {
+    background-color: #E4E4E4;
+    width: 60px;
+    height: 8px;
+    vertical-align: top;
+    margin-top: 4px;
+    float: right;
+}
+
+.messageDownloadProgress progress::-webkit-progress-bar {
+    border: 1px solid #CDCDCD;
+    background-color: #E4E4E4;
+    border-radius: 4px;
+}
+
+.messageDownloadProgress progress::-webkit-progress-value {
+    background-color: #FECB00;
+    border: 1px solid #CDCDCD;
+    border-radius: 4px;
+}
+
+.messageDownloadProgress button, .messageDownloadProgress button * {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    float: left;
+}
+
+#mainBtn, #messageArea {
+    width: 100%;
+    bottom: 0;
+}
+
+#resizableArea {
+    height: 98px;
+    position: absolute;
+    bottom: 0;
+}
+
+#mainBtn {
+    bottom: 72px;
+    height: 38px;
+    border: 1px solid #EAEEF0;
+    background-color: #FAFAFA;
+}
+
+#mainBtn button {
+    border: none;
+    background: none;
+    width: 20px;
+    height: 100%;
+    margin-left: 5px;
+    margin-top: 10px;
+}
+
+#mainBtn button img, #mainBtn button svg {
+    width: 16px;
+    height: 16px;
+}
+
+
+.icon-folder_open {
+    font-size: 17px;
+    color:#828c90;
+}
+
+.icon-folder_close {
+    font-size: 17px;
+    color:#a9b4b7;
+}
+
+#mainBtnRight {
+    margin-right: 24px;
+}
+
+#messageArea {
+    height: 100%;
+    background-color: white;
+}
+
+#messageArea textarea {
+    width: calc(100vw - 100px);
+    height: calc(100% - 60px);
+    border: none;
+    margin: 9px;
+    margin-right: 90px;
+    resize: none;
+    font-weight: 400;
+    font-size: 13px;
+}
+
+#messageArea button {
+    background-color: silver;
+    border-radius: 5px;
+    position: fixed;
+    right: 1px;
+    bottom: 1px;
+    width: 70px;
+    height: 56px;
+    color: black;
+    border: none
+}
+
+#messageArea button:disabled {
+    opacity: 0.5;
+}
+
+.right {
+    float: right;
+}
+
+.max {
+    width: 100%;
+    display: block;
+}
+
+#overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+    display: none;
+}
+
+#roomTitle {
+    width: 300px;
+    height: 170px;
+    background-color: white;
+    border: 1px solid #95989A;
+    border-radius: 5px;
+    margin: 190px auto;
+    display: none;
+}
+
+#titleHeader {
+    height: 30px;
+    font-family: 'Noto Sans KR';
+    font-size: 13px;
+    color: #2E2E2E;
+    background-color: #FAFAFA;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding-top: 10px;
+    border-bottom: 1px solid #CECECE;
+}
+
+#roomTitle #titleHeader #titleAlias {
+    float: left;
+    margin-left: 110px;
+}
+
+#titleHeader .right {
+    margin-top: 4px;
+    margin-right: 14px;
+}
+
+#titleHeader button {
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    margin: 0;
+}
+
+#roomTitle input {
+    width: 250px;
+    height: 40px;
+    border: 1px solid #D3D3D3;
+    border-radius: 4px;
+    margin-top: 20px;
+    padding-left: 10px;
+    font-size: 14px;
+}
+
+#titleButtonArea {
+    margin-top: 15px;
+}
+
+button.decide {
+    width: 60px;
+    height: 32px;
+    border-radius: 23px;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR';
+    font-size: 12px;
+}
+
+button.positive {
+    background-color: #5B9CED;
+    color: white;
+    margin-right: 5px;
+}
+
+button.negative {
+    border: 1px solid #D3D3D3;
+    color: #5B9CED;
+}
+
+#profileView {
+    width: 320px;
+    background-color: white;
+    border: 1px solid #95989A;
+    border-radius: 6px;
+    margin: 90px auto;
+    text-align: center;
+    display: none;
+}
+
+#profileView .right {
+    margin: 20px;
+    width: 14px;
+    height: 14px;
+}
+
+#profileView .right button {
+    margin: 0;
+    padding: 0;
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+.profileAvatar {
+    width: 100px;
+    height: 100px;
+    margin: 50px auto 0 auto;
+}
+
+.profileAvatar * {
+    width: 100px;
+    height: 100px;
+    display: table-cell;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 50%;
+}
+
+.profileName {
+    margin-top: 10px;
+    font-family: 'Noto Sans KR';
+    font-size: 16px;
+    color: #434343;
+    font-weight: 500;
+}
+
+.profileName button {
+    margin: 0;
+    padding: 0;
+}
+
+.profileName span.icon-favorite_opacity {
+    font-size: 16px;
+}
+
+.profileName span.icon-favorite_opacity.favorite::before {
+    color: #FFB100;
+}
+
+.profileDepart {
+    font-family: 'Noto Sans KR';
+    font-size: 12px;
+    color: #95989A;
+    margin-top: 5px;
+    font-weight: 300;
+}
+
+.profileNickname {
+    margin-top: 15px;
+    display: none;
+}
+
+.profileNickname span {
+    border: 1px solid #D3D3D3;
+    border-radius: 20px;
+    font-family: 'Noto Sans KR';
+    font-size: 11px;
+    padding: 3px 12px;
+}
+
+#profileView table {
+    margin-left: 28px;
+    margin-top: 10px;
+}
+
+#profileView th {
+    font-family: 'Noto Sans KR';
+    font-size: 11px;
+    color: #95989A;
+    text-align: left;
+    height: 25px;
+    font-weight: 300;
+}
+
+#profileView td {
+    font-family: 'Noto Sans KR';
+    font-size: 13px;
+    color: #424242;
+    padding-left: 20px;
+    text-align: left;
+}
+
+#profileView .profileChat button {
+    border-radius: 20px;
+    width: 100px;
+    height: 32px;
+    font-family: 'Noto Sans KR';
+    font-size: 12px;
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+#profileView .profileChat button:nth-child(2) {
+    margin-left: 20px;
+}
+
+#profileEdit {
+    width: 320px;
+    height: 380px !important;
+    background-color: white;
+    border-radius: 4px;
+    margin: 90px auto;
+    display: none;
+}
+
+#profileEdit form {
+    margin: 28px;
+}
+
+#profileEdit form > div {
+    width: 100%;
+    clear: both;
+}
+
+#profileEdit #titleAlias {
+    width: 290px;
+    float: left;
+}
+
+#profileEdit #editAvatar {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+#profileEdit #editAvatar * {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: table-cell;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+#profileEdit #editAvatar img {
+    border: 1px solid #CECECE;
+}
+
+#profileEdit #editAvatar::after {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-block;
+    content: url(../image/icon_camera.svg);
+    position: absolute;
+    bottom: 0;
+    right: -6px;
+}
+
+#profileEdit #nickNameSize {
+    font-family: 'Noto Sans KR';
+    font-size: 11px;
+    color: #95989A;
+    text-align: right;
+}
+
+#profileEdit input[type=text] {
+    width: 100%;
+    height: 31px;
+    border: 1px solid #D3D3D3;
+    border-radius: 4px;
+    font-family: 'Noto Sans KR';
+    font-size: 13px;
+    color: #424242;
+    margin-bottom: 8px;
+    padding-left: 7px;
+}
+
+#profileEdit .buttonArea {
+    margin-top: 12px;
 }

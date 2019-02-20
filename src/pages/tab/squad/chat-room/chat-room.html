@@ -15,7 +15,6 @@
     ipcRenderer.on('selectSquad', function(event, data){
       console.log(data.sid) // "squad" 출력
     })
-
   </script>
 </head>
 
@@ -33,22 +32,21 @@
     <div id="wrapper">
         <header>
             <div>
-                <div class="left avatar">
-                    <canvas width="48" height="48"></canvas>
-                </div>
-                <div class="">
+                <div class="title_div">
                     <div id="title">
-                        <span></span>
+                        <span>SquadName</span>
                     </div>
                     <div id="userCount">
-                        <span>대화상대</span>
-                        <span class="userCountField">2</span>
+                        <span>Participant</span>
+                        <span class="userCountField"> 2</span>
                     </div>
                 </div>
             </div>
             <div id="topBtn">
-                <button id="toggleSearch" class="teamSvg2">
-                    <span class="icon-search icon teamColor"></span>
+                <!-- <button id="toc" class="teamSvg2">
+                    <span class="icon-search icon teamColor">
+
+                    </span>
                 </button>
                 <button id="toggleNotify" class="teamSvg2">
                     <span class="icon-alarm icon teamColor"></span>
@@ -56,7 +54,7 @@
                 </button>
                 <button id="toggleMenu" class="teamSvg2">
                     <span class="icon-menu icon teamColor"></span>
-                </button>
+                </button> -->
                 <!-- <div id="popup">
                     <ul>
                         <li id="addMember">대화상대 추가</li>
@@ -67,24 +65,9 @@
                 </div> -->
             </div>
         </header>
-        <section id="searchArea">
-            <form>
-                <div id="inputForm">
-                    <input />
-                    <span class="hide">47</span>
-                    <button class="hide">
-                        <img src="../../../../../www/imgs/btn_close.svg">
-                    </button>
-                </div>
-                <div class="right">
-                    <button id="searchClose" data-tr="text:close">닫기</button>
-                </div>
-            </form>
-        </section>
         <div id="splitWrapper">
             <div id="messageBody">
                 <ul class="datalist">
-                    <li class="systemMessage template hide">2017.07.03 (월)</li>
                     <li class="hide template">
                         <div class="avatar left">
                             <img src="../../../../../www/imgs/chicken_02-01_1x.svg" />
@@ -94,7 +77,7 @@
                             <ul>
                                 <li>
                                     <div class="messageContent">
-                                        <div class="message ">
+                                        <div class="message">
                                             <div class="textMessageBox">
                                                 <span class="max originalMessage"></span>
                                                 <span class="max translateMessage"></span>
@@ -137,23 +120,13 @@
             <div id="resizableArea">
                 <div id="mainBtn">
                     <div class="left">
-                        <button class="teamSvg1 hide">
-                            <span class="icon-emoticon icon teamColor"></span>
-                        </button>
                         <button id="openFile" class="teamSvg1">
-                            <span class="icon-chat_file icon teamColor"></span>
-                        </button>
-                        <button class="teamSvg1 hide">
-                            <span class="icon-video_line icon teamColor"></span>
+                            <img src="../../../../../www/imgs/chat_ico_file.svg">
                         </button>
                     </div>
                     <div class="right" id="mainBtnRight">
-
-                        <button id="openFolder" class="teamSvg1">
-                            <span class="icon-folder_open icon teamColor"></span>
-                        </button>
                         <button id="filebox" class="teamSvg1">
-                            <span class="icon-archive icon teamColor"></span>
+                            <img src="../../../../../www/imgs/folder_open.svg">
                         </button>
                     </div>
                 </div>
