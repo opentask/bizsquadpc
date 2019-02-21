@@ -22,6 +22,8 @@ export class LoginPage implements OnInit {
   autoLogin : boolean;
   loginForm: FormGroup;
   version: any;
+  hideForm = true;
+  imgPath = "imgs/main512.png";
 
   // 새 창으로 열기위해..
   ipc: any;
@@ -41,17 +43,30 @@ export class LoginPage implements OnInit {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public electron: Electron,
+    public electronProvider: Electron,
     private bizFire: BizFireService,
     private loading: LoadingProvider,
     public formBuilder: FormBuilder
     ) {
+  
       this.loginForm = formBuilder.group({
         email: ['', this.emailValidator],
         password: ['', this.passwordValidator]
       });
-      this.ipc = electron.ipc;
+      this.ipc = electronProvider.ipc;
       this._unsubscribeAll = new Subject<any>();
+  }
+  ionViewCanEnter(){
+    electron.ipcRenderer.send('giveMeSquadValue', 'ping');
+    electron.ipcRenderer.on('selectSquad', (event, data) => {
+      if(data != null){
+        this.hideForm = false;
+        this.navCtrl.setRoot('page-squad-chat',data);
+        console.log(data); // "squad" 출력)
+      } else {
+        this.hideForm = true;
+      }
+    })
   }
 
   ngOnInit() { 
@@ -88,7 +103,7 @@ export class LoginPage implements OnInit {
       // 폼 값이 없으면 로그인 에러창 출력
       // alert("you entered an incorrect email address or password.");
       this.loading.hide();
-      this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
+      this.electronProvider.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
     } else {
       // 로그인 정보 인증
         this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user => {
@@ -101,7 +116,7 @@ export class LoginPage implements OnInit {
         }).catch(err => {
           // 로그인 인증 실패 
           this.loading.hide();
-          this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
+          this.electronProvider.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
         });
     }
   }
@@ -109,10 +124,10 @@ export class LoginPage implements OnInit {
   // * electron function.
   // ------------------------------------------------------------------
   windowClose() {
-    this.electron.windowClose();
+    this.electronProvider.windowClose();
   }
 
   windowMimimize() {
-    this.electron.windowMimimize();
+    this.electronProvider.windowMimimize();
   }
 }

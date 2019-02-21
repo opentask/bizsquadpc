@@ -1,3 +1,42 @@
 page-squad-chat {
-
+    .drag{
+        -webkit-app-region: drag;
+    }
+    .login-top-menu{
+        -webkit-app-region: no-drag;
+        color: #757272;
+    }
+    .windowMimimize{
+        padding-top: 8px;
+    }
+    .top-menu{
+        position: absolute;
+        top: 1px;
+        right: 1px;
+    }
+    .no-padding-topAndBot{
+        padding-top: 0;
+        padding-bottom:0;
+    }
+    .squadName{
+        font-size: 15px;
+        font-weight: 500;
+        padding-right: 18%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .members{
+        padding-top: 5px;
+        display: inline-block;
+    }
+    ion-list{
+        padding-right: 0px;
+    }
+    .item-md.item-block .item-inner{
+        padding-right: 0px !important;
+    }
+    ion-label{
+        margin-right: 0 !important;
+    }
 }

@@ -208,6 +208,7 @@ export class HomePage implements OnInit {
       this.bizFire.onBizGroups.next([]);
     }
     return this.afAuth.auth.signOut().then(()=> {
+        this.electron.resetValue();
         if(navigateToLoginWhenDone) {
           return this._app.getRootNav().setRoot('page-login');
         } else {

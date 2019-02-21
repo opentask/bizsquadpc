@@ -1,4 +1,4 @@
-<ion-content no-padding class="login-content content-color">
+<ion-content no-padding class="login-content content-color" *ngIf="hideForm">
   <div style="float: right">
     <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
       <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
@@ -8,8 +8,8 @@
     </button> 
   </div>
   <div id="wrapper">
-    <ion-img width="90" height="90" alt="logo" src="imgs/main512.png" style="margin-bottom:10px;"></ion-img>
-   
+    <ion-img width="90" height="90" alt="logo" [src]="imgPath" style="margin-bottom:10px;"></ion-img>
+    
     <form [formGroup]="loginForm">
       <input type="email" formControlName="email" placeholder="Email" id="username" />
       <input type="password" formControlName="password" placeholder="Password" id="password" />
