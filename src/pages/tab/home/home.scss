@@ -173,7 +173,7 @@ page-home {
     }
     .statusMenu li {
         padding-right: 5px;
-        text-align: right !important;
+        text-align: left !important;
     }
     
     #popup ul, li {
@@ -221,6 +221,7 @@ page-home {
         display: inline-block;
     }
     .selectBadge{
+        margin-right: 5px;
         float: left;
         position: relative;
         border-radius: 100%;
