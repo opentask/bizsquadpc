@@ -166,6 +166,15 @@ page-home {
         right:25px;
         top:45px;
     }
+    .statusMenu{
+        width: 70px !important;
+        left:55px !important;
+        top:50px !important;
+    }
+    .statusMenu li {
+        padding-right: 5px;
+        text-align: right !important;
+    }
     
     #popup ul, li {
         margin: 0;
@@ -188,5 +197,36 @@ page-home {
     
     #popup li:hover {
         background-color: rgba(91, 156, 237, 0.1)
+    }
+    #statusBadge {
+        position: absolute;
+        border-radius: 100%;
+        padding:0;
+        width: 13px;
+        height: 13px;
+        left:45px;
+        bottom: 10px;
+        color: transparent;
+        font-size: 7px;
+        line-height: 1.5;
+        background-color: #32db64;
+        border: 2px solid white;
+        cursor: pointer;
+    }
+    #statusBadge:hover{
+        color:#62a8ea;
+        background-color:#e6e6e6;
+    }
+    .onlineBadge{
+        display: inline-block;
+    }
+    .selectBadge{
+        float: left;
+        position: relative;
+        border-radius: 100%;
+        padding:0;
+        width: 10px;
+        height: 10px;
+        top:2px;
     }
 }

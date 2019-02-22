@@ -56,6 +56,8 @@ export class HomePage implements OnInit {
 
   // logout,quit toggle bar
   menuShow : boolean = false;
+  // userStatus toggle bar
+  statusMenu : boolean = false;
 
   ipc: any;
 
@@ -177,6 +179,22 @@ export class HomePage implements OnInit {
     }
   }
 
+  setStatus() {
+    if(this.statusMenu){
+      this.statusMenu = false;
+    } else {
+      this.statusMenu = true;
+    }
+  }
+
+  changedStatus(e){
+    if(this.statusMenu){
+      this.statusMenu = false;
+    } else {
+      this.statusMenu = true;
+    }
+  }
+
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
@@ -185,10 +203,6 @@ export class HomePage implements OnInit {
     this.bizFire.windowCloseAndUserStatus().then(() => {
       this.electron.windowClose();
     });
-  }
-  // 프로필 편집
-  profileSetting(){
-    
   }
 
     /*
@@ -222,6 +236,10 @@ export class HomePage implements OnInit {
             return new Promise<any>(resolve => resolve(true));
         }
     });
+  }
+
+  showNotify(){
+    this.navCtrl.setRoot('page-notify');
   }
 
 }

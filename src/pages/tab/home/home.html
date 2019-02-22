@@ -3,19 +3,27 @@
     <!-- 프로필 사진이 있으면 -->
     <ion-avatar item-start *ngIf="currentUser && currentUser.photoURL">
         <img class="photoURL" src="{{currentUser.photoURL}}">
+        <ion-badge id="statusBadge" (click)="setStatus()">V</ion-badge>
     </ion-avatar>
     <!-- 프로필 사진이 없으면 -->
     <ion-avatar class="notPhoto" item-start *ngIf="currentUser && currentUser.photoURL == null && displayName != null">
         <span class="displayName">{{ displayName }}</span>
+        <ion-badge id="statusBadge" (click)="setStatus()">V</ion-badge>
     </ion-avatar>
     <h2 class="user-name" *ngIf="currentUser.displayName != null">{{ fullName }}
-      <button end ion-button icon-only clear color="dark" style="float: right" (click)="showMenu()">
-        <ion-icon name="more"></ion-icon>
-      </button>
+        <button end ion-button icon-only clear color="dark" style="float: right" (click)="showMenu()">
+            <ion-icon name="more"></ion-icon>
+        </button>
+        <button end ion-button icon-only clear color="dark" style="float: right;margin-right: 7px;color:#999" (click)="showNotify()">
+            <ion-icon name="list-box"></ion-icon>
+        </button>
     </h2>
     <h2 class="user-name" *ngIf="currentUser.displayName == null">{{ currentUser.email }}
         <button end ion-button icon-only clear color="dark" style="float: right" (click)="showMenu()">
             <ion-icon name="more"></ion-icon>
+        </button>
+        <button end ion-button icon-only clear color="dark" style="float: right;margin-right: 7px;color:#999" (click)="showNotify()">
+            <ion-icon name="list-box"></ion-icon>
         </button>
     </h2>
   </ion-item>
@@ -25,7 +33,14 @@
         <li id="signoutBtn" (click)="signOut()">Sign out</li>
         <li id="exitBtn" (click)="windowClose()">Exit</li>
     </ul>
-  </div>
+  </div> 
+  <div id="popup" class="statusMenu" *ngIf="statusMenu">
+        <ul> 
+            <li (click)="changedStatus($event)"><ion-badge class="selectBadge" color="secondary">&nbsp;</ion-badge>Online</li>
+            <li (click)="changedStatus($event)"><ion-badge class="selectBadge" color="orange">&nbsp;</ion-badge>Wait</li>
+            <li (click)="changedStatus($event)"><ion-badge class="selectBadge" color="danger">&nbsp;</ion-badge>Busy</li>
+        </ul>
+      </div>
   <div id="appSelectArea">
     <span>Apps</span>
     <ul>

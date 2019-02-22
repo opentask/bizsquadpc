@@ -33,9 +33,24 @@ page-tabs {
     }
 
     // custom tabs icon
+    .ion-md-customHome {
+        background: url(../../www/imgs/md-home.svg) 50% 50% no-repeat;
+        height: 27px;
+        width: 27px;
+    }
     .ion-md-customChat {
         background: url(../../www/imgs/menu_chat.svg) 50% 50% no-repeat;
-        height: 24px;
+        height: 27px;
+        width: 27px;
     }
-
+    .ion-md-customSquad {
+        background: url(../../www/imgs/menu_board.svg) 50% 50% no-repeat;
+        height: 27px;
+        width: 27px;
+    }
+    .ion-md-customMember {
+        background: url(../../www/imgs/menu_user.svg) 50% 50% no-repeat;
+        height: 27px;
+        width: 27px;
+    }
 }

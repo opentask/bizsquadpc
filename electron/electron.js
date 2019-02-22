@@ -46,7 +46,7 @@ function createWindow() {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
     
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -96,7 +96,7 @@ ipcMain.on('createChatRoom', (event, squad) => {
         slashes: true,
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // chatRoom.webContents.openDevTools();
+    chatRoom.webContents.openDevTools();
 });
 ipcMain.on('resetValue',(e) =>{
     selectSquad = null;
@@ -105,9 +105,6 @@ ipcMain.on('resetValue',(e) =>{
 ipcMain.on('giveMeSquadValue', (event,text) => {
     event.sender.send('selectSquad',selectSquad);
 })
-
-
-
 autoUpdater.on('checking-for-update', function () {
     sendStatusToWindow('Checking for update...');
 });
@@ -119,7 +116,6 @@ autoUpdater.on('update-available', function (info) {
 autoUpdater.on('update-not-available', function (info) {
     sendStatusToWindow('Update not available.');
 });
-
 autoUpdater.on('error', function (err) {
     sendStatusToWindow('Error in auto-updater.');
 });
