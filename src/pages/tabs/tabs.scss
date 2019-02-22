@@ -31,4 +31,11 @@ page-tabs {
     .tabs-md[tabsPlacement="bottom"] > .tabbar::before {
     background-image: none;
     }
+
+    // custom tabs icon
+    .ion-md-customChat {
+        background: url(../../www/imgs/menu_chat.svg) 50% 50% no-repeat;
+        height: 24px;
+    }
+
 }

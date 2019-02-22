@@ -30,13 +30,13 @@
     <span>Apps</span>
     <ul>
       <li>
-          <button id="extMember" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid);">
+          <button id="extMember" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+token);">
               <img src="imgs/member.svg"> 
               <span class="title">Member</span> 
           </button>
       </li>
       <li>
-          <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid);">
+          <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid+'&token='+token);">
               <img src="imgs/notice.svg">
               <span class="title">Notice</span>
           </button>

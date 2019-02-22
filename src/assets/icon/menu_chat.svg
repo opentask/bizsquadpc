@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="2345 -617 30 30">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        clip-path: url(#clip-아트보드_1);
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+    <clipPath id="clip-아트보드_1">
+      <rect x="2345" y="-617" width="30" height="30"/>
+    </clipPath>
+  </defs>
+  <g id="아트보드_1" data-name="아트보드 – 1" class="cls-2">
+    <rect id="사각형_105" data-name="사각형 105" class="cls-1" width="30" height="30" transform="translate(2345 -617)"/>
+    <g id="menu_chat" transform="translate(1977 -667.962)">
+      <path id="빼기_3" data-name="빼기 3" class="cls-3" d="M21.774,25.256h0l-6.658-4.438H10a6.007,6.007,0,0,1-6-6V6a6.007,6.007,0,0,1,6-6H21a6.007,6.007,0,0,1,6,6v8.817a6.008,6.008,0,0,1-5.226,5.95v4.488ZM10.543,9.451h-.027a1.5,1.5,0,1,0,.027,0Zm5-.087h-.027a1.5,1.5,0,1,0,.027,0Zm5-.087h-.027a1.5,1.5,0,1,0,.027,0Z" transform="translate(368 53.962)"/>
+    </g>
+  </g>
+</svg>

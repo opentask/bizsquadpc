@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="2345 -617 30 30">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <g id="menu_board" transform="translate(2345 -617)">
+    <rect id="사각형_105" data-name="사각형 105" class="cls-1" width="30" height="30"/>
+    <path id="menu_board-2" data-name="menu_board" class="cls-2" d="M25,23H15.609V9.608H29V19A4,4,0,0,1,25,23ZM13.7,23H11a4,4,0,0,1-4-4V9.608h6.7V23ZM29,7.7H7V5a4,4,0,0,1,4-4H25a4.005,4.005,0,0,1,4,4V7.695Z" transform="translate(-3 3)"/>
+  </g>
+</svg>

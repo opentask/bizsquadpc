@@ -10,6 +10,7 @@ import { SquadService } from '../../../providers/squad.service';
 import { AccountService } from '../../../providers/account/account';
 import { STRINGS } from '../../../biz-common/commons';
 import { database } from 'firebase';
+import { Http } from '@angular/http';
 
 interface IBbsItem {
   bbsId: string,
@@ -39,7 +40,7 @@ export class HomePage implements OnInit {
   currentUser: IUserData;
   group: IBizGroup;
   allCollectedUsers: IUser[];
-
+  
   messages: IBbsItem[];
 
   // display user info
@@ -60,8 +61,7 @@ export class HomePage implements OnInit {
 
   isPartner = false;
 
-
-
+  token: any;
 
   private _unsubscribeAll;
 
@@ -75,8 +75,9 @@ export class HomePage implements OnInit {
     public afAuth: AngularFireAuth,
     private squadService: SquadService,
     private accountService: AccountService,
+    public http: Http,
     public _app : App) {
-
+      
       this._unsubscribeAll = new Subject<any>();
       this.ipc = electron.ipc;
   }
@@ -89,6 +90,12 @@ export class HomePage implements OnInit {
           this.currentUser = user;
           this.displayName = this.bizFire.getDiplayNameInitial();
           this.fullName = user.displayName;
+          
+          this.http.get('https://asia-northeast1-bizsquad-6d1be.cloudfunctions.net/customToken?authorization='+ this.currentUser.uid)
+          .subscribe((data) => {
+            console.log("tokenData",data);
+            this.token = data.json().customToken;
+          })
       });
 
       this.bizFire.onBizGroupSelected

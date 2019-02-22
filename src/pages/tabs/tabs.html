@@ -2,7 +2,7 @@
   <ion-navbar color="primary" style="min-height: 30px;padding-bottom: 10px;">
     <ion-buttons left class="login-top-menu">
       <button ion-button icon-only clear small color="light" (tap)="presentPopover($event)">
-        <ion-icon name="apps" style="font-size: 20px;"></ion-icon> 
+        <ion-icon name="notifications" style="font-size: 20px;"></ion-icon> 
         <ion-badge *ngIf="badgeVisible" id="badge">&nbsp;</ion-badge>
       </button>
       <button class="groupName" ion-button icon-end clear small color="light" (click)="goGroupList()">
@@ -16,15 +16,15 @@
       </button>
       <button ion-button icon-only clear small color="light" (click)="windowClose()">
         <ion-icon name="md-close" style="font-size: 20px;"></ion-icon>
-      </button> 
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 <ion-tabs tabsPlacement="top" selectedIndex="0" color="primary" style="margin-top:45px;margin-bottom: 45px;">
-    <ion-tab [root]="tab1Root" tabTitle="Home" tabIcon="home"></ion-tab>
-    <ion-tab [root]="tab2Root" tabTitle="Squad" tabIcon="logo-buffer"></ion-tab>
-    <ion-tab [root]="tab5Root" tabTitle="Member" tabIcon="contacts"></ion-tab>
-    <ion-tab [root]="tab3Root" tabTitle="Chat" tabIcon="chatboxes"></ion-tab>
-    <ion-tab [root]="tab4Root" tabTitle="Notify" tabIcon="notifications" tabBadgeStyle="danger" [tabBadge]="notification"></ion-tab>
+    <ion-tab [root]="tab1Root" tabIcon="home"></ion-tab>
+    <ion-tab [root]="tab2Root" tabIcon="logo-buffer"></ion-tab>
+    <ion-tab [root]="tab5Root" tabIcon="contacts"></ion-tab>
+    <ion-tab [root]="tab3Root" tabIcon="customChat"></ion-tab>
+    <!-- <ion-tab [root]="tab4Root" tabTitle="Notify" tabIcon="notifications" tabBadgeStyle="danger" [tabBadge]="notification"></ion-tab> -->
     <!-- 그룹별 알림 표시 양식 -->
 </ion-tabs>
