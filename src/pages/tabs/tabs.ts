@@ -42,6 +42,7 @@ export class TabsPage {
   messages: INotification[];
   badgeVisible = true;
   badgeCount = 0;
+  chatCount = 1;
 
   isPartner = false;
 

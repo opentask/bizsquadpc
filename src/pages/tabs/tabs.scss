@@ -8,17 +8,13 @@ page-tabs {
     #badge {
         position: absolute;
         // top: -3px;
-        right: 3px;
-        bottom: 4px;
+        left:16px;
+        top: 4px;
         border-radius: 100%;
         padding:0;
         width: 10px;
         height: 10px;
         background-color: red;
-    }
-    .tab-button ion-badge{
-        border-radius: 100%;
-        right: 14px !important;
     }
     .groupName{
         text-transform: none;

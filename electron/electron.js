@@ -110,6 +110,18 @@ autoUpdater.on('checking-for-update', function () {
 });
 
 autoUpdater.on('update-available', function (info) {
+    // const dialogOpts = {
+    //     type: 'info',
+    //     buttons: ['OK'],
+    //     title: 'Application Update',
+    //     message: releaseNameG,
+    //     detail: 'There is a new update.\nThe installation file is being downloaded.\n',
+    //     icon: path.join(__dirname, 'logo512.png'),
+    //     noLink : true
+    // }
+    // dialog.showMessageBox(dialogOpts, (response) => {
+    //     if (response === 0) autoUpdater.quitAndInstall();
+    //     })
     sendStatusToWindow('Update available.');
 });
 
@@ -141,7 +153,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         buttons: ['Install and Relaunch', 'Later'],
         title: 'Application Update',
         message: releaseNameG,
-        detail: 'Would you like to download it now?\nWhen you quit the app,it will automatically start the installation.',
+        detail: 'Do you want to install it now?\nWhen you quit the app,it will automatically start the installation.',
         icon: path.join(__dirname, 'logo512.png'),
         noLink : true
     }
