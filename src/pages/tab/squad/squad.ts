@@ -179,8 +179,5 @@ export class SquadPage {
         this.userDataChanged = null;
     }
   }
-  kimtaehwan(squad){
-      console.log(squad);
-  }
 
 }

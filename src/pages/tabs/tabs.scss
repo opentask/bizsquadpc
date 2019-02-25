@@ -16,6 +16,9 @@ page-tabs {
         height: 10px;
         background-color: red;
     }
+    .tab-button ion-badge{
+        border-radius: 100%;
+    }
     .groupName{
         text-transform: none;
         font-weight: bold;

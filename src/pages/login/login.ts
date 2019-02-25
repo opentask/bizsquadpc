@@ -113,10 +113,10 @@ export class LoginPage implements OnInit {
       // 로그인 정보 인증
         this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user => {
           this.loading.hide();
-          this.electron.updateOnlineStatus();
           // 로그인 시 기존과 다르게 이제 비즈그룹을 선택 후 메인페이지로 이동.
           // this.navCtrl.setRoot('page-tabs').catch(error => console.error(error));
           this.bizFire.getUserOnlineStatus().then(() =>{
+            this.electron.updateOnlineStatus();
             this.navCtrl.setRoot('page-group-list').then().catch(error => console.error(error));
           })
         }).catch(err => {

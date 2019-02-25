@@ -17,60 +17,60 @@ page-squad {
         margin:0 !important;
         line-height: 2.5;
     }
+    .long-text{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: block;
+        width: 70%;
+        white-space: nowrap;
+    }
+    .folder-long-text{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: block;
+        width: 65%;
+        white-space: nowrap;
+    }
+    .member-count{
+        font-size:11px;
+        position: absolute;
+        color:#999;
+        font-weight: 600;
+        right:77px;
+        bottom:7px;
+    }
+    .folder-member-count{
+        font-size:11px;
+        position: absolute;
+        color:#999;
+        font-weight: 600;
+        right:84px;
+        bottom:7px;
+        line-height: 2.5;
+    }
     .squadList-button{
         bottom:3px;
         position: absolute;
-        right: 80px;
+        right: 45px;
     }
     .squadList-video{
-        bottom:3px;
+        bottom:4px;
         position: absolute;
-        right: 40px;
+        right: 10px;
         width: 30px;
+        opacity: 0.8;
     }
     .squadList-button-folder{
         bottom:3px;
         position: absolute;
-        right: 87px;
+        right: 52px;
     }
     .squadList-video-folder{
-        bottom:3px;
+        bottom:4px;
         position: absolute;
-        right: 47px;
+        right: 18px;
         width: 30px;
-    }
-    .memberCountBadge{
-        position: absolute;
-        // top: -3px;
-        right: 10px;
-        bottom: 9px;
-        border-radius: 100%;
-        padding:0;
-        width: 20px;
-        height: 20px;
-        background-color: red;
-        line-height: 1.8;
-        font-size: 12px;
-    }
-    .memberCountBadge-folder{
-        position: absolute;
-        // top: -3px;
-        right: 17px;
-        bottom: 9px;
-        border-radius: 100%;
-        padding:0;
-        width: 20px;
-        height: 20px;
-        background-color: red;
-        line-height: 1.8;
-        font-size: 12px;
-    }
-    .privateSquadName{
-        text-overflow: ellipsis;
-        overflow: hidden;
-        display: block;
-        width: 220px;
-        white-space: nowrap;
+        opacity: 0.8;
     }
     .squadList-item{
         font-size: 15px;
