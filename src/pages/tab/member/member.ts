@@ -41,11 +41,18 @@ export class MemberPage {
   myStatus;
 
   allCollectedUsers: IUser[];
+  managerAuthUser: IUser[];
+  memberAuthUser: IUser[];
+  partnerAuthUser: IUser[];
+
+  managerUid: any;
+  manager: boolean = false;
+
   memberCount: any;
 
-  manager: boolean = false;
+  partnerUid: any;
   Partner : boolean = false;
-  managerUid: any;
+  partnerCount:any;
 
   constructor(
     public navCtrl: NavController, 
@@ -102,7 +109,10 @@ export class MemberPage {
             this.currentGroup = groups.find(g => g.gid === this.gid);
             if(this.currentGroup){
 
-                this.managerUid = this.currentGroup.data.manager;
+                this.managerUid = Object.keys(this.currentGroup.data.manager);
+                if(this.currentGroup.data.partners && this.currentGroup.data['partners'] != null){
+                  this.partnerUid = Object.keys(this.currentGroup.data.partners);
+                }
 
                 // is me a manager?
                 this.manager = this.currentGroup.data.manager != null &&
@@ -117,7 +127,7 @@ export class MemberPage {
                   // get all true users' id.
                   allUsers = Object.keys(members)
                       .filter(uid => members[uid] === true)
-                      .filter(uid => uid != this.currentUser.uid)
+                      // .filter(uid => uid != this.currentUser.uid) 자기 자신 제외 구 소스
                       .map(uid => uid);
                 }
                 // * get ALL USERS DATA !
@@ -133,10 +143,18 @@ export class MemberPage {
                             takeUntil(this._unsubscribeAll))
                         .subscribe(all => {
                             this.allCollectedUsers = all;
-                            this.memberCount = this.allCollectedUsers.length;
+                            this.managerAuthUser = this.allCollectedUsers.filter(u => u.uid == this.managerUid);
+                            this.memberAuthUser = this.allCollectedUsers.filter(u => u.uid != this.managerUid && u.uid != this.partnerUid);
+                            if(this.partnerUid){
+                              this.partnerAuthUser = this.allCollectedUsers.filter(u => u.uid == this.partnerUid);
+                              this.partnerCount = this.partnerAuthUser.length;
+                            }
+                            this.memberCount = this.memberAuthUser.length;
+                            console.log(this.managerUid);
 
                             console.log(this.allCollectedUsers);
-                             
+                            console.log(this.managerAuthUser);
+                          
                             all.forEach(user => {
                               const newData = user.data;
                               if(user.data.displayName == null || user.data.displayName.length == 0){
@@ -199,7 +217,6 @@ export class MemberPage {
 
   isPartner(uid: string): boolean {
     let ret = false;
-
     if(this.currentGroup != null) {
         ret =  this.currentGroup.data['partners'] != null && this.currentGroup.data['partners'][uid] === true;
     }
