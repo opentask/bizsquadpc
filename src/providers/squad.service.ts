@@ -13,6 +13,7 @@ export interface ISquad {
         manager?: any,
         type?: string,
         status?: number,
+        member_count?:any,
     },
     members?: any,
     bookmark?: boolean

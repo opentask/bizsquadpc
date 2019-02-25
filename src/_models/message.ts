@@ -23,7 +23,6 @@ export interface IUserData {
     user_icon?: string,
     onlineStatus?: string,
     user_onlineColor?: string,
-    user_statusTooltip?: string,
 }
 
 

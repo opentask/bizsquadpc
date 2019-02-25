@@ -12,6 +12,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class ChatPage {
 
+  defaultSegment : string = "chatRoom"
+
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 

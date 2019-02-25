@@ -10,20 +10,16 @@
                 <!-- 프로필 사진이 있으면 -->
                 <ion-avatar item-start *ngIf="currentUser && currentUser.photoURL" (click)="clickAvatar($event,currentUser)">
                     <img class="photoURL" src="{{currentUser.photoURL}}">
+                    <ion-badge id="statusBadge" [style.background-color]="myStatus"></ion-badge>
                 </ion-avatar>
                 <!-- 프로필 사진이 없으면 -->
                 <ion-avatar class="notPhoto" item-start *ngIf="currentUser && currentUser.photoURL == null" (click)="clickAvatar($event,currentUser)">
                     <span class="displayName">{{ displayName }}</span>
+                    <ion-badge id="statusBadge" [style.background-color]="myStatus"></ion-badge>
                 </ion-avatar>
                 <h2 class="user-name" *ngIf="currentUser.displayName !=null">{{ fullName }}
-                    <button end ion-button icon-only clear [style.color]="myStatus"  style="float: right" (click)="onlineStatus()" title="{{ myStatus_title }}">
-                        <ion-icon name="happy"></ion-icon>
-                    </button>
                 </h2>
                 <h2 class="user-name" *ngIf="currentUser.displayName ==null">{{ currentUser.email }}
-                    <button end ion-button icon-only clear [style.color]="myStatus"  style="float: right" (click)="onlineStatus()" title="{{ myStatus_title }}">
-                        <ion-icon name="happy"></ion-icon>
-                    </button>
                 </h2>
             </ion-item>
         </ion-list>
@@ -37,20 +33,16 @@
                     <!-- 프로필 사진이 있으면 -->
                     <ion-avatar item-start *ngIf="user && user.data.photoURL" (click)="clickAvatar($event,user)">
                         <img class="photoURL" src="{{ user.data.photoURL }}">
+                        <ion-badge id="statusBadge" [style.background-color]="user.data.user_onlineColor"></ion-badge>
                     </ion-avatar>
                     <!-- 프로필 사진이 없으면 -->
                     <ion-avatar class="notPhoto" item-start *ngIf="user && user.data.photoURL == null" (click)="clickAvatar($event,user)">
                         <span class="displayName">{{ user.data.user_icon }}</span>
+                        <ion-badge id="statusBadge" [style.background-color]="user.data.user_onlineColor"></ion-badge>
                     </ion-avatar>
                     <h2 class="user-name" *ngIf="user.data.displayName != null">{{ user.data.displayName }}
-                        <button end ion-button icon-only clear [style.color]="user.data.user_onlineColor" style="float: right" [title]="user.data.user_statusTooltip">
-                            <ion-icon name="happy"></ion-icon> 
-                        </button> 
                     </h2>  
                     <h2 class="user-name" *ngIf="user.data.displayName == null">{{ user.data.email }}
-                        <button end ion-button icon-only clear [style.color]="user.data.user_onlineColor" style="float: right" [title]="user.data.user_statusTooltip">
-                            <ion-icon name="happy"></ion-icon>
-                        </button>
                     </h2>
                 </ion-item>
             </ng-container>

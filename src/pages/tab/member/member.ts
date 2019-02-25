@@ -39,7 +39,6 @@ export class MemberPage {
   displayName;
   fullName;
   myStatus;
-  myStatus_title = 'online';
 
   allCollectedUsers: IUser[];
   memberCount: any;
@@ -70,14 +69,14 @@ export class MemberPage {
           case 'online':
             this.myStatus = '#32db64';
             break;
-          case 'offline':
-            this.myStatus = '#C7C7C7';
-            break;
           case 'wait':
-            this.myStatus = '#FFBF00';
+            this.myStatus = '#FEA926';
             break;
           case 'busy':
             this.myStatus = '#f53d3d';
+            break;
+          case 'offline':
+            this.myStatus = '#C7C7C7';
             break;
         }
         console.log("currentUser",this.currentUser);
@@ -152,19 +151,15 @@ export class MemberPage {
                               }
                               switch(user.data.onlineStatus){
                                 case 'online':
-                                  newData['user_statusTooltip'] = 'online';
                                   newData['user_onlineColor'] = '#32db64';
                                   break;
                                 case 'offline':
-                                  newData['user_statusTooltip'] = 'offline';
                                   newData['user_onlineColor'] = '#C7C7C7';
                                   break;
                                 case 'wait':
-                                  newData['user_statusTooltip'] = 'wait';
                                   newData['user_onlineColor'] = '#FFBF00';
                                   break;
                                 case 'busy':
-                                  newData['user_statusTooltip'] = 'busy';
                                   newData['user_onlineColor'] = '#f53d3d';
                                   break;
                               }
@@ -190,37 +185,6 @@ export class MemberPage {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
-
-  onlineStatus() {
-    console.log(this.myStatus);
-    switch(this.myStatus){
-      // online 일때 클릭시 yellow
-      case '#32db64':
-        this.bizFire.statusChangedIcon('wait').then(() =>{
-          this.myStatus = '#FFBF00';
-          this.myStatus_title = 'wait'
-          console.log("changed wait");
-        });
-        break;
-      // wait 일때 클릭시 red
-      case '#FFBF00':
-        this.bizFire.statusChangedIcon('busy').then(() =>{
-          this.myStatus = '#f53d3d';
-          this.myStatus_title = 'busy'
-          console.log("changed wait");
-      });
-        break;
-      // busy 일때 클릭시 green
-      case '#f53d3d':
-        this.bizFire.statusChangedIcon('online').then(() =>{
-          this.myStatus = '#32db64';
-          this.myStatus_title = 'online'
-          console.log("changed wait");
-        });
-        break;
-    }
-  }
-
   // 자신 프로필 사진 클릭시 프로필보기.
   clickAvatar(ev,target) {
     this.Partner = this.isPartner(target.uid);
@@ -239,7 +203,6 @@ export class MemberPage {
     if(this.currentGroup != null) {
         ret =  this.currentGroup.data['partners'] != null && this.currentGroup.data['partners'][uid] === true;
     }
-  
 
     return ret;
 }

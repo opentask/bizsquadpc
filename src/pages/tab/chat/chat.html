@@ -1,4 +1,12 @@
 <ion-content no-padding class="content-color">
+    <ion-segment [(ngModel)]="defaultSegment">
+        <ion-segment-button value="chatRoom">
+            chatRoom
+        </ion-segment-button>
+        <ion-segment-button value="squadChatRoom">
+            squad ChatRoom
+        </ion-segment-button>
+    </ion-segment>
     
     <ion-scroll class="scrollable" scrollY="true">
         

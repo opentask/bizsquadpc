@@ -1,13 +1,12 @@
 import { Electron } from './../../../providers/electron/electron';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { Subject, Subscription, combineLatest } from 'rxjs';
 import { IBizGroup, BizFireService } from '../../../providers/biz-fire/biz-fire';
 import { ISquad, SquadService } from '../../../providers/squad.service';
 import { IFolderItem } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { STRINGS } from '../../../biz-common/commons';
-
 @IonicPage({  
   name: 'page-squad',
   segment: 'squad',
@@ -28,6 +27,9 @@ export class SquadPage {
 
   isPartner = false;
 
+  defaultSegment : string = "generalSquad";
+  isAndroid: boolean = false;
+
   folders: Array<IFolderItem> = [];
   privateFolders: Array<IFolderItem> = [];
   publicSquads: ISquad[] = [];
@@ -44,9 +46,11 @@ export class SquadPage {
     public navParams: NavParams,
     public bizFire : BizFireService,
     public electron : Electron,
-    private squadService: SquadService,) {
+    private squadService: SquadService,
+    public platform : Platform) {
     this._unsubscribeAll = new Subject<any>();
     this.ipc = electron.ipc;
+    this.isAndroid = platform.is('ios');
   }
 
   ngOnInit() {
@@ -87,6 +91,10 @@ export class SquadPage {
         takeUntil(this._unsubscribeAll))
     .subscribe(([userData, squadList]) => {
         if(userData.gid === this.currentBizGroup.gid){
+            squadList.forEach(squad =>{
+                const newData = squad.data;
+                newData["member_count"] = Object.keys(squad.data.members).length;
+            })
             this.updateShelf(userData, squadList);
         }
     });
@@ -124,9 +132,9 @@ export class SquadPage {
 
     // console.log(folders, privateSquads, publicSquads);
 
+    this.publicSquads = publicSquads;
     this.folders = folders;
     this.privateSquads = privateSquads;
-    this.publicSquads = publicSquads;
     this.privateFolders = privateFolders;
   }
 
@@ -155,6 +163,9 @@ export class SquadPage {
     ev.stopPropagation();
     console.log(squad);
     this.electron.openChatRoom(squad);
+  }
+  onvideocam(ev){
+    ev.stopPropagation();
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,7 @@
 page-squad {
+
     .scrollable{
-        height: 100%;
+        height: 90%;
         white-space: nowrap;
         overflow: auto !important;
     }
@@ -19,12 +20,50 @@ page-squad {
     .squadList-button{
         bottom:3px;
         position: absolute;
-        right: 20px;
+        right: 80px;
+    }
+    .squadList-video{
+        bottom:3px;
+        position: absolute;
+        right: 40px;
+        width: 30px;
     }
     .squadList-button-folder{
         bottom:3px;
         position: absolute;
-        right: 27px;
+        right: 87px;
+    }
+    .squadList-video-folder{
+        bottom:3px;
+        position: absolute;
+        right: 47px;
+        width: 30px;
+    }
+    .memberCountBadge{
+        position: absolute;
+        // top: -3px;
+        right: 10px;
+        bottom: 9px;
+        border-radius: 100%;
+        padding:0;
+        width: 20px;
+        height: 20px;
+        background-color: red;
+        line-height: 1.8;
+        font-size: 12px;
+    }
+    .memberCountBadge-folder{
+        position: absolute;
+        // top: -3px;
+        right: 17px;
+        bottom: 9px;
+        border-radius: 100%;
+        padding:0;
+        width: 20px;
+        height: 20px;
+        background-color: red;
+        line-height: 1.8;
+        font-size: 12px;
     }
     .privateSquadName{
         text-overflow: ellipsis;
@@ -36,6 +75,9 @@ page-squad {
     .squadList-item{
         font-size: 15px;
         color:#222;
+    }
+    .segmentPadding{
+        padding: 5px 3px;
     }
 
     .squadList-item:hover {
@@ -61,18 +103,17 @@ page-squad {
     }
     ::-webkit-scrollbar-track {
         // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important;
-        border-radius: 8px!important;
+        // border-radius: 8px!important;
         background-color: #f6f6f6!important;
     }
-
     ::-webkit-scrollbar {
-        width: 10px!important;
+        width: 8px!important;
         background-color: #f6f6f6!important;
     }
-
     ::-webkit-scrollbar-thumb {
-        border-radius: 8px!important;
+        // border-radius: 8px!important;
         // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3)!important;
-        background-color: #62a8ea!important;
+        background-color: #999!important;
+        opacity: 0.7;
     }
 }

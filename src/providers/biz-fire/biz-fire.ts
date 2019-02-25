@@ -119,6 +119,7 @@ export class BizFireService {
     public afStore: AngularFirestore,
     public afStorage: AngularFireStorage
     ) {
+        
         this.onUserSignOut = new Subject<boolean>();
 
         this._lang.setLanguage('en'); // load default language.
@@ -307,7 +308,7 @@ export class BizFireService {
         onlineStatus : 'offline'
     })
   }
-  statusChangedIcon(value) {
+  statusChanged(value) {
     return this.afStore.doc(`users/${this.currentUID}`).update({
         onlineStatus : value
     })

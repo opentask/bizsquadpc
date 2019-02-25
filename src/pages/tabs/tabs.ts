@@ -68,12 +68,6 @@ export class TabsPage {
 
   ngOnInit() {
 
-    // on/offline check
-    window.addEventListener('online',this.electron.updateOnlineStatus);
-    window.addEventListener('offline',this.electron.updateOnlineStatus);
-
-    this.electron.updateOnlineStatus();
-
     // * current User for RIGHT MENU
     this.bizFire.currentUser
         .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))

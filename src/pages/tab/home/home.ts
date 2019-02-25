@@ -65,6 +65,8 @@ export class HomePage implements OnInit {
 
   token: any;
 
+  myStatus: any;
+
   private _unsubscribeAll;
 
   private nameMargins: Subscription[] = []; // margin name arrays.
@@ -90,9 +92,23 @@ export class HomePage implements OnInit {
       .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
       .subscribe(user => {
           this.currentUser = user;
+          this.myStatus = user.onlineStatus;
+          switch(user.onlineStatus){
+            case 'online':
+              this.myStatus = '#32db64';
+              break;
+            case 'wait':
+              this.myStatus = '#FEA926';
+              break;
+            case 'busy':
+              this.myStatus = '#f53d3d';
+              break;
+            case 'offline':
+              this.myStatus = '#C7C7C7';
+              break;
+          }
           this.displayName = this.bizFire.getDiplayNameInitial();
           this.fullName = user.displayName;
-          
           this.http.get('https://asia-northeast1-bizsquad-6d1be.cloudfunctions.net/customToken?authorization='+ this.currentUser.uid)
           .subscribe((data) => {
             console.log("tokenData",data);
@@ -178,8 +194,7 @@ export class HomePage implements OnInit {
       this.menuShow = true;
     }
   }
-
-  setStatus() {
+  showStatus(){
     if(this.statusMenu){
       this.statusMenu = false;
     } else {
@@ -193,6 +208,9 @@ export class HomePage implements OnInit {
     } else {
       this.statusMenu = true;
     }
+    console.log(e.target.innerText);
+    if(e.target.innerText != this.myStatus && e.target.innerText)
+    this.bizFire.statusChanged(e.target.innerText);
   }
 
   ngOnDestroy(): void {
