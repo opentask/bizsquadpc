@@ -5,6 +5,7 @@ import { IBizGroup, BizFireService } from '../../providers/biz-fire/biz-fire';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { LoadingProvider } from '../../providers';
+import { TokenProvider } from '../../providers/token/token';
 
 @IonicPage({  
   name: 'page-group-list',
@@ -29,7 +30,8 @@ export class GroupListPage {
     public navParams: NavParams,
     public electron : Electron,
     private bizFire: BizFireService,
-    private loading: LoadingProvider,) {
+    private loading: LoadingProvider,
+    private tokenService : TokenProvider,) {
 
       this._unsubscribeAll = new Subject<any>();
   }
@@ -67,6 +69,9 @@ export class GroupListPage {
             this.groups = bizGroups;
             this.loading.hide();
         });
+
+    //파이어베이스에서 토큰 키를 tokenService의 customToken변수에 저장.
+    this.tokenService.getToken();
   }
 
   ngOnDestroy(): void {

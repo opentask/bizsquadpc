@@ -16,6 +16,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpModule } from '@angular/http';
+import { TokenProvider } from '../providers/token/token';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { HttpModule } from '@angular/http';
     LoadingProvider,
     BizFireService,
     AlertProvider,
+    TokenProvider,
   ]
 })
 export class AppModule {}

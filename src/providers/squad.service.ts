@@ -36,7 +36,7 @@ export class SquadService {
     * Current BizGroups' squad list:
     * public or mine.
     * */
-   onSquadListChanged = new BehaviorSubject<ISquad[]>([]);
+    onSquadListChanged = new BehaviorSubject<ISquad[]>([]);
 
     constructor(public bizFire : BizFireService,) {
 

@@ -29,7 +29,7 @@
   </ion-item>
   <div id="popup" *ngIf="menuShow">
     <ul> 
-        <li id="profileSetting" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/account')">My Account</li>
+        <li id="profileSetting" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/account?token='+'customToken')">My Account</li>
         <li id="signoutBtn" (click)="signOut()">Sign out</li>
         <li id="exitBtn" (click)="windowClose()">Exit</li>
     </ul>
@@ -42,16 +42,16 @@
     </ul>
   </div>
   <div id="appSelectArea">
-    <span>Apps</span>
+    <span>Taskbox</span>
     <ul>
       <li>
-          <button id="extMember" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+token);">
+          <button id="extMember" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
               <img src="imgs/member.svg"> 
               <span class="title">Member</span> 
           </button>
       </li>
       <li>
-          <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid+'&token='+token);">
+          <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid+'&token='+customToken);">
               <img src="imgs/notice.svg">
               <span class="title">Notice</span>
           </button>
@@ -87,7 +87,7 @@
           </button>
       </li>
       <li>
-          <button [disabled]="!manager"  id="extTeammanage" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid);">
+          <button [disabled]="!manager"  id="extTeammanage" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
               <img src="imgs/setting.svg">
               <span class="title">Management</span>
           </button>
@@ -97,7 +97,7 @@
 
   <ion-item no-padding style="top:1px;">
     <span class="list">Recent Notice</span>
-    <ion-badge *ngIf="!isPartner" class="ion-badge-cursor" item-end (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid);">view</ion-badge>
+    <ion-badge *ngIf="!isPartner" class="ion-badge-cursor" item-end (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid+'&token='+customToken);">view</ion-badge>
   </ion-item>
   <ion-grid no-padding *ngIf="!noBbs && !isPartner" class="notice-grid">
     <!-- noice title -->

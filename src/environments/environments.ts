@@ -7,6 +7,15 @@ export const environment = {
         projectId: "bizsquad-6d1be",
         storageBucket: "bizsquad-6d1be.appspot.com",
         messagingSenderId: "83346353069"
+
+        // change test DB?
+
+        // apiKey: "AIzaSyAM4OlSUISkIm3JKZoU7M-a5SAcLp8TUFg",
+        // authDomain: "bizsquad-test.firebaseapp.com",
+        // databaseURL: "https://bizsquad-test.firebaseio.com",
+        // projectId: "bizsquad-test",
+        // storageBucket: "bizsquad-test.appspot.com",
+        // messagingSenderId: "873460252341"
     },
     loading: {
         spinner: 'circles',

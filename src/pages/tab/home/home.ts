@@ -11,6 +11,7 @@ import { AccountService } from '../../../providers/account/account';
 import { STRINGS } from '../../../biz-common/commons';
 import { database } from 'firebase';
 import { Http } from '@angular/http';
+import { TokenProvider } from '../../../providers/token/token';
 
 interface IBbsItem {
   bbsId: string,
@@ -49,8 +50,6 @@ export class HomePage implements OnInit {
 
   // no bbs message value;
   noBbs : boolean = false;
-
-  jj = "koko"
   // disable setting value. icon 
   manager: boolean = false;
 
@@ -63,7 +62,7 @@ export class HomePage implements OnInit {
 
   isPartner = false;
 
-  token: any;
+  customToken: any;
 
   myStatus: any;
 
@@ -80,13 +79,21 @@ export class HomePage implements OnInit {
     private squadService: SquadService,
     private accountService: AccountService,
     public http: Http,
+    private tokenService : TokenProvider,
     public _app : App) {
       
       this._unsubscribeAll = new Subject<any>();
       this.ipc = electron.ipc;
+
+      this.customToken = this.tokenService.customToken;
   }
 
   ngOnInit(): void {
+
+    // 토큰 저장
+    this.customToken = this.tokenService.customToken;
+    console.log(this.customToken);
+
     // * current User for RIGHT MENU
     this.bizFire.currentUser
       .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
@@ -109,11 +116,6 @@ export class HomePage implements OnInit {
           }
           this.displayName = this.bizFire.getDiplayNameInitial();
           this.fullName = user.displayName;
-          this.http.get('https://asia-northeast1-bizsquad-6d1be.cloudfunctions.net/customToken?authorization='+ this.currentUser.uid)
-          .subscribe((data) => {
-            console.log("tokenData",data);
-            this.token = data.json().customToken;
-          })
       });
 
       this.bizFire.onBizGroupSelected

@@ -2,6 +2,51 @@ page-chat {
     ion-segment-button{
         color:black !important;
     }
+    ion-avatar{
+        border-radius: 100%;
+    }
+    .list-md .item-block .item-inner{
+        border-bottom: none !important;
+    }
+    .marginB56{
+        margin-bottom: 56px;
+    }
+    .chat-item{
+        padding: 3px 5px 3px 16px;
+        border-bottom: 1px solid #e0e0e0 !important;
+    }
+    .chat-item:hover {
+        background-color: rgba(107, 166, 238, 0.1);
+    }
+    .chat-message{
+        display: inline-block;
+        width: 70%;
+    }
+    .chat-time{
+        display: inline-block;
+        width: 30%;
+        text-align: right;
+    }
+    .chat-count{
+        float:right;
+        line-height: 1.5;
+        font-size: 12px !important;
+        color:#777;
+        font-weight: bold;
+    }    
+    .notPhoto{
+        background-color:#c96a5c;
+        text-align: center;
+    }
+    .displayName{
+        font-weight: bold;
+        color:white;
+        line-height: 2.5;
+    }
+
+
+
+
     // scroll bar
     .scrollable{
         height: 90%;

@@ -1,7 +1,6 @@
 
     <ion-content no-padding class="content-color">
-        <div class="segmentPadding">
-            <ion-segment mode="ios" [(ngModel)]="defaultSegment">
+            <ion-segment [(ngModel)]="defaultSegment">
                 <ion-segment-button value="generalSquad">
                     General Squad 
                 </ion-segment-button>
@@ -9,7 +8,6 @@
                     Agile Squad
                 </ion-segment-button>
             </ion-segment>
-        </div>
             <ion-scroll class="scrollable" scrollY="true">
                 <div [ngSwitch]="defaultSegment">
                     <ion-list *ngSwitchCase="'generalSquad'" scrollY="true" style="margin-bottom:56px;">
@@ -21,7 +19,7 @@
                         <!-- 퍼블릭 스쿼드 -->
                             <!-- if_로그인 한 계정이 파트너가 아닐 경우에만.. -->
                         <ng-container *ngIf="!isPartner">
-                            <ion-item no-lines class="squadList-item" *ngFor="let squad of publicSquads" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
+                            <ion-item no-lines class="squadList-item" *ngFor="let squad of publicSquads" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid+'&token='+customToken);">
                                 <span class="long-text">{{squad.data.name}}</span>
                                 <span class="member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>
                                 <button class="squadList-button" ion-button clear icon-only (click)="onSquadChat($event,squad)">
@@ -38,7 +36,7 @@
                                 <span class="folder-squad-length" *ngIf="folder.squads.length > 0"> ({{folder.squads.length}})</span>
                                 </h3>
                                 <div *ngIf="isGroupShown(i)">
-                                    <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
+                                    <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid+'&token='+customToken);">
                                         <span class="folder-long-text">{{squad.data.name}}</span>
                                         <span class="folder-member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>
                                         <button class="squadList-button-folder" ion-button clear icon-only (click)="onSquadChat($event,squad)">
@@ -54,7 +52,7 @@
                     </ion-list>
                     <ion-list *ngSwitchCase="'privateSquad'" scrollY="true" style="margin-bottom:56px;">
                         <!-- 권한이 필요한 스쿼드 출력 -->
-                        <ion-item no-lines class="squadList-item" *ngFor="let squad of privateSquads" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
+                        <ion-item no-lines class="squadList-item" *ngFor="let squad of privateSquads" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid+'&token='+customToken);">
                             <span class="long-text">{{squad.data.name}}</span>
                             <span class="member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>
                             <button class="squadList-button" ion-button clear icon-only (click)="onSquadChat($event,squad)">
@@ -71,7 +69,7 @@
                             <span class="folder-squad-length" *ngIf="folder.squads.length > 0"> ({{folder.squads.length}})</span>
                             </h3>
                             <div *ngIf="isPrivateGroupShown(s)">
-                                <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid);">
+                                <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/squad/view?gid='+currentBizGroup.gid+'&sid='+squad.sid+'&token='+customToken);">
                                     <span class="folder-long-text">{{squad.data.name}}</span>
                                     <span class="folder-member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>
                                     <button class="squadList-button-folder" ion-button clear icon-only (click)="onSquadChat($event,squad)">

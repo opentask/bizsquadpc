@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
+import { TokenProvider } from '../../providers/token/token';
 
 @IonicPage({  
   name: 'page-login',
@@ -48,6 +49,7 @@ export class LoginPage implements OnInit {
     private loading: LoadingProvider,
     public formBuilder: FormBuilder,
     public electron: Electron,
+    private tokenService : TokenProvider,
     ) {
   
       this.loginForm = formBuilder.group({

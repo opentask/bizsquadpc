@@ -3,10 +3,11 @@ import { IonicPage, NavController, NavParams, MenuController,PopoverController }
 import { Electron } from './../../providers/electron/electron';
 import { BizFireService } from '../../providers';
 import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil, map } from 'rxjs/operators';
 import { IBizGroup } from '../../providers/biz-fire/biz-fire';
 import { IUserData, INotification } from '../../_models/message';
 import { NotificationService } from '../../providers/notification.service';
+import { ChatService,IChatRoom } from '../../providers/chat.service';
 
 @IonicPage({  
   name: 'page-tabs',
@@ -42,7 +43,7 @@ export class TabsPage {
   messages: INotification[];
   badgeVisible = true;
   badgeCount = 0;
-  chatCount = 1;
+  chatCount = 0;
 
   isPartner = false;
 
@@ -61,7 +62,8 @@ export class TabsPage {
     private bizFire: BizFireService,
     public menuCtrl: MenuController,
     public popoverCtrl :PopoverController,
-    private noticeService: NotificationService
+    private noticeService: NotificationService,
+    public chatService: ChatService
     ) {
       // test notification count
       this._unsubscribeAll = new Subject<any>();
@@ -113,6 +115,35 @@ export class TabsPage {
         this.badgeVisible = this.badgeCount > 0;
         this.messages = msgs.filter(m => m.data.gid === this.currentGroup.gid);
         this.notification = this.messages.filter(m => m.data.statusInfo.done !== true).length;
+    });
+
+
+    this.bizFire.afStore
+    .collection("rooms", ref => ref.where("group_id","==",this.currentGroup.gid))
+    .snapshotChanges()
+    .pipe(takeUntil(this.bizFire.onUserSignOut),takeUntil(this._unsubscribeAll),
+        map(rooms => rooms.filter(r=>{
+                let ret = false;
+                // this squad is a private s.
+                const members = r.payload.doc.get('members');
+                if(members){
+                    ret = members[this.bizFire.currentUID] != undefined;
+                }
+                return ret;
+            }).map(d => ({cid: d.payload.doc.id, data: d.payload.doc.data()} as IChatRoom))
+        )
+    ).subscribe((chatRooms) => {
+        console.log('chatRooms');
+        console.log(chatRooms);
+        this.chatService.onChatRoomListChanged.next(chatRooms);
+        
+
+        if(this.chatService.onSelectChatRoom.value != null){
+            const newChat = chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
+            if(newChat){
+                this.chatService.onSelectChatRoom.next(newChat);
+            }
+        }
     });
 
   }

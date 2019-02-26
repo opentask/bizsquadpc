@@ -7,6 +7,7 @@ import { ISquad, SquadService } from '../../../providers/squad.service';
 import { IFolderItem } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { STRINGS } from '../../../biz-common/commons';
+import { TokenProvider } from '../../../providers/token/token';
 @IonicPage({  
   name: 'page-squad',
   segment: 'squad',
@@ -26,6 +27,8 @@ export class SquadPage {
   ipc: any;
 
   isPartner = false;
+  
+  customToken: any;
 
   defaultSegment : string = "generalSquad";
   isAndroid: boolean = false;
@@ -47,13 +50,17 @@ export class SquadPage {
     public bizFire : BizFireService,
     public electron : Electron,
     private squadService: SquadService,
-    public platform : Platform) {
+    public platform : Platform,
+    private tokenService : TokenProvider,) {
     this._unsubscribeAll = new Subject<any>();
     this.ipc = electron.ipc;
+    
     this.isAndroid = platform.is('ios');
   }
 
   ngOnInit() {
+
+    this.customToken = this.tokenService.customToken;
 
     this.bizFire.onBizGroupSelected
     .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))

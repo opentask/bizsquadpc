@@ -52,7 +52,7 @@
                     <ion-item style="background-color: #f6f6f6" no-lines> 
                             <span class="list">Manager</span>
                     </ion-item>
-                    <ion-item class="userList listBorder" no-lines> 
+                    <ion-item class="userList listBorder" no-lines *ngIf="!serachValue || manager.data.displayName.indexOf(serachValue.trim())>-1"> 
                         <ion-avatar item-start *ngIf="manager && manager.data.photoURL" (click)="clickAvatar($event,manager)">
                             <img class="photoURL" src="{{ manager.data.photoURL }}">
                             <ion-badge id="statusBadge" [style.background-color]="manager.data.user_onlineColor"></ion-badge>
@@ -66,9 +66,9 @@
                     </ion-item>
                 </ion-list>
                 <ion-item style="background-color: #f6f6f6" no-lines *ngIf="memberCount > 0">
-                    <span class="list">Member <span class="cococo">&nbsp;{{ memberCount }}</span></span>
+                    <span class="list">Member <span class="member-count">&nbsp;{{ memberCount }}</span></span>
                 </ion-item>
-                <ion-list>
+                <ion-list no-margin>
                     <ng-container *ngFor="let member of memberAuthUser">
                         <ion-item class="userList listBorder" no-lines *ngIf="!serachValue || member.data.displayName.indexOf(serachValue.trim())>-1"> 
                             <ion-avatar item-start *ngIf="member && member.data.photoURL" (click)="clickAvatar($event,member)">

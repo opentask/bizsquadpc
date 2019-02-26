@@ -118,7 +118,6 @@ export class MemberPage {
                 this.manager = this.currentGroup.data.manager != null &&
                     this.currentGroup.data.manager[this.bizFire.currentUID] === true;
                     
-
                 let allUsers;
 
                 const members = this.currentGroup.data.members;
