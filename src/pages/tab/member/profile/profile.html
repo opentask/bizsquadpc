@@ -13,24 +13,24 @@
   <ion-list *ngIf="!editProfile" no-margin>
     <ion-item no-lines text-center>
       <!-- 프로필 사진이 있으면 -->
-      <ion-avatar *ngIf="targetValue && targetValue.photoURL">
+      <ion-avatar *ngIf="targetValue && targetValue.data.photoURL">
           <img class="photoURL" src="{{ imageSrc }}">
       </ion-avatar>
       <!-- 프로필 사진이 없으면 -->
-      <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.photoURL == null">
+      <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null">
           <span class="displayName">{{ notImg }}</span>
       </ion-avatar> 
     </ion-item>
-    <h2 *ngIf="targetValue.displayName != null" class="user-name" text-center>{{ targetValue.displayName }}</h2>
-    <h2 *ngIf="targetValue.displayName == null" class="user-notName" text-center>No nickname</h2>
+    <h2 *ngIf="targetValue.data.displayName != null" class="user-name" text-center>{{ targetValue.data.displayName }}</h2>
+    <h2 *ngIf="targetValue.data.displayName == null" class="user-notName" text-center>No nickname</h2>
     <ion-grid>
       <ion-row>
         <ion-col class="profileTitle" col-3 offset-1>Mobile</ion-col>
-        <ion-col col-8>{{ targetValue.phoneNumber }}</ion-col>
+        <ion-col col-8>{{ targetValue.data.phoneNumber }}</ion-col>
       </ion-row>
       <ion-row>
         <ion-col class="profileTitle" col-3 offset-1>Email</ion-col>
-        <ion-col col-8>{{ targetValue.email }}</ion-col>
+        <ion-col col-8>{{ targetValue.data.email }}</ion-col>
       </ion-row>
       <ion-row>
         <ion-col class="profileTitle" col-3 offset-1>auth</ion-col>
@@ -42,10 +42,10 @@
         <ion-col col-6 offset-3>
             <button class="profile_button" ion-button round full (click)="editProfileShow()">edit Profile</button>
         </ion-col>
-      </ion-row>
+      </ion-row> 
       <ion-row *ngIf="!who">
         <ion-col col-6 offset-3>
-            <button class="profile_button" ion-button round full>1:1 Chat</button>
+            <button class="profile_button" ion-button round full (click)="moveMemberChat(targetValue)">1:1 Chat</button>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -57,11 +57,11 @@
     <form [formGroup]="editProfileForm"> 
       <ion-item no-lines text-center>
         <!-- 프로필 사진이 있으면 -->
-        <ion-avatar *ngIf="targetValue && targetValue.photoURL">
+        <ion-avatar *ngIf="targetValue && targetValue.data.photoURL">
             <img class="photoURL" src="{{ imageSrc }}">
         </ion-avatar>
         <!-- 프로필 사진이 없으면 -->
-        <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.photoURL == null">
+        <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null">
             <span class="displayName">{{ notImg }}</span>
         </ion-avatar> 
         <ion-avatar class="icon-camera" (click)="fileAttach.click()">

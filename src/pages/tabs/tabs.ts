@@ -41,6 +41,7 @@ export class TabsPage {
   // 알람 개수 카운트 - 값이 0일 경우 표시 안됨.
   notification = 0;
   messages: INotification[];
+  chatRooms = [];
   badgeVisible = true;
   badgeCount = 0;
   chatCount = 0;
@@ -92,17 +93,14 @@ export class TabsPage {
             takeUntil(this._unsubscribeAll))
         .subscribe((group) => {
             //console.log('onBizGroupSelected', group.gid);
-
             // set selected group to
             this.currentGroup = group;
             console.log(this.currentGroup);
             this.isPartner = this.bizFire.isPartner(group);
             // set select values.
             this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
-
             // set menu font color.
             this.backgroundColor = this.currentGroup.data.team_color || '#5b9ced'; // default color is '#5b9ced';
-            
 
         });
 
@@ -118,10 +116,9 @@ export class TabsPage {
     });
 
 
-    this.bizFire.afStore
-    .collection("rooms", ref => ref.where("group_id","==",this.currentGroup.gid))
-    .snapshotChanges()
-    .pipe(takeUntil(this.bizFire.onUserSignOut),takeUntil(this._unsubscribeAll),
+    this.bizFire.afStore.collection("chats", ref => ref.where("gid","==",this.currentGroup.gid))
+    .stateChanges()
+    .pipe(takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut),
         map(rooms => rooms.filter(r=>{
                 let ret = false;
                 // this squad is a private s.
@@ -135,17 +132,18 @@ export class TabsPage {
     ).subscribe((chatRooms) => {
         console.log('chatRooms');
         console.log(chatRooms);
-        this.chatService.onChatRoomListChanged.next(chatRooms);
+        chatRooms.forEach(msg =>{
+            this.chatRooms.push(msg);
+          })
+        this.chatService.onChatRoomListChanged.next(this.chatRooms);
         
-
         if(this.chatService.onSelectChatRoom.value != null){
-            const newChat = chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
+            const newChat = this.chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
             if(newChat){
                 this.chatService.onSelectChatRoom.next(newChat);
             }
         }
     });
-
   }
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-menu',{}, {cssClass: 'page-menu'});
@@ -172,6 +170,7 @@ export class TabsPage {
   // }
 
   ngOnDestroy(): void {
+    console.log("tabs destroy?")
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }

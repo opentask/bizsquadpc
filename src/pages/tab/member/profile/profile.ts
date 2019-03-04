@@ -1,3 +1,4 @@
+import { Electron } from './../../../../providers/electron/electron';
 import { AlertProvider } from './../../../../providers/alert/alert';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, PopoverController } from 'ionic-angular';
@@ -5,8 +6,10 @@ import { Subject } from 'rxjs';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
+import { IUser } from '../../../../_models/message';
+import { ChatService, IChatRoom } from '../../../../providers/chat.service';
 
- 
+
 @IonicPage({ 
   name: 'page-profile',
   segment: 'profile',
@@ -27,7 +30,8 @@ export class ProfilePage {
   // 변경된 값이 있는지
   checkProfile: boolean = false;
 
-  targetValue : any;
+  targetValue : IUser;
+  myValue: IUser;
   manager: any;
   partner: boolean = false;
   checkManager: boolean = false;
@@ -58,21 +62,28 @@ export class ProfilePage {
     public popoverCtrl :PopoverController,
     private loading: LoadingProvider,
     public formBuilder: FormBuilder,
-    public alertCtrl : AlertProvider) {
+    public alertCtrl : AlertProvider,
+    public electron : Electron,
+    public chatService: ChatService) {
 
       this._unsubscribeAll = new Subject<any>();
   }
 
   ngOnInit(): void {
+
+    // 본인 프로필값 -채팅을 위한
+    this.myValue = this.navParams.get('me');
     // 본인선택시 본인프로필값 / 유저선택시 유저 프로필값 가져옴.
     this.targetValue = this.navParams.get('target');
     // 매니저 체크 값.
     this.manager = this.navParams.get('manager');
     // 파트너 체크 값.
     this.partner = this.navParams.get('partner');
-    console.log(this.partner);
     this.loadUserData();
 
+    console.log(this.myValue);
+    console.log(this.targetValue);
+    console.log("you partner?",this.partner);
 
 
     if(this.targetValue != null && this.targetValue.uid){
@@ -84,9 +95,9 @@ export class ProfilePage {
     console.log("본인체크",this.who);
 
     this.editProfileForm = this.formBuilder.group({
-      displayName: [this.targetValue.displayName, this.displayNameValidator],
-      phoneNumber: [this.targetValue.phoneNumber, this.phoneNumberValidator],
-      email: [this.targetValue.email],
+      displayName: [this.targetValue.data.displayName, this.displayNameValidator],
+      phoneNumber: [this.targetValue.data.phoneNumber, this.phoneNumberValidator],
+      email: [this.targetValue.data.email],
     });
 
     this.editProfileForm.valueChanges.pipe(takeUntil(this._unsubscribeAll))
@@ -182,24 +193,17 @@ export class ProfilePage {
   }
 
   loadUserData(){
-    if(this.targetValue.data != undefined) {
-      this.targetValue = this.targetValue.data;
-    } else if(this.targetValue && this.targetValue.data == undefined){
-      this.targetValue = this.targetValue
-    }
-      if(this.targetValue.photoURL == null) {
-        if(this.targetValue.displayName == null || this.targetValue.displayName.length == 0){
-          this.notImg = this.targetValue.email.substr(0, 2);
-        } else {
-          let count = 2;
-          if(this.targetValue.displayName.length === 1){
-            count = 1;
-          }
-          this.notImg = this.targetValue.displayName.substr(0,count);
-        }
-      } else {
-        this.imageSrc = this.targetValue.photoURL;
+    if(this.targetValue.data != null && this.targetValue.data.photoURL != null) {
+      this.imageSrc = this.targetValue.data.photoURL;
+    } else if(this.targetValue.data.displayName != null || this.targetValue.data.displayName.length != 0){
+      let count = 2;
+      if(this.targetValue.data.displayName.length === 1){
+        count = 1;
       }
+      this.notImg = this.targetValue.data.displayName.substr(0,count);
+    } else {
+      this.notImg = this.targetValue.data.email.substr(0,2);
+    }
   }
 
   closePopover(){
@@ -207,6 +211,28 @@ export class ProfilePage {
       this._unsubscribeAll.next();
       this._unsubscribeAll.complete();
     });
+  }
+
+  moveMemberChat(){
+    let chatRooms = this.chatService.onChatRoomListChanged.getValue();
+    let selectedRoom: IChatRoom;
+    for(let room of chatRooms) {
+      const member_list = room.data.members;
+      const member_count = Object.keys(member_list).length;
+      if(member_list){
+        if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(this.targetValue.uid) && member_count == 2){
+          selectedRoom = room;
+          break;
+        }
+      }
+    }
+    if(selectedRoom == null){
+      this.chatService.createRoomByMember(this.myValue,this.targetValue);
+    } else {
+      this.chatService.onSelectChatRoom.next(selectedRoom);
+      this.electron.openChatRoom(selectedRoom);
+    }
+    this.closePopover();
   }
 
   ngOnDestroy(): void {

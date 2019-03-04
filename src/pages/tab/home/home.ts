@@ -216,6 +216,7 @@ export class HomePage implements OnInit {
   }
 
   ngOnDestroy(): void {
+    console.log("tab/home destroy?")
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }

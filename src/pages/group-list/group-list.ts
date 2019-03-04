@@ -37,6 +37,7 @@ export class GroupListPage {
   }
 
   ngOnInit() {
+
     this.loading.show();
     // get user's bizgroup.
     this.bizFire.onBizGroups

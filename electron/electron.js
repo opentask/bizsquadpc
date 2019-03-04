@@ -25,6 +25,7 @@ logger.info('App starting...');
 let win;
 let chatRoom;
 let selectSquad;
+let selectChatRoom;
 
 function createWindow() {
     // Create the browser window.
@@ -75,9 +76,9 @@ ipcMain.on('loadGH', (event, arg) => {
 });
 
 
-ipcMain.on('createChatRoom', (event, squad) => {
+ipcMain.on('createChatRoom', (event, chatRoom) => {
 
-    selectSquad = squad;
+    selectChatRoom = chatRoom;
 
     chatRoom = new BrowserWindow({
         width: 360,
@@ -96,14 +97,14 @@ ipcMain.on('createChatRoom', (event, squad) => {
         slashes: true,
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // chatRoom.webContents.openDevTools();
+    chatRoom.webContents.openDevTools();
 });
 ipcMain.on('resetValue',(e) =>{
-    selectSquad = null;
+    selectChatRoom = null;
 });
 
-ipcMain.on('giveMeSquadValue', (event,text) => {
-    event.sender.send('selectSquad',selectSquad);
+ipcMain.on('giveMeRoomValue', (event,text) => {
+    event.sender.send('selectRoom',selectChatRoom);
 })
 autoUpdater.on('checking-for-update', function () {
     sendStatusToWindow('Checking for update...');

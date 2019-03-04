@@ -1,0 +1,88 @@
+page-member-chat {
+    ion-avatar{
+        border-radius: 100%;
+    }
+    .drag{
+        -webkit-app-region: drag;
+    }
+    .login-top-menu{
+        -webkit-app-region: no-drag;
+        color: #757272;
+    }
+    .windowMimimize{
+        padding-top: 8px;
+    }
+    .top-menu{
+        position: absolute;
+        top: 1px;
+        right: 1px;
+    }
+    .no-padding-topAndBot{
+        padding-top: 0;
+        padding-bottom:0;
+    }
+    .squadName{
+        font-size: 15px;
+        font-weight: 500;
+        padding-right: 18%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .members{
+        padding-top: 5px;
+        display: inline-block;
+    }
+    ion-list{
+        padding-right: 0px;
+    }
+    .item-md.item-block .item-inner{
+        padding-right: 0px !important;
+    }
+    ion-label{
+        margin-right: 0 !important;
+    }
+    
+    // 프로필 사진이 없을 때.
+    .notPhoto{
+        background-color:#c96a5c;
+        text-align: center;
+        margin-left:16px !important;
+    }
+    .displayName{
+        font-weight: bold;
+        color:white;
+        line-height: 2.5;
+    }
+    .listBorder{
+        border-bottom: 1px solid #e0e0e0 !important;
+    }
+
+
+    // chat
+    .scroll-content {
+        background-color: map-get($colors, light);
+    }
+    textarea {
+        width: calc(100% - 20px);
+        margin-left: 10px;
+        background-color: #fff;
+        font-size: 1.2em;
+        resize: none;
+        border: none;
+    }   
+    ion-item {
+        background-color: map-get($colors, light) !important;
+    }
+    .chat-bubble {
+        width: 65%;
+        overflow: hidden;
+    }
+    .chat-message {
+        padding: 20px;
+        border-radius: 5px; 
+        background-color: #fff;
+        white-space: normal;
+    }
+
+}

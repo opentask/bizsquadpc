@@ -1,0 +1,21 @@
+<ion-content no-padding>
+    <ion-item class="drag" no-margin no-padding>
+      <ion-grid class="no-padding-topAndBot">
+        <ion-row>
+          <ion-col class="no-padding-topAndBot"*ngIf="squadData != null">
+            <h2 class="squadName">{{ squadData.name }}</h2>
+            <p class="members"><ion-icon name="person"></ion-icon> {{ memberCount }}</p> 
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div class="top-menu">
+        <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
+          <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
+        </button>
+        <button ion-button icon-only clear small color="light" (click)="windowClose()">
+          <ion-icon class="login-top-menu" name="md-close"></ion-icon>
+        </button> 
+      </div>
+    </ion-item>
+  </ion-content>
+  

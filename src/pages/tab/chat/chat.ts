@@ -17,10 +17,10 @@ import { Subject } from 'rxjs';
 export class ChatPage {
 
   private _unsubscribeAll;
-
   defaultSegment : string = "chatRoom";
   chatrooms = [];
   squadrooms = [];
+
 
   constructor(
     public navCtrl: NavController, 
@@ -33,23 +33,6 @@ export class ChatPage {
 
   ngOnInit() {
 
-    console.log(this.bizFire.currentUID);
-
-    this.chatService.onChatRoomListChanged
-    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll)
-    ,map(docs => docs.filter(d=>{
-          return d.data.members[this.bizFire.currentUID].notification_id == '';
-        })
-      ))
-    .subscribe(rooms => {
-        this.chatrooms = rooms.sort((a,b): number => {
-        if(a.data.lastMessageTime < b.data.lastMessageTime) return 1;          
-        if(a.data.lastMessageTime > b.data.lastMessageTime) return -1;
-        return 0;
-      });
-      // context.rooms = chatRooms;
-      console.log(this.chatrooms);
-    });
   }
 
 

@@ -1,7 +1,10 @@
+import { Electron } from './electron/electron';
 import { Injectable } from '@angular/core';
 import { BizFireService } from './biz-fire/biz-fire';
 import { SquadService } from './squad.service';
 import { BehaviorSubject } from 'rxjs';
+import { IUser } from '../_models/message';
+import { take, map } from 'rxjs/operators';
 
 export interface IChatRoom {
     cid: string,
@@ -9,17 +12,14 @@ export interface IChatRoom {
   }
 export interface IChatRoomData {
     created: number,
-    group_id: string,
-    is_group: number,
-    lastMessage: string,
-    lastMessageTime: number,
-    manager:any,
+    gid: string,
+    lastMessage?: string,
+    lastMessageTime?: number,
     members:any,
-    name: string,
-    squad_id: string,
-    status: number
+    status: number,
+    notify?:boolean
 }
-  
+
 export interface IRoomMessages {
     rid: string,
     data: IRoomMessagesData
@@ -27,7 +27,7 @@ export interface IRoomMessages {
 
 export interface IRoomMessagesData {
     created: number,
-    file: string,
+    file?: string,
     message: string,
     photoURL: string,
     senderId: string,
@@ -42,6 +42,8 @@ export class ChatService {
 
     room_type: string;
 
+    var_chatRooms: any;
+
     onChatRoomListChanged = new BehaviorSubject<IChatRoom[]>([]);
 
     onSelectChatRoom = new BehaviorSubject<IChatRoom>(null);
@@ -50,6 +52,7 @@ export class ChatService {
 
     constructor(
         public bizFire : BizFireService,
+        public electron: Electron,
         public squadService : SquadService) {
             
 
@@ -58,17 +61,72 @@ export class ChatService {
         return this.onChatRoomListChanged.getValue();
     }
 
-    // getMessagePath(room_type){
-    //     switch(room_type){
-    //       case 'Chatroom-messages':
-    //         return 'rooms/' + this.onSelectChatRoom.getValue().cid+'/chat';
-    //       case 'Squadroom-messages':
-    //         return 'bizgroups/'+this.bizFire.onBizGroupSelected.getValue().gid + '/squads/' + this.squadService.onSelectSquad.getValue().sid +'/chat';
-    //       case 'Chatroom':
-    //         return 'rooms/'+this.onSelectChatRoom.getValue().cid;
-    //       case 'Squadroom':
-    //         return 'bizgroups/'+this.bizFire.onBizGroupSelected.getValue().gid + '/squads/' + this.squadService.onSelectSquad.getValue().sid;
-    //     }
-    // }
+    createRoomByMember(me:IUser,member:IUser){
+        const now = new Date();
+        const newRoom:IChatRoomData = {
+            created:  now.getTime() / 1000 | 0,
+            gid: this.bizFire.onBizGroupSelected.getValue().gid,
+            status: 1,
+            members:{
+                [me.uid] : {
+                    data: me.data,
+                    uid: me.uid,
+                    notify: true
+                },
+                [member.uid] : {
+                    data: member.data,
+                    uid: member.uid,
+                    notify: true
+                }
+            },
+        }
+        this.createRoom(newRoom);
+      }
+
+    createRoom(newRoom:IChatRoomData){
+        if(newRoom != null){
+            this.bizFire.afStore.collection("chats").add(newRoom).then(room => {
+                room.get().then(snap =>{
+                    this.var_chatRooms = {
+                        cid : snap.id,
+                        data: snap.data()
+                    } as IChatRoom;
+                    this.onSelectChatRoom.next(this.var_chatRooms);
+                    this.electron.openChatRoom(this.var_chatRooms);
+                })
+            });
+        }
+    }
+    getMessagePath(type,cid?){
+        switch(type){
+            case 'member-chat':
+              return 'chats/' + cid +'/chat';
+            case 'squad-chat':
+              return 'bizgroups/'+this.bizFire.onBizGroupSelected.getValue().gid + '/squads/' + "this.squadService.onSelectSquad.getValue().sid "+'/chat';
+            case 'member-chat-room':
+              return 'chats/' + cid;
+            case 'squad-chat-room':
+              return 'bizgroups/'+this.bizFire.onBizGroupSelected.getValue().gid + '/squads/' + "this.squadService.onSelectSquad.getValue().sid";
+          }  
+    }
+
+    sendMessage(room_type,txt_message,cid) {
+
+            const now = new Date();
+            const newMessage: IRoomMessagesData = {
+                file : "",
+                message: txt_message,
+                created: now.getTime() / 1000 | 0,
+                senderId: this.bizFire.currentUID,
+                senderName: this.bizFire.currentUserValue.displayName,
+                photoURL: this.bizFire.currentUserValue.photoURL
+            }
+            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,cid)).add(newMessage).then(() =>{
+                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type +'-room',cid)).set({
+                    lastMessage : txt_message,
+                    lastMessageTime : now.getTime() / 1000 | 0,
+                },{merge : true})
+            }).catch(error => console.error(error));
+    }
 
 }

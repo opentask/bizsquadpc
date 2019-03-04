@@ -33,8 +33,8 @@ export class Electron {
     }
   }
 
-  openChatRoom(squad){
-    electron.ipcRenderer.send('createChatRoom',squad);
+  openChatRoom(ChatRoom){
+    electron.ipcRenderer.send('createChatRoom',ChatRoom);
     // 그리고 현재 디렉터리의 html을 로드합니다.
     // win.loadURL(url);
   }

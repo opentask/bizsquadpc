@@ -60,14 +60,15 @@ export class LoginPage implements OnInit {
       this._unsubscribeAll = new Subject<any>();
   }
   ionViewCanEnter(){
-    electron.ipcRenderer.send('giveMeSquadValue', 'ping');
-    electron.ipcRenderer.on('selectSquad', (event, data) => {
-      if(data != null){
+    electron.ipcRenderer.send('giveMeRoomValue', 'ping');
+    electron.ipcRenderer.on('selectRoom', (event, roomData) => {
+      if(roomData != null){
         this.hideForm = false;
-        this.navCtrl.setRoot('page-squad-chat',data);
-        console.log(data); // "squad" 출력)
+        this.navCtrl.setRoot('page-member-chat',{roomData : roomData});
+        console.log("룸데이터가있습니다.",roomData); // "select member data" 출력)
       } else {
         this.hideForm = true;
+        console.log("룸데이터가없습니다.",roomData); // "select member data" 출력)
       }
     })
   }
