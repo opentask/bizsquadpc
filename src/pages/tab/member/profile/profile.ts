@@ -155,7 +155,6 @@ export class ProfilePage {
         if(this.attachFile){
             const ref = this.bizFire.afStorage.storage.ref(`users/${this.bizFire.currentUID}/${this.attachFile.name}`);
             ref.put(this.attachFile).then(fileSnapshot => {
-
                 // upload finished.
                 this.attachFile = null;
 
@@ -179,13 +178,21 @@ export class ProfilePage {
     if(this.editProfileForm.valid && this.checkProfile) {
       this.loading.show();
       const editData = this.editProfileForm.value;
-      this.bizFire.editUserProfile(editData).then(() => {
-        console.log("바뀐값이 없어도 실행됨.");
-        this.loading.hide();
-        this.viewCtrl.dismiss();
-      }).catch(err => { 
-        this.loading.hide();
-        console.log(err)
+      let updateProfileData;
+      updateProfileData = {
+        displayName: this.editProfileForm.value['displayName'],
+        photoURL: this.bizFire.afAuth.auth.currentUser.photoURL
+      };
+      this.bizFire.afAuth.auth.currentUser.updateProfile(updateProfileData).then(() =>{
+        this.bizFire.editUserProfile(editData).then(() => {
+          console.log(this.editProfileForm['displayName'])
+          console.log("바뀐값이 없어도 실행됨.");
+          this.loading.hide();
+          this.viewCtrl.dismiss();
+        }).catch(err => { 
+          this.loading.hide();
+          console.log(err)
+        })
       })
     } else {
       this.viewCtrl.dismiss();

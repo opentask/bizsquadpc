@@ -32,7 +32,20 @@ export class ChatPage {
   }
 
   ngOnInit() {
+    this.chatService.onChatRoomListChanged
+    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut))
+    .subscribe((rooms) => {
+      console.log(rooms);
+      this.chatrooms = rooms.sort((a,b): number => {
+        if(a.data.lastMessageTime < b.data.lastMessageTime) return 1;          
+        if(a.data.lastMessageTime > b.data.lastMessageTime) return -1;
+        return 0;
+      })
+    })
+  }
 
+  roominfo(room){
+    console.log(room)
   }
 
 

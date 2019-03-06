@@ -11,7 +11,7 @@
         <div [ngSwitch]="defaultSegment">
             <!-- 1:1채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'chatRoom'" scrollY="true">
-                <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatrooms" (click)="gotoRoom(room)">
+                <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatrooms" (click)="roominfo(room)">
                     <ion-avatar item-start *ngIf="room.data.members[this.bizFire.currentUID].photoURL != null">
                         <img src="{{room.data.members[this.bizFire.currentUID].photoURL}}">
                     </ion-avatar>

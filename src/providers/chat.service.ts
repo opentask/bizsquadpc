@@ -132,7 +132,7 @@ export class ChatService {
                     lastMessageTime : now.getTime() / 1000 | 0,
                 },{merge : true})
                 // this.onSelectChatRoom.next(selectedRoom);
-            }).catch(error => console.error(error));
+            }).catch(error => console.error("라스트메세지 작성 에러?",error));
     }
 
 }

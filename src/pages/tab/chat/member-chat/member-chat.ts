@@ -76,7 +76,7 @@ export class MemberChatPage {
         ));
         this.readMessages.forEach(msg =>{
           this.messages.push(msg);
-          console.log(msg);
+          console.log(msg.data.message);
         })
       })
     }
