@@ -129,6 +129,7 @@ export class MemberPage {
                       .filter(uid => members[uid] === true)
                       // .filter(uid => uid != this.currentUser.uid) 자기 자신 제외 구 소스
                       .map(uid => uid);
+                  console.log("allUsers",allUsers)
                 }
                 // * get ALL USERS DATA !
                 if (allUsers && allUsers.length > 0) {
@@ -145,9 +146,17 @@ export class MemberPage {
                             this.allCollectedUsers = all;
                             this.managerAuthUser = this.allCollectedUsers.filter(u => u.uid == this.managerUid);
                             this.memberAuthUser = this.allCollectedUsers.filter(u => u.uid != this.managerUid && u.uid != this.partnerUid);
-                            this.allCollectedUsers.filter(u => u.uid == this.bizFire.currentUID).forEach(user =>{
+                            this.allCollectedUsers.filter(u => u.uid == this.bizFire.currentUID)
+                            .forEach(user =>{
                               this.mydata = user;
+                              console.log(user.data.displayName);
                             });
+
+                            this.bizFire.currentUser
+                            .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
+                            .subscribe(user => {
+                              this.mydata.data.displayName = user.displayName
+                            })
 
                             if(this.partnerUid){
                               this.partnerAuthUser = this.allCollectedUsers.filter(u => u.uid == this.partnerUid);

@@ -91,11 +91,6 @@ export class BizFireService {
   // !! web .ver metaData 생략 !!
 
 
-
-
-  // !! web .ver metaData 생략 !!
-
-
   public bizGroupSub;
   public userState: IUserState = {status:'init', user: null, autoSignIn: true};
 

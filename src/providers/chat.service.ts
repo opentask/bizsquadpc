@@ -7,6 +7,7 @@ import { IUser } from '../_models/message';
 import { take, map } from 'rxjs/operators';
 
 export interface IChatRoom {
+    uid?: string,
     cid: string,
     data: IChatRoomData
   }
@@ -15,7 +16,7 @@ export interface IChatRoomData {
     gid: string,
     lastMessage?: string,
     lastMessageTime?: number,
-    members:any,
+    members: any,
     status: number,
     notify?:boolean
 }
@@ -58,7 +59,12 @@ export class ChatService {
 
     }
     getChatRooms(){
-        return this.onChatRoomListChanged.getValue();
+        let chatRooms = this.onChatRoomListChanged.getValue();
+        chatRooms.forEach(room =>{
+            const newData = room;
+            newData['uid'] = this.bizFire.currentUID;
+          })
+        return chatRooms;
     }
 
     createRoomByMember(me:IUser,member:IUser){
@@ -111,7 +117,6 @@ export class ChatService {
     }
 
     sendMessage(room_type,txt_message,cid) {
-
             const now = new Date();
             const newMessage: IRoomMessagesData = {
                 file : "",
@@ -121,11 +126,12 @@ export class ChatService {
                 senderName: this.bizFire.currentUserValue.displayName,
                 photoURL: this.bizFire.currentUserValue.photoURL
             }
-            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,cid)).add(newMessage).then(() =>{
+            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,cid)).add(newMessage).then(snap =>{
                 this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type +'-room',cid)).set({
                     lastMessage : txt_message,
                     lastMessageTime : now.getTime() / 1000 | 0,
                 },{merge : true})
+                // this.onSelectChatRoom.next(selectedRoom);
             }).catch(error => console.error(error));
     }
 

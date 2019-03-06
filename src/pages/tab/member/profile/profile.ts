@@ -214,7 +214,8 @@ export class ProfilePage {
   }
 
   moveMemberChat(){
-    let chatRooms = this.chatService.onChatRoomListChanged.getValue();
+    let chatRooms = this.chatService.getChatRooms();
+    console.log("chatRooms",chatRooms);
     let selectedRoom: IChatRoom;
     for(let room of chatRooms) {
       const member_list = room.data.members;
@@ -230,6 +231,7 @@ export class ProfilePage {
       this.chatService.createRoomByMember(this.myValue,this.targetValue);
     } else {
       this.chatService.onSelectChatRoom.next(selectedRoom);
+      console.log("룸데이터 최신화되었는가",selectedRoom);
       this.electron.openChatRoom(selectedRoom);
     }
     this.closePopover();

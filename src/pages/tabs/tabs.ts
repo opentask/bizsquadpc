@@ -79,7 +79,7 @@ export class TabsPage {
             this.currentUser = user;
             this.displayName = this.bizFire.getDiplayNameInitial();
             this.fullName = user.displayName || user.email;
-        });
+    });
     this.bizFire.onBizGroups
         .pipe(filter(g=>g!=null),
             takeUntil(this._unsubscribeAll))
