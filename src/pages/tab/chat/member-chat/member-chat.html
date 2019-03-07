@@ -10,7 +10,7 @@
       </div>
       
       <ng-container *ngFor="let member of roomMembers;">
-        <ion-avatar item-start *ngIf="member && member.photoURL">
+        <ion-avatar style="margin-left: 16px !important" item-start *ngIf="member && member.photoURL">
           <img class="photoURL" src="{{member.photoURL}}">
         </ion-avatar>
         <ion-avatar class="notPhoto" item-start *ngIf="member && member.photoURL == null">
