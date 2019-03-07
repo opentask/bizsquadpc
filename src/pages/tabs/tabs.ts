@@ -118,7 +118,7 @@ export class TabsPage {
 
     
     this.bizFire.afStore.collection("chats", ref => ref.where("gid","==",this.currentGroup.gid))
-    .stateChanges()
+    .snapshotChanges()
     .pipe(takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut),
         map(rooms => rooms.filter(r=>{
                 let ret = false;
@@ -131,13 +131,13 @@ export class TabsPage {
             }).map(d => ({cid: d.payload.doc.id, data: d.payload.doc.data()} as IChatRoom))
         )
     ).subscribe((chatRooms) => {
-        console.log('chatRooms');
+        // chatRooms.forEach(msg =>{
+        //     this.chatRooms.push(msg);
+        //   })
+        console.log('added 동작한 채팅룸');
         console.log(chatRooms);
-        chatRooms.forEach(msg =>{
-            this.chatRooms.push(msg);
-          })
-        this.chatService.onChatRoomListChanged.next(this.chatRooms);
-        
+        this.chatService.onChatRoomListChanged.next(chatRooms);
+
         if(this.chatService.onSelectChatRoom.value != null){
             const newChat = this.chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
             if(newChat){
