@@ -83,7 +83,9 @@ export class MemberChatPage {
           this.messages.push(msg);
           console.log(msg.data.message);
         })
-        this.contentArea.scrollToBottom();
+        setTimeout(() => { 
+          this.scrollToBottom();
+        },100)
       })
     }
     // this.chatService.createRoom(null);
