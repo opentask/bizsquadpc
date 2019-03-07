@@ -75,14 +75,14 @@ export class ChatService {
             status: 1,
             members:{
                 [me.uid] : {
-                    data: me.data,
-                    uid: me.uid,
-                    notify: true
+                    name: me.data.displayName,
+                    photoURL : me.data.photoURL,
+                    uid: me.uid
                 },
                 [member.uid] : {
-                    data: member.data,
-                    uid: member.uid,
-                    notify: true
+                    name: member.data.displayName,
+                    photoURL : member.data.photoURL,
+                    uid: member.uid
                 }
             },
         }
@@ -95,7 +95,8 @@ export class ChatService {
                 room.get().then(snap =>{
                     this.var_chatRooms = {
                         cid : snap.id,
-                        data: snap.data()
+                        data: snap.data(),
+                        uid: this.bizFire.currentUID
                     } as IChatRoom;
                     this.onSelectChatRoom.next(this.var_chatRooms);
                     this.electron.openChatRoom(this.var_chatRooms);

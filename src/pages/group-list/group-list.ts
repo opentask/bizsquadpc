@@ -31,7 +31,8 @@ export class GroupListPage {
     public electron : Electron,
     private bizFire: BizFireService,
     private loading: LoadingProvider,
-    private tokenService : TokenProvider,) {
+    private tokenService : TokenProvider,
+    ) {
 
       this._unsubscribeAll = new Subject<any>();
   }

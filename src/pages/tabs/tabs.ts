@@ -116,6 +116,7 @@ export class TabsPage {
     });
 
 
+    
     this.bizFire.afStore.collection("chats", ref => ref.where("gid","==",this.currentGroup.gid))
     .stateChanges(['added'])
     .pipe(takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut),

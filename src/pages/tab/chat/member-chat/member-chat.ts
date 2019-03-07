@@ -1,18 +1,17 @@
-import { IchatMember } from './member-chat';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { IUser, IUserData } from '../../../../_models/message';
 import { ChatService, IChatRoom, IRoomMessages } from '../../../../providers/chat.service';
 import { BizFireService } from '../../../../providers';
+import { unescapeIdentifier } from '@angular/compiler';
 
 export interface Ichats {
   message: string,
 }
 export interface IchatMember{
-  data : IUserData,
-  notify : boolean,
-  uid : string
+  name: string,
+  photoURL: string,
 }
  
 @IonicPage({  
@@ -57,11 +56,17 @@ export class MemberChatPage {
     if(this.chatroom != null) {
       // // * get USERS DATA !
       Object.keys(this.chatroom.data.members).forEach(uid => {
+        console.log("uid",uid);
+        console.log("chatroom.uid",this.chatroom.uid)
         if(uid != this.chatroom.uid){
           this.roomMembers.push(this.chatroom.data.members[uid]);
-          this.chatTitle += this.chatroom.data.members[uid].data.displayName + ',';
+          console.log("roomMembers",this.roomMembers);
+          this.roomMembers.forEach(member =>{
+            this.chatTitle += member.name + ',';
+          })
         }
       });
+      
       // 방 인원 수
       this.roomCount = Object.keys(this.chatroom.data.members).length;
 
@@ -78,6 +83,7 @@ export class MemberChatPage {
           this.messages.push(msg);
           console.log(msg.data.message);
         })
+        this.contentArea.scrollToBottom();
       })
     }
     // this.chatService.createRoom(null);
@@ -88,7 +94,6 @@ export class MemberChatPage {
       this.scrollToBottom();
     },1500)
   }
-
 
 
   sendMessage(){
@@ -117,6 +122,7 @@ export class MemberChatPage {
     // 앞, 뒤 공백제거 => resultString
     if(this.editorMsg !=null){
       const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
+      this.editorMsg = '';
       if(resultString != ''){
           this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
       }

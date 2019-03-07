@@ -8,14 +8,13 @@
           <ion-icon class="login-top-menu" name="md-close"></ion-icon>
         </button> 
       </div>
+      
       <ng-container *ngFor="let member of roomMembers;">
-        <!-- 프로필 사진이 있으면 -->
-        <ion-avatar item-start *ngIf="member && member.data.photoURL">
-          <img class="photoURL" src="{{member.data.photoURL}}">
+        <ion-avatar item-start *ngIf="member && member.photoURL">
+          <img class="photoURL" src="{{member.photoURL}}">
         </ion-avatar>
-        <!-- 프로필 사진이 없으면 -->
-        <ion-avatar class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
-            <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+        <ion-avatar class="notPhoto" item-start *ngIf="member && member.photoURL == null">
+            <span class="displayName">{{ member.name | slice:0:2 }}</span>
         </ion-avatar>
       </ng-container>
 
