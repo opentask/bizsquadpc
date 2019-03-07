@@ -134,7 +134,7 @@ export class TabsPage {
         // chatRooms.forEach(msg =>{
         //     this.chatRooms.push(msg);
         //   })
-        console.log('added 동작한 채팅룸');
+        console.log('채팅룸개수');
         console.log(chatRooms);
         this.chatService.onChatRoomListChanged.next(chatRooms);
 

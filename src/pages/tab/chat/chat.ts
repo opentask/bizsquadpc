@@ -35,31 +35,6 @@ export class ChatPage {
   }
 
   ngOnInit() {
-    this.chatService.onChatRoomListChanged
-    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut))
-    .subscribe((rooms) => {
-      this.chatrooms = rooms.sort((a,b): number => {
-        if(a.data.lastMessageTime < b.data.lastMessageTime) return 1;          
-        if(a.data.lastMessageTime > b.data.lastMessageTime) return -1;
-        return 0;
-      })
-      this.chatrooms.map(room => {
-        this.memberCount = Object.keys(room.data.members).length;
-
-        const uids = Object.keys(room.data.members).filter(l => l != this.bizFire.currentUID);
-        this.accountService.getAllUserInfos(uids).pipe(filter(l =>{
-          let ret;
-          ret = l.filter(li => li != null).length === uids.length;
-          return ret;
-        }))
-        .subscribe(userData => {
-          room.data.members = userData[0];
-        })
-      })
-      console.log(this.chatrooms);
-    })
-
-
   }
 
   roominfo(room){
