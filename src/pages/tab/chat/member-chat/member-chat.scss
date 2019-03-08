@@ -216,7 +216,6 @@ page-member-chat {
                   position: absolute;
                 }
               }
-      
             }
           }
       
@@ -225,6 +224,16 @@ page-member-chat {
               background-color: $toUserBackgroundColor;
               float: left;
             }
+            .msg-time-content{
+                position: absolute;
+                display: inline-block;
+                margin-left: 5px;
+                bottom: 10px;
+                .time{
+                    color:#999;
+                    font-size: 11px;
+                }
+              }
             .msg-detail {
               padding-left: 60px;
             }
@@ -251,6 +260,19 @@ page-member-chat {
                 text-align: right;
               }
             }
+            .msg-time-content{
+                position: absolute;
+                display: inline-block;
+                margin-right: 5px;
+                min-width: 55px;
+                left:-52px;
+                bottom: 1px;
+                min-width: 55px;
+                .time{
+                    color:#999;
+                    font-size: 11px;
+                }
+              }
             ion-avatar {
               right: 0;
             }

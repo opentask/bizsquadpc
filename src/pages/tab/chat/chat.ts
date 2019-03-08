@@ -23,6 +23,7 @@ export class ChatPage {
   chatrooms : IChatRoom[];
   squadrooms = [];
   memberCount : number;
+  members = [];
 
   constructor(
     public navCtrl: NavController, 
@@ -35,6 +36,36 @@ export class ChatPage {
   }
 
   ngOnInit() {
+    this.chatService.onChatRoomListChanged
+    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
+    .subscribe((rooms) => {
+      this.chatrooms = rooms.sort((a,b): number => {
+        if(a.data.lastMessageTime < b.data.lastMessageTime) return 1;          
+        if(a.data.lastMessageTime > b.data.lastMessageTime) return -1;
+        return 0;
+      });
+      // context.rooms = chatRooms;
+      console.log("chatrooms tab3");
+      console.log(this.chatrooms);
+      this.chatrooms.forEach(room => {
+        Object.keys(room.data.members).filter(uid => uid != this.bizFire.currentUID).forEach(user =>{
+          this.members.push(user);
+        })
+        this.accountService.getAllUserInfos(this.members)
+        .pipe(filter(l => {
+            //null check
+            // getAllUserInfos returns, [null, null, {}, {}...];
+            let ret;
+            ret = l.filter(ll => ll != null).length === this.members.length;
+            return ret;
+        })).subscribe(allUsers => {
+          const newData = room;
+          newData['test'] = allUsers;
+          room = newData;
+          console.log(this.chatrooms);
+        })
+      })
+    });
   }
 
   roominfo(room){

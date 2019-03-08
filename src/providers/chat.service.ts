@@ -9,7 +9,8 @@ import { take, map } from 'rxjs/operators';
 export interface IChatRoom {
     uid?: string,
     cid: string,
-    data: IChatRoomData
+    data: IChatRoomData,
+    test?: any
   }
 export interface IChatRoomData {
     created: number,
