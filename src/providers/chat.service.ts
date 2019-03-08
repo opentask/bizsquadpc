@@ -129,6 +129,12 @@ export class ChatService {
                 photoURL: this.bizFire.currentUserValue.photoURL
             }
             this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,cid)).add(newMessage).then(snap =>{
+
+                // 알람이 들어갈 부분
+                if(newMessage.senderId == this.bizFire.currentUID){
+                    console.log("내가 보내는 메세지");
+                } 
+
                 this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type +'-room',cid)).set({
                     lastMessage : txt_message,
                     lastMessageTime : now.getTime() / 1000 | 0,

@@ -28,9 +28,9 @@
     </h2>
   </ion-item>
   <div id="popup" *ngIf="menuShow">
-    <ul> 
+    <ul>
         <li id="profileSetting" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/account?token='+'customToken')">My Account</li>
-        <li id="signoutBtn" (click)="signOut()">Sign out</li>
+        <li id="signoutBtn" (click)="offlineState()">Sign out</li>
         <li id="exitBtn" (click)="windowClose()">Exit</li>
     </ul>
   </div> 

@@ -232,8 +232,6 @@ export class HomePage implements OnInit {
     * */
   signOut(navigateToLoginWhenDone = true): Promise<boolean> {
     if(this.bizFire.userState.status === 'signIn') { // old status was 'signIn'
-
-      this.bizFire.windowCloseAndUserStatus();
       if(this.bizFire.bizGroupSub)
       {
         this.bizFire.bizGroupSub();
@@ -250,12 +248,19 @@ export class HomePage implements OnInit {
       this.bizFire.onBizGroups.next([]);
     }
     return this.afAuth.auth.signOut().then(()=> {
+
         this.electron.resetValue();
         if(navigateToLoginWhenDone) {
           return this._app.getRootNav().setRoot('page-login');
         } else {
             return new Promise<any>(resolve => resolve(true));
         }
+    });
+  }
+
+  offlineState(){
+    this.bizFire.windowCloseAndUserStatus().then(() =>{
+      this.signOut();
     });
   }
 
