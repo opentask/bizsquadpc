@@ -1,3 +1,4 @@
+import { AccountService } from './../../providers/account/account';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController,PopoverController } from 'ionic-angular';
 import { Electron } from './../../providers/electron/electron';
@@ -64,7 +65,8 @@ export class TabsPage {
     public menuCtrl: MenuController,
     public popoverCtrl :PopoverController,
     private noticeService: NotificationService,
-    public chatService: ChatService
+    public chatService: ChatService,
+    public accountService : AccountService
     ) {
       // test notification count
       this._unsubscribeAll = new Subject<any>();
@@ -131,6 +133,15 @@ export class TabsPage {
             }).map(d => ({cid: d.payload.doc.id, data: d.payload.doc.data()} as IChatRoom))
         )
     ).subscribe((chatRooms) => {
+        chatRooms.map(room => {
+            Object.keys(room.data.members).filter(uid => uid != this.bizFire.currentUID).forEach(user =>{
+              this.accountService.getUserObserver(user).subscribe(userData => {
+                const newData = room;
+                newData['test'] = userData;
+                room = newData;
+              })
+            })
+          })
         // chatRooms.forEach(msg =>{
         //     this.chatRooms.push(msg);
         //   })

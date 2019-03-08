@@ -10,22 +10,25 @@
     <ion-scroll class="scrollable" scrollY="true">
         <div [ngSwitch]="defaultSegment">
             <!-- 1:1채팅 폼 -->
-            <!-- <ion-list class="marginB56" *ngSwitchCase="'chatRoom'" scrollY="true">
-                <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatrooms" (click)="roominfo(room)">
-                    <ion-avatar item-start *ngIf="room.data.members.data.photoURL != null">
-                        <img src="{{room.data.members.data.photoURL}}">
+            <ion-list class="marginB56" *ngSwitchCase="'chatRoom'" scrollY="true">
+                <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatrooms" (click)="gotoRoom(room)">
+                    <ion-avatar item-start *ngIf="room.test.data.photoURL != null">
+                        <img src="{{ room.test.data.photoURL }}">
                     </ion-avatar>
-                    <ion-avatar class="notPhoto" item-start *ngIf="room.data.members.data.photoURL == null">
+                    <ion-avatar class="notPhoto" item-start *ngIf="room.test.data.photoURL == null">
                         <span class="displayName">
-                            {{ room.data.members.data.displayName | slice:0:2 }}
+                            {{ room.test.data.displayName | slice:0:2 }}
                         </span>
                     </ion-avatar>
-                    <h2>{{ room.data.members.data.displayName }}
-                        <ion-icon class="chat-count" name="person"> {{ this.memberCount }}</ion-icon>
+                    <h2>{{ room.test.data.displayName }}
+                        <ion-icon class="chat-count" name="person"> 2 </ion-icon>
                     </h2>
-                    <p class="chat-message">{{ room.data.lastMessage | slice:0:35}}</p><p class="chat-time">{{ room.data.lastMessageTime }}</p>
+                    <p class="chat-message">{{ room.data.lastMessage | slice:0:35}}</p><p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>
                 </ion-item>
-            </ion-list> -->
+            </ion-list>
+
+
+
             <!-- 스쿼드 채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
                 <ion-item class="chat-item listBorder">

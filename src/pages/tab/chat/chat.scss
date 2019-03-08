@@ -14,6 +14,7 @@ page-chat {
     .chat-item{
         padding: 3px 5px 3px 16px;
         border-bottom: 1px solid #e0e0e0 !important;
+        cursor: pointer;
     }
     .chat-item:hover {
         background-color: rgba(107, 166, 238, 0.1);

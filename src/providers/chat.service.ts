@@ -10,7 +10,7 @@ export interface IChatRoom {
     uid?: string,
     cid: string,
     data: IChatRoomData,
-    test?: any
+    test?: IUser
   }
 export interface IChatRoomData {
     created: number,
