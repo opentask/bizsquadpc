@@ -73,7 +73,6 @@ export class TabsPage {
   }
 
   ngOnInit() {
-
     // * current User for RIGHT MENU
     this.bizFire.currentUser
         .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
@@ -132,10 +131,10 @@ export class TabsPage {
                 return ret;
             }).map(d => ({cid: d.payload.doc.id, data: d.payload.doc.data()} as IChatRoom))
         )
-    ).subscribe((chatRooms) => {
+    ).pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRooms) => {
         chatRooms.map(room => {
             Object.keys(room.data.members).filter(uid => uid != this.bizFire.currentUID).forEach(user =>{
-              this.accountService.getUserObserver(user).subscribe(userData => {
+              this.accountService.getUserObserver(user).pipe(takeUntil(this._unsubscribeAll)).subscribe(userData => {
                 const newData = room;
                 newData['test'] = userData;
                 room = newData;

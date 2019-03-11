@@ -66,30 +66,6 @@ export class MemberPage {
   }
 
   ngOnInit(): void {
-    this.bizFire.currentUser
-    .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
-    .subscribe(user => {
-        this.currentUser = user;
-        this.displayName = this.bizFire.getDiplayNameInitial();
-        this.fullName = user.displayName;
-        this.myStatus = user.onlineStatus;
-        switch(user.onlineStatus){
-          case 'online':
-            this.myStatus = '#32db64';
-            break;
-          case 'wait':
-            this.myStatus = '#FEA926';
-            break;
-          case 'busy':
-            this.myStatus = '#f53d3d';
-            break;
-          case 'offline':
-            this.myStatus = '#C7C7C7';
-            break;
-        }
-        console.log("currentUser",this.currentUser);
-    });
-
     this.bizFire.onBizGroupSelected
     .pipe(
         filter(g=>g!=null),
@@ -103,18 +79,16 @@ export class MemberPage {
 
     // get selected group info.
     this.bizFire.onBizGroups
-    .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
+    .pipe(filter(g=>g!=null)
+    ,takeUntil(this._unsubscribeAll))
     .subscribe(groups => {
-
         if(this.gid && groups.length > 0){
             this.currentGroup = groups.find(g => g.gid === this.gid);
             if(this.currentGroup){
-
                 this.managerUid = Object.keys(this.currentGroup.data.manager);
                 if(this.currentGroup.data.partners && this.currentGroup.data['partners'] != null){
                   this.partnerUid = Object.keys(this.currentGroup.data.partners);
                 }
-
                 // is me a manager?
                 this.manager = this.currentGroup.data.manager != null &&
                     this.currentGroup.data.manager[this.bizFire.currentUID] === true;
@@ -140,8 +114,9 @@ export class MemberPage {
                             let ret;
                             ret = l.filter(ll => ll != null).length === allUsers.length;
                             return ret;
-                            }),
-                            takeUntil(this._unsubscribeAll))
+                            })
+                            ,takeUntil(this._unsubscribeAll)
+                            )
                         .subscribe(all => {
                             this.allCollectedUsers = all;
                             this.managerAuthUser = this.allCollectedUsers.filter(u => u.uid == this.managerUid);
@@ -151,13 +126,6 @@ export class MemberPage {
                               this.mydata = user;
                               console.log(user.data.displayName);
                             });
-
-                            this.bizFire.currentUser
-                            .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
-                            .subscribe(user => {
-                              this.mydata.data.displayName = user.displayName
-                            })
-
                             if(this.partnerUid){
                               this.partnerAuthUser = this.allCollectedUsers.filter(u => u.uid == this.partnerUid);
                               this.partnerCount = this.partnerAuthUser.length;
@@ -194,7 +162,6 @@ export class MemberPage {
                                   newData['user_onlineColor'] = '#f53d3d';
                                   break;
                               }
-                              // this.namePush.push(user.data.displayName);
                             }) 
                         });
                 }
@@ -211,7 +178,6 @@ export class MemberPage {
     }
   }
   
-
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();

@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
 import { TokenProvider } from '../../providers/token/token';
+import { IChatRoomData, IChatRoom } from '../../providers/chat.service';
 
 @IonicPage({  
   name: 'page-login',
@@ -51,7 +52,7 @@ export class LoginPage implements OnInit {
     public electron: Electron,
     private tokenService : TokenProvider,
     ) {
-  
+      this.hideForm = false;
       this.loginForm = formBuilder.group({
         email: ['', this.emailValidator],
         password: ['', this.passwordValidator]
@@ -61,14 +62,17 @@ export class LoginPage implements OnInit {
   }
   ionViewCanEnter(){
     electron.ipcRenderer.send('giveMeRoomValue', 'ping');
-    electron.ipcRenderer.on('selectRoom', (event, roomData) => {
-      if(roomData != null){
-        this.hideForm = false;
-        this.navCtrl.setRoot('page-member-chat',{roomData : roomData});
-        console.log("룸데이터가있습니다.",roomData); // "select member data" 출력)
+    electron.ipcRenderer.on('selectRoom', (event, roomData : IChatRoom) => {
+      if(roomData != null) {
+        if(roomData.data.type == "member"){
+          this.navCtrl.setRoot('page-member-chat',{roomData : roomData});
+          console.log("룸데이터가있습니다.",roomData); // "select member data" 출력)
+        } else {
+          console.log("스쿼드채팅입니다.");
+          this.navCtrl.setRoot('page-squad-chat');
+        }
       } else {
         this.hideForm = true;
-        console.log("룸데이터가없습니다.",roomData); // "select member data" 출력)
       }
     })
   }

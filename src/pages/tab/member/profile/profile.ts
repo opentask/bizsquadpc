@@ -235,7 +235,7 @@ export class ProfilePage {
       }
     }
     if(selectedRoom == null){
-      this.chatService.createRoomByMember(this.myValue,this.targetValue);
+      this.chatService.createRoomByMember("member",this.myValue,this.targetValue);
     } else {
       this.chatService.onSelectChatRoom.next(selectedRoom);
       console.log("룸데이터 최신화되었는가",selectedRoom);

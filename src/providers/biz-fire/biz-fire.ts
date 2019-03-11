@@ -1,3 +1,4 @@
+import { App } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { IUserData } from './../../_models/message';
 import { User } from 'firebase';
@@ -112,7 +113,8 @@ export class BizFireService {
   constructor(
     public afAuth: AngularFireAuth,
     public afStore: AngularFirestore,
-    public afStorage: AngularFireStorage
+    public afStorage: AngularFireStorage,
+    public _app : App
     ) {
         
         this.onUserSignOut = new Subject<boolean>();
@@ -279,6 +281,35 @@ export class BizFireService {
             return false;
         }
     }
+    signOut(navigateToLoginWhenDone = true): Promise<boolean>{
+        console.log('BizFireService.signOut()');
+
+        if(this.userState.status === 'signIn'){
+            // yes.
+            if(this.bizGroupSub){
+                this.bizGroupSub();
+                this.bizGroupSub = null;
+            }
+            this.userState.user = null;
+            this.userState.status = 'signOut';
+            this._authState.next(this.userState);
+
+            // * called ONLY user signed Out from signIn.
+            this.onUserSignOut.next(true);
+
+            // clear bizgroups
+            this.onBizGroups.next(null);
+        }
+        return this.afAuth.auth.signOut().then(()=> {
+            if(navigateToLoginWhenDone){
+                return this._app.getRootNav().setRoot('page-login');
+            } else {
+                return new Promise<any>(resolve => resolve(true));
+            }
+        });
+    }
+
+  
 
   editUserProfile(editData) {
     if(editData){

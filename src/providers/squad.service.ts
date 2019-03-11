@@ -14,6 +14,8 @@ export interface ISquad {
         type?: string,
         status?: number,
         member_count?:any,
+        lastMessage?:string,
+        lastMessageTime?:number,
     },
     members?: any,
     bookmark?: boolean

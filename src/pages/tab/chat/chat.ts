@@ -7,6 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { takeUntil, filter, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IUser } from '../../../_models/message';
+import { SquadService, ISquad } from '../../../providers/squad.service';
 
 @IonicPage({  
   name: 'page-chat',
@@ -21,11 +22,13 @@ export class ChatPage {
 
   private _unsubscribeAll;
   defaultSegment : string = "chatRoom";
-  chatrooms : IChatRoom[];
+  chatRooms : IChatRoom[];
+  squadChatRooms: ISquad[]
   squadrooms = [];
   memberCount : number;
   members = [];
   myData : IUser;
+  
 
   constructor(
     public navCtrl: NavController, 
@@ -34,6 +37,7 @@ export class ChatPage {
     public chatService : ChatService,
     public accountService : AccountService,
     public electron : Electron,
+    private squadService: SquadService,
     ) {
       this._unsubscribeAll = new Subject<any>();
   }
@@ -45,17 +49,32 @@ export class ChatPage {
       this.myData = userdata;
     });
 
+    this.squadService.onSquadListChanged
+    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
+    .subscribe(squad => {
+      squad.forEach(squad =>{
+        const newData = squad.data;
+        newData["member_count"] = Object.keys(squad.data.members).length;
+        if(squad.data.lastMessageTime == null){
+          newData["lastMessageTime"] = 1;
+        }
+      })
+      this.squadChatRooms = squad.sort((a,b): number => {
+         return b.data.lastMessageTime - a.data.lastMessageTime;
+      });
+    })
+    
     this.chatService.onChatRoomListChanged
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
     .subscribe((rooms) => {
-      this.chatrooms = rooms.sort((a,b): number => {
+      this.chatRooms = rooms.sort((a,b): number => {
         if(a.data.lastMessageTime < b.data.lastMessageTime) return 1;          
         if(a.data.lastMessageTime > b.data.lastMessageTime) return -1;
         return 0;
       });
       // context.rooms = chatRooms;
       console.log("chatrooms tab3");
-      console.log(this.chatrooms);
+      console.log(this.chatRooms);
     });
   }
 
@@ -70,6 +89,10 @@ export class ChatPage {
       console.log("룸데이터 최신화되었는가",value);
       this.electron.openChatRoom(value);
   }
+  gotoSquadRoom(value){
+    console.log(value);
+  }
+
   gotoSquadroom(){
 
   }

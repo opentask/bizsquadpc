@@ -45,6 +45,24 @@ page-chat {
         line-height: 2.5;
     }
 
+    .squadRoomName{
+        display: block;
+        width: 75%;
+        font-size: 15px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-bottom: 6px;
+    }
+    .squadMemberCount{
+        position: absolute;
+        top: 18px;
+        right: 20px;
+        line-height: 1.5;
+        font-size: 12px !important;
+        color:#777;
+        font-weight: bold;
+    }
 
 
 

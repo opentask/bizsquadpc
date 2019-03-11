@@ -15,6 +15,7 @@ export interface IChatRoom {
 export interface IChatRoomData {
     created: number,
     gid: string,
+    type: string,
     lastMessage?: string,
     lastMessageTime?: number,
     members: any,
@@ -68,11 +69,12 @@ export class ChatService {
         return chatRooms;
     }
 
-    createRoomByMember(me:IUser,member:IUser){
+    createRoomByMember(type,me:IUser,member:IUser){
         const now = new Date();
         const newRoom:IChatRoomData = {
             created:  now.getTime() / 1000 | 0,
             gid: this.bizFire.onBizGroupSelected.getValue().gid,
+            type: type,
             status: 1,
             members:{
                 [me.uid] : {

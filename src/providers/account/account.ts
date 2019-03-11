@@ -10,22 +10,31 @@ export class AccountService {
   private userObserverMap:{[uid: string]: BehaviorSubject<any>} = {};
 
   constructor(private bizFire: BizFireService) {
+    this.bizFire.onUserSignOut.subscribe(()=>{
+        //clear all map.
+         Object.keys(this.userObserverMap).forEach(obj => {
+             this.userObserverMap[obj].complete();
+         });
+         this.userObserverMap = {};
 
+         this.userObserverMap = {};
+     });
   }
 
     getUserObserver(uid: string): Observable<IUser | null> {
         if(this.userObserverMap[uid] != null){
+            console.log("여긴가혹시?")
             return this.userObserverMap[uid].asObservable(); //pipe needed?
         } else {
             const newUser = new BehaviorSubject<IUser>(null);
             this.bizFire.afStore.doc(`users/${uid}`).snapshotChanges()
                 .pipe(takeUntil(this.bizFire.onUserSignOut))
                 .subscribe(d => {
-                if(d.payload.exists){
-                    newUser.next({uid: d.payload.id, data: d.payload.data()} as IUser);
-                } else {
-                    console.error(`user[${uid}] data not found from /users/${uid}`);
-                }
+                    if(d.payload.exists){
+                        newUser.next({uid: d.payload.id, data: d.payload.data()} as IUser);
+                    } else {
+                        console.error(`user[${uid}] data not found from /users/${uid}`);
+                    }
                 });
             this.userObserverMap[uid] = newUser;
             return this.userObserverMap[uid].asObservable();

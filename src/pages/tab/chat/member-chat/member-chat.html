@@ -22,47 +22,6 @@
       <p class="members"><ion-icon name="person"></ion-icon> {{this.roomCount}} </p> 
   </ion-item>
 </ion-header>
-<!-- <ion-content no-padding>
-  <ion-scroll class="scrollable" scrollY="true">
-    <ion-list no-lines>
-        <ion-item *ngFor="let msg of messages" [class]="msg.data.senderId == chatroom.uid ? 'message right' : 'message left'">
-          <ion-avatar item-start *ngIf="msg.data.photoURL == null">
-              {{ msg.data.senderName| slice:0:2 }}
-          </ion-avatar>
-          <ion-avatar *ngIf="msg.data.photoURL != null">
-            <img src="{{msg.data.photoURL}}">
-          </ion-avatar>
-          <div class="msg-detail">
-            <div class="msg-info">
-              <p>  12345 </p>
-            </div>
-            <div class="msg-content">
-              <span class="triangle"></span>
-              <p class="line-breaker">{{ msg.data.message }}</p>
-            </div>
-            <div class="file" *ngIf="msg.data.file != ''">
-                <img src="{{msg.data.file}}">
-            </div>
-          </div>
-        </ion-item>
-    </ion-list>
-  </ion-scroll>
-</ion-content>
-
-<ion-footer>
-  <ion-toolbar> 
-    <form [formGroup]="sendForm" (keyup.enter)="sendMessage()">
-      <textarea [(ngModel)]="message" spellcheck="true" formControlName="sendMessage" autoComplete="true" autocorrect="true" rows="1" class="chat-input" placeholder="type message...">
-      </textarea>
-      <ion-buttons right>
-          <button (click)="sendMessage()" ion-button icon-only item-right class="send-chat-button">
-                <ion-icon name="send"></ion-icon>
-          </button>
-      </ion-buttons>
-    </form>
-  </ion-toolbar>
-</ion-footer>
- -->
 
  <ion-content>
     <div class="message-wrap">

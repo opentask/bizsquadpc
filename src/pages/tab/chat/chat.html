@@ -11,7 +11,7 @@
         <div [ngSwitch]="defaultSegment">
             <!-- 1:1채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'chatRoom'" scrollY="true">
-                <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatrooms" (click)="gotoRoom(room)">
+                <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatRooms" (click)="gotoRoom(room)">
                     <ion-avatar item-start *ngIf="room.test.data.photoURL != null">
                         <img src="{{ room.test.data.photoURL }}">
                     </ion-avatar>
@@ -28,14 +28,18 @@
             </ion-list>
 
 
-
             <!-- 스쿼드 채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
-                <ion-item class="chat-item listBorder">
-                    <h2>Squad Name
-                        <ion-icon class="chat-count" name="person"> 8</ion-icon> 
-                    </h2>
-                    <p class="chat-message">messages</p><p class="chat-time">date-time</p>
+                <ion-item class="chat-item listBorder" *ngFor="let room of squadChatRooms" (click)="gotoSquadRoom(room)">
+                    <h2 class="squadRoomName">{{ room.data.name | slice:0:25 }}</h2>
+                    <ion-icon class="squadMemberCount" name="person"> {{room.data.member_count}}</ion-icon> 
+                    <ng-container *ngIf="room.data.lastMessage != null">
+                        <p class="chat-message">{{ room.data.lastMessage | slice:0:35 }}</p>
+                        <p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>
+                    </ng-container>
+                    <ng-container *ngIf="room.data.lastMessage == null">
+                        <p class="chat-message">There are no messages.</p>
+                    </ng-container>
                 </ion-item>
             </ion-list>
         </div>

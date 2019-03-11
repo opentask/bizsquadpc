@@ -69,7 +69,9 @@ export class GroupListPage {
                 }
             });
             this.groups = bizGroups;
-            this.loading.hide();
+            setTimeout(() => { 
+              this.loading.hide();
+            },2000)
         });
 
     //파이어베이스에서 토큰 키를 tokenService의 customToken변수에 저장.
