@@ -139,10 +139,12 @@ export class SquadPage {
 
     // console.log(folders, privateSquads, publicSquads);
 
-    this.publicSquads = publicSquads;
     this.folders = folders;
-    this.privateSquads = privateSquads;
+    this.publicSquads = publicSquads;
+    
     this.privateFolders = privateFolders;
+    this.privateSquads = privateSquads;
+    
   }
 
   toggleGroup(group) {

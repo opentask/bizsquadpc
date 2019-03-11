@@ -212,7 +212,9 @@ export class HomePage implements OnInit {
   }
 
   logout(){
+    this.electron.resetValue();
     this.bizFire.windowCloseAndUserStatus().then(() =>{
+      // 로그인 페이지에서 처리하는 값 초기화
       this.bizFire.signOut();
     });
   }

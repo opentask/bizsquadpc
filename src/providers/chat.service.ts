@@ -19,13 +19,13 @@ export interface IChatRoomData {
     lastMessage?: string,
     lastMessageTime?: number,
     members: any,
-    status: number,
     notify?:boolean
 }
 
 export interface IRoomMessages {
     rid: string,
-    data: IRoomMessagesData
+    data: IRoomMessagesData,
+    
 }
 
 export interface IRoomMessagesData {
@@ -34,7 +34,7 @@ export interface IRoomMessagesData {
     message: string,
     photoURL: string,
     senderId: string,
-    senderName: string
+    senderName: string,
 }
 
 @Injectable({
@@ -75,7 +75,6 @@ export class ChatService {
             created:  now.getTime() / 1000 | 0,
             gid: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
-            status: 1,
             members:{
                 [me.uid] : {
                     name: me.data.displayName,
@@ -128,7 +127,7 @@ export class ChatService {
                 created: now.getTime() / 1000 | 0,
                 senderId: this.bizFire.currentUID,
                 senderName: this.bizFire.currentUserValue.displayName,
-                photoURL: this.bizFire.currentUserValue.photoURL
+                photoURL: this.bizFire.currentUserValue.photoURL,
             }
             this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,cid)).add(newMessage).then(snap =>{
 

@@ -52,7 +52,7 @@ export class LoginPage implements OnInit {
     public electron: Electron,
     private tokenService : TokenProvider,
     ) {
-      this.hideForm = false;
+      this.hideForm = true;
       this.loginForm = formBuilder.group({
         email: ['', this.emailValidator],
         password: ['', this.passwordValidator]
@@ -64,6 +64,7 @@ export class LoginPage implements OnInit {
     electron.ipcRenderer.send('giveMeRoomValue', 'ping');
     electron.ipcRenderer.on('selectRoom', (event, roomData : IChatRoom) => {
       if(roomData != null) {
+        this.hideForm = false;
         if(roomData.data.type == "member"){
           this.navCtrl.setRoot('page-member-chat',{roomData : roomData});
           console.log("룸데이터가있습니다.",roomData); // "select member data" 출력)

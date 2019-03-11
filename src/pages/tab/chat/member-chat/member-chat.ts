@@ -1,10 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
-import { IUser, IUserData } from '../../../../_models/message';
 import { ChatService, IChatRoom, IRoomMessages } from '../../../../providers/chat.service';
 import { BizFireService } from '../../../../providers';
-import { unescapeIdentifier } from '@angular/compiler';
 
 export interface Ichats {
   message: string,
@@ -93,18 +91,6 @@ export class MemberChatPage {
     setTimeout(() => { 
       this.scrollToBottom();
     },1500)
-  }
-
-
-  sendMessage(){
-    // 앞, 뒤 공백제거 => resultString
-    if(this.message !=null){
-      const resultString = this.message.replace(/(^\s*)|(\s*$)/g, '');
-      if(resultString != ''){
-          this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
-      }
-    }
-    this.message = '';
   }
   windowClose() {
     this.electron.windowClose();
