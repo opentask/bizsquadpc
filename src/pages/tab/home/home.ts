@@ -114,7 +114,7 @@ export class HomePage implements OnInit {
       });
 
       this.bizFire.onBizGroupSelected
-      .pipe(filter(d=>d!=null),
+      .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),
           switchMap(group => {
               //* have group changed?
               let reloadGroup = true;

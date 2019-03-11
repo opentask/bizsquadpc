@@ -68,9 +68,7 @@ export class ChatPage {
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
     .subscribe((rooms) => {
       this.chatRooms = rooms.sort((a,b): number => {
-        if(a.data.lastMessageTime < b.data.lastMessageTime) return 1;          
-        if(a.data.lastMessageTime > b.data.lastMessageTime) return -1;
-        return 0;
+        return b.data.lastMessageTime - a.data.lastMessageTime;
       });
       // context.rooms = chatRooms;
       console.log("chatrooms tab3");

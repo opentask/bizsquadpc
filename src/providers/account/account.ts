@@ -23,7 +23,6 @@ export class AccountService {
 
     getUserObserver(uid: string): Observable<IUser | null> {
         if(this.userObserverMap[uid] != null){
-            console.log("여긴가혹시?")
             return this.userObserverMap[uid].asObservable(); //pipe needed?
         } else {
             const newUser = new BehaviorSubject<IUser>(null);

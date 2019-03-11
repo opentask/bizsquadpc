@@ -97,7 +97,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         slashes: true,
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    chatRoom.webContents.openDevTools();
+    // chatRoom.webContents.openDevTools();
 });
 ipcMain.on('resetValue',(e) =>{
     selectChatRoom = null;
@@ -163,8 +163,11 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         })
 });
 
-
 autoUpdater.checkForUpdatesAndNotify();
+// 10분마다 버전 체크 후 업데이트
+setInterval(function() {
+    autoUpdater.checkForUpdatesAndNotify();
+ }, 600000);
 
 function sendStatusToWindow(message) {
     logger.info(message);
