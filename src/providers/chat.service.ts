@@ -4,7 +4,6 @@ import { BizFireService } from './biz-fire/biz-fire';
 import { SquadService } from './squad.service';
 import { BehaviorSubject } from 'rxjs';
 import { IUser } from '../_models/message';
-import { take, map } from 'rxjs/operators';
 
 export interface IChatRoom {
     uid?: string,
@@ -19,7 +18,8 @@ export interface IChatRoomData {
     lastMessage?: string,
     lastMessageTime?: number,
     members: any,
-    notify?:boolean
+    notify?:boolean,
+    member_count?:any,
 }
 
 export interface IRoomMessages {

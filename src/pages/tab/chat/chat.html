@@ -21,7 +21,7 @@
                         </span>
                     </ion-avatar>
                     <h2>{{ room.test.data.displayName }}
-                        <ion-icon class="chat-count" name="person"> 2 </ion-icon>
+                        <ion-icon class="chat-count" name="person"> {{ room.data.member_count }}</ion-icon>
                     </h2>
                     <p class="chat-message">{{ room.data.lastMessage | slice:0:35}}</p><p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>
                 </ion-item>

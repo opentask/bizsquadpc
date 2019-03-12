@@ -3,6 +3,10 @@ import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService, IChatRoom, IRoomMessages } from '../../../../providers/chat.service';
 import { BizFireService } from '../../../../providers';
+import { User } from 'firebase';
+import { IUserState } from '../../../../providers/biz-fire/biz-fire';
+import { takeUntil } from 'rxjs/operators';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 export interface Ichats {
   message: string,
@@ -38,14 +42,23 @@ export class MemberChatPage {
   roomMembers : IchatMember[] = [];
   roomCount : number;
   chatTitle = "";
+  logout : any;
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public chatService : ChatService,
     public bizFire : BizFireService,
-    public electron: Electron) {
+    public electron: Electron,
+    public afAuth: AngularFireAuth,
+    ) {
+      this.afAuth.authState.subscribe((user: User | null) => {
+        if(user == null){
+          this.windowClose();
+        }
+    })
   }
+  
 
   ngOnInit(): void {
     this.chatroom = this.navParams.get('roomData');

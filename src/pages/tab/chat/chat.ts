@@ -63,10 +63,17 @@ export class ChatPage {
          return b.data.lastMessageTime - a.data.lastMessageTime;
       });
     })
-    
+     
     this.chatService.onChatRoomListChanged
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
     .subscribe((rooms) => {
+      rooms.forEach(room =>{
+        const newData = room.data;
+        newData["member_count"] = Object.keys(room.data.members).length;
+        if(room.data.lastMessageTime == null){
+          newData["lastMessageTime"] = 1;
+        }
+      })
       this.chatRooms = rooms.sort((a,b): number => {
         return b.data.lastMessageTime - a.data.lastMessageTime;
       });
