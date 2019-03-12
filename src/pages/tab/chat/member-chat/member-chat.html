@@ -41,7 +41,7 @@
             <p>{{msg.data.senderName}}</p>
           </div>
           <div class="msg-content">
-            <span class="triangle"></span>
+            <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
             <p class="line-breaker">{{msg.data.message}}</p>
             <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
               <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>

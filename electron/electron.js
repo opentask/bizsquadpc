@@ -24,8 +24,8 @@ logger.info('App starting...');
 
 let win;
 let chatRoom;
-let selectSquad;
 let selectChatRoom;
+let videoRoom;
 
 function createWindow() {
     // Create the browser window.
@@ -47,7 +47,7 @@ function createWindow() {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
     
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -96,8 +96,9 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         slashes: true,
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    chatRoom.webContents.openDevTools();
+    // chatRoom.webContents.openDevTools();
 });
+
 ipcMain.on('resetValue',(e) =>{
     selectChatRoom = null;
 });
