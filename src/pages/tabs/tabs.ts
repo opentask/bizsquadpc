@@ -102,7 +102,6 @@ export class TabsPage {
             this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
             // set menu font color.
             this.backgroundColor = this.currentGroup.data.team_color || '#5b9ced'; // default color is '#5b9ced';
-
         });
 
     // get number of unfinished notices.

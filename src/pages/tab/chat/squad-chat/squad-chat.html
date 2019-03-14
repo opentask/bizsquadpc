@@ -18,7 +18,7 @@
    <ion-content>
       <div class="message-wrap"> 
         <div *ngFor="let msg of messages"
-             class="message" 
+             class="message"
              [class.left]="msg.data.senderId != this.bizFire.currentUID"
              [class.right]="msg.data.senderId === this.bizFire.currentUID">
           <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID">

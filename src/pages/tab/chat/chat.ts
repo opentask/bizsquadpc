@@ -93,12 +93,8 @@ export class ChatPage {
       console.log("룸데이터 최신화되었는가",value);
       this.electron.openChatRoom(value);
   }
-  gotoSquadRoom(value){
+  gotoSquadRoom(value : ISquad){
     this.electron.openChatRoom(value);
-  }
-
-  gotoSquadroom(){
-
   }
 
   ngOnDestroy(): void {

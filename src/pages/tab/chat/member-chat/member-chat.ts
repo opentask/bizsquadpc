@@ -78,9 +78,10 @@ export class MemberChatPage {
         }
       });
       
-      // 방 인원 수
+
       this.roomCount = Object.keys(this.chatroom.data.members).length;
 
+      
       // 입력한 메세지 배열에 담기
       this.bizFire.afStore.collection(`chats/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))
       .stateChanges().subscribe(snap => {

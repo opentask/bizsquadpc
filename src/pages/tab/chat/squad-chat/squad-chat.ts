@@ -12,6 +12,7 @@ import { filter, map, takeUntil } from 'rxjs/operators';
 import { IUser } from '../../../../_models/message';
 import { ChatService, IRoomMessages } from '../../../../providers/chat.service';
 import { IchatMember } from '../member-chat/member-chat';
+import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 
 @IonicPage({  
   name: 'page-squad-chat',
@@ -32,11 +33,12 @@ export class SquadChatPage {
   roomMembers : IchatMember[] = [];
   roomCount : number;
   roomName = "";
+  currentGroup : IBizGroup;
 
-  selectSquad : any;
+  selectSquad : ISquad;
   squad : ISquad;
   members: any;
-  memberCount : any;
+  groupMember : IBizGroup;
   allCollectedUsers: IUser[];
   mydata: IUser;
   editorMsg = '';
@@ -59,45 +61,23 @@ export class SquadChatPage {
   ngOnInit(): void {
     this.selectSquad = this.navParams.get("roomData");
     if(this.selectSquad != null){
-      console.log(this.selectSquad);
+      // 스쿼드 데이터
       this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}/squads/${this.selectSquad.sid}`).snapshotChanges()
       .subscribe(d => {
         if(d.payload.exists){
             this.squad = ({sid: d.payload.id, data: d.payload.data()} as ISquad);
-            console.log(this.squad);
             // 스쿼드 채팅이름.
             this.roomName = this.squad.data.name;
-
-            let allUsers;
-            const members = this.squad.data.members;
-            // 방 인원 수
-            this.roomCount = Object.keys(members).length;
-            if (members) {
-              allUsers = Object.keys(members)
-                  .filter(uid => members[uid] === true)
-                  .map(uid => uid);
-    
-              if (allUsers && allUsers.length > 0) {
-                this.accountService.getAllUserInfos(allUsers)
-                    .pipe(filter(l => {
-                        let ret;
-                        ret = l.filter(ll => ll != null).length === allUsers.length;
-                        return ret;
-                        }))
-                    .subscribe(all => {
-                      this.allCollectedUsers = all;
-                      console.log("allUsers",this.allCollectedUsers);
-                      // 내 정보
-                      this.allCollectedUsers.filter(u => u.uid == this.bizFire.currentUID)
-                      .forEach(user =>{
-                        this.mydata = user;
-                        console.log("내 정보", this.mydata);
-                      });
-                  })
-              }
-            }
         }
       })
+      // 비즈그룹 데이터 방 인원 수. 일단 한번 가져온 후 값 변경 시 변경
+      this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}`).snapshotChanges()
+      .subscribe(snap =>{
+        if(snap.payload.exists){
+          this.groupMember = ({gid: snap.payload.id, data: snap.payload.data()} as IBizGroup);
+          this.roomCount = Object.keys(this.groupMember.data.members).length;
+        }
+      });
     }
 
     // 입력한 메세지 배열에 담기
@@ -111,7 +91,6 @@ export class SquadChatPage {
       ));
       this.readMessages.forEach(msg =>{
         this.messages.push(msg);
-        console.log(msg.data.message);
       })
       this.onFocus();
     })
