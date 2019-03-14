@@ -5,6 +5,13 @@ page-home {
     ion-avatar{
         border-radius: 100%;
     }
+    ion-footer{
+        bottom:42px;
+        text-align: left;
+        padding-left: 17px;
+        font-size: 11px;
+        color:#444;
+    }
 
     .padding-left-20{
         padding-left:20px !important; 

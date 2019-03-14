@@ -67,6 +67,9 @@ export class SquadPage {
     .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
     .subscribe(group => {
         this.generalMembers = Object.keys(group.data.members).length;
+        if(group.data.partners != null){
+            this.generalMembers = Object.keys(group.data.members).length - Object.keys(group.data.partners).length;
+        }
         // if current group changed,
         // select my squad.
         if( this.currentBizGroup != null) {

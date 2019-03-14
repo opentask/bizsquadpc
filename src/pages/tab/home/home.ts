@@ -154,7 +154,6 @@ export class HomePage implements OnInit {
               this.manager = this.group.data.manager != null &&
               this.group.data.manager[this.bizFire.currentUID] === true;
               console.log(this.manager);
-
               // ----------------------------------------------------------------------------//
               if(reloadGroup === true){
                   // group squads reloading...
