@@ -1,21 +1,61 @@
-<ion-content no-padding>
-    <ion-item class="drag" no-margin no-padding>
-      <ion-grid class="no-padding-topAndBot">
-        <ion-row>
-          <ion-col class="no-padding-topAndBot"*ngIf="squadData != null">
-            <h2 class="squadName">{{ squadData.name }}</h2>
-            <p class="members"><ion-icon name="person"></ion-icon> {{ memberCount }}</p> 
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-      <div class="top-menu">
-        <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
-          <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
-        </button>
-        <button ion-button icon-only clear small color="light" (click)="windowClose()">
-          <ion-icon class="login-top-menu" name="md-close"></ion-icon>
-        </button> 
-      </div>
+<ion-header>
+    <ion-item class="drag listBorder" no-margin no-padding no-lines>
+        <div class="top-menu">
+          <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
+            <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
+          </button>
+          <button ion-button icon-only clear small color="light" (click)="windowClose()">
+            <ion-icon class="login-top-menu" name="md-close"></ion-icon>
+          </button> 
+        </div>
+        <div class="squadChatTitleCon">
+          <h2 class="chatName"> {{ roomName }}</h2>
+          <p class="members"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
+        </div>
     </ion-item>
-  </ion-content>
-  
+  </ion-header>
+   
+   <ion-content>
+      <div class="message-wrap"> 
+        <div *ngFor="let msg of messages"
+             class="message" 
+             [class.left]="msg.data.senderId != this.bizFire.currentUID"
+             [class.right]="msg.data.senderId === this.bizFire.currentUID">
+          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID">
+            <span class="senderName">{{ msg.data.senderName | slice:0:2 }}</span>
+          </ion-avatar>
+          <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
+            <img class="user-img" src="{{msg.data.photoURL}}">
+          </ion-avatar>
+          <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
+          <div class="msg-detail">
+            <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID">
+              <p>{{msg.data.senderName}}</p>
+            </div>
+            <div class="msg-content">
+              <span class="triangle" *ngIf="msg.data.senderId == this.bizFire.currentUID"></span>
+              <p class="line-breaker">{{msg.data.message}}</p>
+              <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
+                <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+              </div>
+            </div>
+            <div class="msg-time-content" *ngIf="msg.data.senderId != this.bizFire.currentUID">
+              <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+    <ion-footer no-border>
+      <div class="input-wrap">
+        <textarea #chat_input
+                  placeholder=""
+                  [(ngModel)]="editorMsg"
+                  (keyup.enter)="sendMsg()"
+                  (focusin)="onFocus()">
+        </textarea>  
+        <button ion-button clear icon-only item-right (click)="sendMsg()">
+          <ion-icon name="ios-send" ios="ios-send" md="md-send"></ion-icon>
+        </button>
+      </div>
+    </ion-footer>

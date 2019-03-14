@@ -106,20 +106,20 @@ export class ChatService {
             });
         }
     }
-    getMessagePath(type,cid?){
+    getMessagePath(type,id,gid?){
         switch(type){
             case 'member-chat':
-              return 'chats/' + cid +'/chat';
+              return 'chats/' + id +'/chat';
             case 'squad-chat':
-              return 'bizgroups/'+this.bizFire.onBizGroupSelected.getValue().gid + '/squads/' + "this.squadService.onSelectSquad.getValue().sid "+'/chat';
+              return 'bizgroups/'+ gid + '/squads/' + id +'/chat';
             case 'member-chat-room':
-              return 'chats/' + cid;
+              return 'chats/' + id;
             case 'squad-chat-room':
-              return 'bizgroups/'+this.bizFire.onBizGroupSelected.getValue().gid + '/squads/' + "this.squadService.onSelectSquad.getValue().sid";
+              return 'bizgroups/'+ gid + '/squads/' + id;
           }  
     }
 
-    sendMessage(room_type,txt_message,cid) {
+    sendMessage(room_type,txt_message,id,gid?) {
             const now = new Date();
             const newMessage: IRoomMessagesData = {
                 file : "",
@@ -129,19 +129,18 @@ export class ChatService {
                 senderName: this.bizFire.currentUserValue.displayName,
                 photoURL: this.bizFire.currentUserValue.photoURL,
             }
-            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,cid)).add(newMessage).then(snap =>{
+            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(snap =>{
 
                 // 알람이 들어갈 부분
                 if(newMessage.senderId == this.bizFire.currentUID){
-                    console.log("내가 보내는 메세지");
                 } 
 
-                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type +'-room',cid)).set({
+                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',id,gid)).set({
                     lastMessage : txt_message,
                     lastMessageTime : now.getTime() / 1000 | 0,
-                },{merge : true})
+                },{merge : true}).catch(error => console.log("라스트 메세지 작성에러",error))
                 // this.onSelectChatRoom.next(selectedRoom);
-            }).catch(error => console.error("라스트메세지 작성 에러?",error));
+            }).catch(error => console.error("메세지작성에러",error));
     }
 
 }

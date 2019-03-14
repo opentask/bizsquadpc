@@ -115,7 +115,8 @@ export class MemberPage {
                             ret = l.filter(ll => ll != null).length === allUsers.length;
                             return ret;
                             })
-                            ,takeUntil(this._unsubscribeAll)
+                            ,
+                            takeUntil(this._unsubscribeAll)
                             )
                         .subscribe(all => {
                             this.allCollectedUsers = all;

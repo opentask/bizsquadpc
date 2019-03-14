@@ -11,6 +11,7 @@ export interface ISquad {
         name?: string,
         created?: number,
         manager?: any,
+        gid?: string,
         type?: string,
         status?: number,
         member_count?:any,
@@ -39,6 +40,7 @@ export class SquadService {
     * public or mine.
     * */
     onSquadListChanged = new BehaviorSubject<ISquad[]>([]);
+
 
     constructor(public bizFire : BizFireService,) {
 

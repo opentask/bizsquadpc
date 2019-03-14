@@ -43,7 +43,6 @@ export class ChatPage {
   }
 
   ngOnInit() {
-
     this.accountService.getUserObserver(this.bizFire.currentUID).pipe(takeUntil(this._unsubscribeAll))
     .subscribe(userdata => {
       this.myData = userdata;
@@ -95,7 +94,7 @@ export class ChatPage {
       this.electron.openChatRoom(value);
   }
   gotoSquadRoom(value){
-    console.log(value);
+    this.electron.openChatRoom(value);
   }
 
   gotoSquadroom(){
