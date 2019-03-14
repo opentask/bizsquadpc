@@ -23,6 +23,7 @@ export class SquadPage {
 
   currentSquad: ISquad;
   currentBizGroup: IBizGroup;
+  generalMembers: number;
 
   ipc: any;
 
@@ -65,6 +66,7 @@ export class SquadPage {
     this.bizFire.onBizGroupSelected
     .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
     .subscribe(group => {
+        this.generalMembers = Object.keys(group.data.members).length;
         // if current group changed,
         // select my squad.
         if( this.currentBizGroup != null) {
