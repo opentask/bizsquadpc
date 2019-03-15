@@ -3,7 +3,6 @@ import { ISquad } from "../providers/squad.service";
 export interface IUser {
     uid: string,
     data: IUserData,
-    isChecked?: false
 }
 
 export interface IUserData {
@@ -22,6 +21,7 @@ export interface IUserData {
     providerId?: any[];
     // + pc version 
     user_icon?: string,
+    isChecked?: boolean,
     onlineStatus?: string,
     user_onlineColor?: string,
 }

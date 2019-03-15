@@ -58,6 +58,17 @@ page-invite {
         font-weight: bold;
         font-size: 14px;
     }
+    .badge-memberCon{
+        height: 62px;
+        padding: 5px;
+        background-color: rgba(91, 156, 237, 0.8);
+    }
+    .memberList-button{
+        height: 20px;
+        font-size: 10px;
+        padding: 0 10px;
+        text-transform: inherit;
+    }
     .notPhoto{
         background-color:#c96a5c;
         text-align: center;

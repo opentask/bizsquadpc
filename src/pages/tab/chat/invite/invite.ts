@@ -24,6 +24,8 @@ export class InvitePage {
   gid: string;
   allCollectedUsers: IUser[];
   mydata: IUser;
+  selectUser: IUser[];
+  selectedNum = 0;
 
   constructor(
     public navCtrl: NavController, 
@@ -85,6 +87,8 @@ export class InvitePage {
                     });      
                     all.forEach(user => {
                       const newData = user.data;
+                      newData['isChecked'] = user.data.isChecked = false;
+
                       if(user.data.displayName == null || user.data.displayName.length == 0){
                         newData['user_icon'] = user.data.email.substr(0, 2);
                       } else {
@@ -117,9 +121,15 @@ export class InvitePage {
 
     })
   }
-  userinfo(info){
-    console.log(info)
+  invite(){
+    console.log(this.selectUser);
+    console.log(this.allCollectedUsers);
   }
+
+  selectedUser() {
+    this.selectedNum = this.allCollectedUsers.filter(user => user.data.isChecked == true).length;
+  }
+
   closePopup(){
     this.viewCtrl.dismiss();
   }

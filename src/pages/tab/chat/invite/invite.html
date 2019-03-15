@@ -1,15 +1,23 @@
 <ion-header>
   <!-- 선택된 멤버가 없으면 텍스트 출력 -->
-  <ng-container *ngIf="true">
-    <p class="title" no-margin>Select the member<br> you want to chat with in the list.</p>
-    <ion-searchbar [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
-  </ng-container>
-</ion-header> 
+  <p *ngIf="!selectedNum" class="title" no-margin>Select the member<br> you want to chat with in the list.</p>
+  <ion-scroll class="scrollable" scrollY="true">
+    <div *ngIf="selectedNum" class="badge-memberCon">
+      <ng-container *ngFor="let member of allCollectedUsers;">
+        <button *ngIf="member.data.isChecked" class="memberList-button" ion-button icon-end round color="light" (click)="member.data.isChecked = false">
+            {{ member.data.displayName }}
+            <ion-icon name="close"></ion-icon>
+        </button>
+      </ng-container>
+    </div>
+  </ion-scroll>
+  <ion-searchbar [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
+</ion-header>
 
 <ion-content no-padding> 
   <ion-scroll class="scrollable" scrollY="true">
-    <ion-list no-margin *ngFor="let member of allCollectedUsers">
-        <ion-item class="userList" no-lines *ngIf="!serachValue || member.data.displayName.indexOf(serachValue.trim())>-1;" (click)="userinfo(member)">
+    <ion-list no-margin *ngFor="let member of allCollectedUsers;">
+        <ion-item class="userList" no-lines *ngIf="!serachValue || member.data.displayName.indexOf(serachValue.trim())>-1;">
             <ion-avatar item-start *ngIf="member && member.data.photoURL">
                 <img class="photoURL" src="{{ member.data.photoURL }}">
                 <ion-badge id="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
@@ -22,12 +30,12 @@
             <h2 class="user-name" *ngIf="member.data.displayName == null">{{ member.data.email }}</h2> -->
             <ion-label *ngIf="member.data.displayName != null">{{ member.data.displayName }}</ion-label>
             <ion-label *ngIf="member.data.displayName == null">{{ member.data.email }}</ion-label>
-            <ion-checkbox slot="end" [(ngModel)]="member.isChecked" mode="ios"></ion-checkbox>
+            <ion-checkbox slot="end" [(ngModel)]="member.data.isChecked" mode="ios" (click)="selectedUser()"></ion-checkbox>
         </ion-item>
     </ion-list>
   </ion-scroll>
 </ion-content>
 <ion-footer>
     <button class="footer-button" ion-button round small color="light" (click)="closePopup()">cencel</button>
-    <button ion-button round small color="primary">invite</button>
+    <button ion-button round small color="primary" (click)="invite()">invite</button>
 </ion-footer>
