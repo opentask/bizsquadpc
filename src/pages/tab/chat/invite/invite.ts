@@ -60,7 +60,7 @@ export class InvitePage {
             // get all true users' id.
             allUsers = Object.keys(members)
                 .filter(uid => members[uid] === true)
-                .filter(uid => members[uid] != this.bizFire.currentUID)
+                .filter(uid => uid != this.bizFire.currentUID)
                 .map(uid => uid);
             console.log("allUsers",allUsers)
           }
