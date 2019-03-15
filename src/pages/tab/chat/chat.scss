@@ -64,7 +64,21 @@ page-chat {
         color:#777;
         font-weight: bold;
     }
+    ion-fab{
+        margin-bottom: 35px;
 
+    }
+    .fab-button{
+        width: 45px;
+        height: 45px;
+    }
+    .triangle{
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 50px 50px 0 50px;
+        border-color: #007bff transparent transparent transparent;
+    }
 
     // scroll bar
     .scrollable{

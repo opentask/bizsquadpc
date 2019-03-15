@@ -1,0 +1,105 @@
+page-invite {
+    .scroll-content{
+        padding:0;
+    }
+    ion-avatar{
+        border-radius: 100%;
+        cursor: pointer;
+    }
+    ion-content{
+        height: 245px;
+    }
+    ion-footer{
+        text-align: center;
+    }
+    ion-label{
+        font-size: 14px;
+    }
+    .searchbar-ios{
+        background: rgba(91, 156, 237, 0.8);
+    }
+    .checkbox-ios{
+        position: absolute;
+        right: 10px;
+    }
+    .footer-button{
+        margin: 10px 10px 10px 2px;
+    }
+    .userList{
+        padding-left: 8px;
+    }
+    #statusBadge {
+        position: absolute;
+        border-radius: 100%;
+        padding:0;
+        width: 13px;
+        height: 13px;
+        left:37px;
+        bottom: 10px;
+        color: transparent;
+        font-size: 7px;
+        line-height: 1.5;
+        border: 2px solid white;
+        cursor: pointer;
+        display: inherit;
+    }
+
+    .title{
+        padding-top: 16px;
+        padding-bottom: 16px;
+        text-align: center;
+        font-size:13px;
+        color:white;
+        font-weight: bold;
+        background-color: rgba(91, 156, 237, 0.8);
+    }
+    .list{
+        color:#62a8ea;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .notPhoto{
+        background-color:#c96a5c;
+        text-align: center;
+    }
+    .displayName{
+        font-weight: bold;
+        color:white;
+        line-height: 2.5;
+    }
+    .user-name{
+        line-height: 2;
+        font-size: 14px;
+    }
+    .member-count{
+        color:#6E6E6E;
+    }
+
+    // scroll bar
+    .scrollable{
+        max-height: 245px;
+        overflow: auto !important;
+    }
+    ::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+        display: inherit;
+    }
+    ::-webkit-scrollbar-track {
+        // -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.3) !important;
+        // border-radius: 8px!important;
+        background-color: #f6f6f6!important;
+    }
+    ::-webkit-scrollbar {
+        width: 12px!important;
+        background-color: #f6f6f6!important;
+    }
+    ::-webkit-scrollbar-thumb {
+        // border-radius: 8px!important;
+        // -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,.3)!important;
+        border: 2px solid #f6f6f6 !important;
+        background-color: #BEBEBE!important;
+        opacity: 0.7;
+        border-radius: 7px !important;
+    }
+
+}

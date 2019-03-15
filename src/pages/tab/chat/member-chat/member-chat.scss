@@ -76,6 +76,13 @@ page-member-chat {
         resize: none;
         border: none;
     }   
+    .sendButton{
+        height: auto;
+        opacity: 0.8;
+        border-radius: 7px;
+        text-transform: capitalize;
+        width:70px;
+    }
     ion-item {
         background-color: map-get($colors, light) !important;
     }
@@ -145,6 +152,7 @@ page-member-chat {
         .input-wrap {
           padding: 5px;
           display: flex;
+          height: 75px;
           textarea {
             flex: 1;
             border: 0;

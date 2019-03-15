@@ -88,6 +88,7 @@ export class BizFireService {
   // * Biz Groups
   onBizGroupSelected = new BehaviorSubject<IBizGroup>(null);
   onBizGroups = new BehaviorSubject<IBizGroup[]>(null);
+  generalMembers = new BehaviorSubject<number>(null);;
 
   // !! web .ver metaData 생략 !!
 

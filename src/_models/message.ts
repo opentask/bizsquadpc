@@ -2,7 +2,8 @@ import { ISquad } from "../providers/squad.service";
 
 export interface IUser {
     uid: string,
-    data: IUserData
+    data: IUserData,
+    isChecked?: false
 }
 
 export interface IUserData {

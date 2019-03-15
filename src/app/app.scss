@@ -59,3 +59,20 @@ ion-item:hover a {
         background-color: white !important;
     }
 }
+
+// member page - popover template
+.page-invite{
+    .popover-content{
+        top: inherit !important;
+        bottom:11%;
+        right:10px !important;
+        width: 280px;
+        height: 400px;
+        border: 3px;
+        background-color: #f6f6f6 !important;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+}

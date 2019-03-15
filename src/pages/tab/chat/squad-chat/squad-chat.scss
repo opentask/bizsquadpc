@@ -76,7 +76,14 @@ page-squad-chat {
         font-size: 1.2em;
         resize: none;
         border: none;
-    }   
+    }  
+    .sendButton{
+        height: auto;
+        opacity: 0.8;
+        border-radius: 7px;
+        text-transform: capitalize;
+        width:70px;
+    } 
     ion-item {
         background-color: map-get($colors, light) !important;
     }

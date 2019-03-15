@@ -25,6 +25,9 @@
                     </h2>
                     <p class="chat-message">{{ room.data.lastMessage | slice:0:35}}</p><p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>
                 </ion-item>
+                <ion-fab right bottom >
+                    <button class="fab-button"  ion-fab color="red" (tap)="presentPopover($event)"><ion-icon name="add"></ion-icon></button>
+                </ion-fab>
             </ion-list>
 
 
@@ -32,7 +35,7 @@
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
                 <ion-item class="chat-item listBorder" *ngFor="let room of squadChatRooms" (click)="gotoSquadRoom(room)">
                     <h2 class="squadRoomName">{{ room.data.name | slice:0:25 }}</h2>
-                    <ion-icon class="squadMemberCount" name="person"> {{room.data.member_count}}</ion-icon> 
+                    <ion-icon class="squadMemberCount" name="person"> {{ generalMembers }}</ion-icon> 
                     <ng-container *ngIf="room.data.lastMessage != null">
                         <p class="chat-message">{{ room.data.lastMessage | slice:0:35 }}</p>
                         <p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>

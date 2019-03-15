@@ -3,7 +3,7 @@ import { AccountService } from './../../../providers/account/account';
 import { ChatService, IChatRoom } from './../../../providers/chat.service';
 import { BizFireService } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
 import { takeUntil, filter, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IUser } from '../../../_models/message';
@@ -28,6 +28,7 @@ export class ChatPage {
   memberCount : number;
   members = [];
   myData : IUser;
+  generalMembers: number;
   
 
   constructor(
@@ -38,6 +39,7 @@ export class ChatPage {
     public accountService : AccountService,
     public electron : Electron,
     private squadService: SquadService,
+    public popoverCtrl :PopoverController,
     ) {
       this._unsubscribeAll = new Subject<any>();
   }
@@ -47,13 +49,22 @@ export class ChatPage {
     .subscribe(userdata => {
       this.myData = userdata;
     });
-
+    
+    this.bizFire.onBizGroupSelected
+    .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
+    .subscribe(group => {
+        if(group.data.partners != null){
+          this.generalMembers = Object.keys(group.data.members).length - Object.keys(group.data.partners).length;
+        } else {
+          this.generalMembers = Object.keys(group.data.members).length
+        }
+    });
+    
     this.squadService.onSquadListChanged
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
     .subscribe(squad => {
       squad.forEach(squad =>{
         const newData = squad.data;
-        newData["member_count"] = Object.keys(squad.data.members).length;
         if(squad.data.lastMessageTime == null){
           newData["lastMessageTime"] = 1;
         }
@@ -95,6 +106,11 @@ export class ChatPage {
   }
   gotoSquadRoom(value : ISquad){
     this.electron.openChatRoom(value);
+  }
+
+  presentPopover(ev): void {
+    let popover = this.popoverCtrl.create('page-invite',{}, {cssClass: 'page-invite'});
+    popover.present({ev: ev});
   }
 
   ngOnDestroy(): void {

@@ -62,8 +62,8 @@
                 (keyup.enter)="sendMsg()"
                 (focusin)="onFocus()">
       </textarea>  
-      <button ion-button clear icon-only item-right (click)="sendMsg()">
-        <ion-icon name="ios-send" ios="ios-send" md="md-send"></ion-icon>
+      <button class="sendButton" ion-button item-right (click)="sendMsg()">
+        send
       </button>
     </div>
   </ion-footer>
