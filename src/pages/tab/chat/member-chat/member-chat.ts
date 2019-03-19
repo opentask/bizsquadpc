@@ -72,12 +72,11 @@ export class MemberChatPage {
 
   ngOnInit(): void {
     this.chatroom = this.navParams.get('roomData');
+    console.log(this.chatroom);
 
     if(this.chatroom != null) {
       // // * get USERS DATA !
-      
       let chatMembers = [];
-
       const c_members = this.chatroom.data.members;
       chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
       console.log(chatMembers);
@@ -95,7 +94,7 @@ export class MemberChatPage {
       
       // 입력한 메세지 배열에 담기
       this.bizFire.afStore.collection(`chats/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))
-      .stateChanges().subscribe(snap => {
+      .stateChanges(['added']).subscribe(snap => {
         this.readMessages = snap.map(d => (
           {
             rid: d.payload.doc.id,

@@ -20,7 +20,8 @@ export interface IChatRoomData {
     notify?:boolean,
     member_count?:any,
     member_data?: IUser[],
-    title?: string
+    title?: string,
+    read?: any
 }
 
 export interface IRoomMessages {
@@ -77,8 +78,8 @@ export class ChatService {
             gid: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
             members: {
-                me : true,
-                target : true
+                [me] : true,
+                [target] : true
             }
         }
         this.createRoom(newRoom);
@@ -157,10 +158,13 @@ export class ChatService {
                 // 알람이 들어갈 부분
                 if(newMessage.senderId == this.bizFire.currentUID){
                 } 
-
+                const uid = this.bizFire.currentUID;
                 this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',id,gid)).set({
                     lastMessage : txt_message,
                     lastMessageTime : now.getTime() / 1000 | 0,
+                    read : {
+                        [this.bizFire.currentUID] : now.getTime() / 1000 | 0
+                    }
                 },{merge : true}).catch(error => console.log("라스트 메세지 작성에러",error))
                 // this.onSelectChatRoom.next(selectedRoom);
             }).catch(error => console.error("메세지작성에러",error));
