@@ -107,8 +107,10 @@ export class MemberChatPage {
         })
         this.onFocus();
       })
+      this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid)
     }
     // this.chatService.createRoom(null);
+
   }
 
   ionViewDidEnter(){
@@ -140,6 +142,9 @@ export class MemberChatPage {
     this.editorMsg = '';
     this.onFocus();
   }
+
+
+
   onFocus() {
     this.contentArea.resize();
     this.scrollToBottom();

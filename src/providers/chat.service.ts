@@ -118,28 +118,16 @@ export class ChatService {
             });
         }
     }
-    updateLastRead(room_type,uid){
-        return new Promise<void>( (resolve, reject) => {      
-          const now = new Date();
-          this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type)).update({
-            ['read.' + uid +".lastRead"]: now.getTime() / 1000 | 0
-          }).then(()=>{
-            resolve();
-          }).catch(error=>{
-            reject(error);
-          });  
-        });
-    }
-    getMessagePath(type,id?,gid?){
+    getMessagePath(type,cid?,gid?){
         switch(type){
             case 'member-chat':
-              return 'chats/' + id +'/chat';
+              return 'chats/' + cid +'/chat';
             case 'squad-chat':
-              return 'bizgroups/'+ gid + '/squads/' + id +'/chat';
+              return 'bizgroups/'+ gid + '/squads/' + cid +'/chat';
             case 'member-chat-room':
-              return 'chats/' + id;
+              return 'chats/' + cid;
             case 'squad-chat-room':
-              return 'bizgroups/'+ gid + '/squads/' + id;
+              return 'bizgroups/'+ gid + '/squads/' + cid;
         }  
     }
 
@@ -169,5 +157,29 @@ export class ChatService {
                 // this.onSelectChatRoom.next(selectedRoom);
             }).catch(error => console.error("메세지작성에러",error));
     }
+
+    updateLastRead(room_type,uid,cid){
+        return new Promise<void>( (resolve, reject) => {  
+          const now = new Date();
+          this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,cid)).set({
+            read :{ [uid]: now.getTime() / 1000 | 0 }
+          },{merge : true}).then(()=>{
+            resolve();
+          }).catch(error=>{
+            reject(error);
+          });  
+        });
+    }
+    checkIfHasNewMessage(data:any) {
+        if(data.read == undefined){
+          return true;
+        }else{
+          if(data.read[this.bizFire.currentUID] == undefined){
+            return true;
+          }else{
+            return data.read[this.bizFire.currentUID] < data.lastMessageTime;
+          }
+        }
+      }
 
 }

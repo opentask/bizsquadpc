@@ -27,6 +27,7 @@ export class TabsPage {
   currentUser: IUserData;
   groupList; // display Select
   currentGroupList: IBizGroup[];
+  roomMessageCounter = '';
 
   backgroundColor: string; // menu right string background color.
 
@@ -130,10 +131,16 @@ export class TabsPage {
                 return ret;
             }).map(d => ({cid: d.payload.doc.id, data: d.payload.doc.data()} as IChatRoom))
         )
-    ).pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRooms) => {
+    ).pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((chatRooms) => {
         console.log(chatRooms);
         this.chatService.onChatRoomListChanged.next(chatRooms);
-
+        if(chatRooms.filter(c => this.chatService.checkIfHasNewMessage(c.data)).length){
+           this.roomMessageCounter = 'N';
+        }else {
+            this.roomMessageCounter = '';
+        }
+        console.log(this.roomMessageCounter);
         if(this.chatService.onSelectChatRoom.value != null){
             const newChat = this.chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
             if(newChat){

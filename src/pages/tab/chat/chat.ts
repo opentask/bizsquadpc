@@ -80,6 +80,9 @@ export class ChatPage {
       rooms.forEach(room =>{
         const newData = room.data;
         newData["member_count"] = Object.keys(room.data.members).length;
+        if(room.data.read != null){
+          console.log(room.data.read[this.bizFire.currentUID]);
+        }
         if(room.data.lastMessageTime == null) {
           newData["lastMessageTime"] = 1;
         }
