@@ -63,10 +63,12 @@ export class ChatPage {
         this.allMembers = members;
         this.chatRooms.forEach(room => {
           room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
+          room.data.title = '';
           room.data.member_data.forEach(m => {
-            room.data.title = m.data.displayName + ',';
+              room.data.title += m.data.displayName + ',';
           })
           room.data.title = room.data.title.slice(0,room.data.title.length-1);
+          console.log("1차",room.data.title);
         })
       })
     }
@@ -82,11 +84,13 @@ export class ChatPage {
           newData["lastMessageTime"] = 1;
         }
         if(this.allMembers != null){
+          room.data.title = '';
           room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
           room.data.member_data.forEach(m => {
-            room.data.title = m.data.displayName + ',';
+            room.data.title += m.data.displayName + ',';
           })
           room.data.title = room.data.title.slice(0,room.data.title.length-1);
+          console.log("2차",room.data.title);
         }
       })
       this.chatRooms = rooms.sort((a,b): number => {

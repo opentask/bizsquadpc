@@ -60,7 +60,9 @@
                     <!-- <ion-avatar item-start *ngIf="true">
                         <img src="imgs/main512.png">
                     </ion-avatar> -->
-                    <h2>{{ room.data.title }}<ion-icon class="chat-count" name="person"> {{ room.data.member_count }}</ion-icon>
+                    <h2>
+                        <span class="room_title">{{ room.data.title }}</span>
+                        <ion-icon class="chat-count" name="person"> {{ room.data.member_count }}</ion-icon>
                     </h2>
                     <ng-container *ngIf="room.data.lastMessage != null">
                         <p class="chat-message">{{ room.data.lastMessage | slice:0:35}}</p>
@@ -75,7 +77,6 @@
                     <button class="fab-button"  ion-fab color="red" (tap)="presentPopover($event)"><ion-icon name="add"></ion-icon></button>
                 </ion-fab>
             </ion-list>
-
 
             <!-- 스쿼드 채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
