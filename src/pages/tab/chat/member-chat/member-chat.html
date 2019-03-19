@@ -4,22 +4,42 @@
         <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
           <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
         </button>
-        <button ion-button icon-only clear small color="light" (click)="windowClose()">
+        <button ion-button icon-only clear small color="light" (click)="windowClose()" (keyup.esc)="windowClose()">
           <ion-icon class="login-top-menu" name="md-close"></ion-icon>
-        </button> 
+        </button>
       </div>
-      
       <ng-container *ngFor="let member of roomMembers;">
-        <ion-avatar style="margin-left: 16px !important" item-start *ngIf="member && member.photoURL">
-          <img class="photoURL" src="{{member.photoURL}}">
-        </ion-avatar>
-        <ion-avatar class="notPhoto" item-start *ngIf="member && member.photoURL == null">
-            <span class="displayName">{{ member.name | slice:0:2 }}</span>
-        </ion-avatar>
+        <ng-container *ngIf="roomCount == 2">
+        <!-- 1명과 대화 시 -->
+          <ion-avatar style="margin-left: 16px !important" item-start *ngIf="member && member.data.photoURL">
+            <img class="photoURL" src="{{member.data.photoURL}}">
+          </ion-avatar>
+          <ion-avatar class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
+              <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+          </ion-avatar>
+        </ng-container>
+        <!-- 자신 제외 2명 일 경우 -->
+       <ng-container *ngIf="roomCount == 3">
+          <ion-avatar class="member_3" style="margin-left: 16px !important" item-start *ngIf="member && member.data.photoURL">
+            <img class="photoURL" src="{{member.data.photoURL}}">
+          </ion-avatar>
+          <ion-avatar class="notPhoto member_3" item-start *ngIf="member && member.data.photoURL == null">
+              <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+          </ion-avatar>
+       </ng-container>
+        <!-- 3명 이상 -->
+        <ng-container *ngIf="roomCount > 3">
+          <ion-avatar class="member_4" style="margin-left: 16px !important" item-start *ngIf="member && member.data.photoURL">
+            <img class="photoURL" src="{{member.data.photoURL}}">
+          </ion-avatar>
+          <ion-avatar class="notPhoto member_4" item-start *ngIf="member && member.data.photoURL == null">
+              <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+          </ion-avatar>
+        </ng-container>
       </ng-container>
 
       <h2 class="chatName">{{ chatTitle | slice : 0 : chatTitle.length - 1 }}</h2>
-      <p class="members"><ion-icon name="person"></ion-icon> {{this.roomCount}} </p> 
+      <p class="members" *ngIf="chatTitle != ''"><ion-icon name="person"></ion-icon> {{this.roomCount}} </p> 
   </ion-item>
 </ion-header>
 

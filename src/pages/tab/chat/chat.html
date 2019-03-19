@@ -12,18 +12,64 @@
             <!-- 1:1채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'chatRoom'" scrollY="true">
                 <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatRooms" (click)="gotoRoom(room)">
-                    <ion-avatar item-start *ngIf="room.test.data.photoURL != null">
-                        <img src="{{ room.test.data.photoURL }}">
-                    </ion-avatar>
-                    <ion-avatar class="notPhoto" item-start *ngIf="room.test.data.photoURL == null">
-                        <span class="displayName">
-                            {{ room.test.data.displayName | slice:0:2 }}
-                        </span>
-                    </ion-avatar>
-                    <h2>{{ room.test.data.displayName }}
-                        <ion-icon class="chat-count" name="person"> {{ room.data.member_count }}</ion-icon>
+                    <ng-container *ngFor="let member of room.data.member_data;">
+
+                        <!-- 1:1채팅 -->
+                        <ng-container *ngIf="room.data.member_data.length == 1">
+                            <ion-avatar class="member_1" item-start *ngIf="member.data.photoURL != null">
+                                <img src="{{ member.data.photoURL }}">
+                            </ion-avatar>
+                            <ion-avatar class="notPhoto member_1" item-start *ngIf="member.data.photoURL == null">
+                                <span class="displayName">
+                                    {{ member.data.displayName | slice:0:2 }}
+                                </span>
+                            </ion-avatar>
+                        </ng-container>
+
+                        <!-- 자신 제외 2명 일 경우 -->
+                        <ng-container *ngIf="room.data.member_data.length == 2">
+                            <ion-avatar class="member_2" item-start *ngIf="member && member.data.photoURL">
+                                <img class="photoURL" src="{{member.data.photoURL}}">
+                            </ion-avatar>
+                            <ion-avatar class="notPhoto member_2" item-start *ngIf="member && member.data.photoURL == null">
+                                <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+                            </ion-avatar>
+                        </ng-container>
+                        <!-- 3명일 경우 -->
+                        <ng-container *ngIf="room.data.member_data.length == 3">
+                            <ion-avatar class="member_3" item-start *ngIf="member && member.data.photoURL">
+                                <img class="photoURL" src="{{member.data.photoURL}}">
+                            </ion-avatar>
+                            <ion-avatar class="notPhoto member_3" item-start *ngIf="member && member.data.photoURL == null">
+                                <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+                            </ion-avatar>
+                        </ng-container>
+
+                        <!-- 3명 이상 -->
+                        <ng-container *ngIf="room.data.member_data.length > 3">
+                            <ion-avatar class="member_4" item-start *ngIf="member && member.data.photoURL">
+                                <img class="photoURL" src="{{member.data.photoURL}}">
+                            </ion-avatar>
+                            <ion-avatar class="notPhoto member_4" item-start *ngIf="member && member.data.photoURL == null">
+                                <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+                            </ion-avatar>
+                        </ng-container>
+
+                    </ng-container>
+                    <!-- 테스트용 -->
+                    <!-- <ion-avatar item-start *ngIf="true">
+                        <img src="imgs/main512.png">
+                    </ion-avatar> -->
+                    <h2>{{ room.data.title }}<ion-icon class="chat-count" name="person"> {{ room.data.member_count }}</ion-icon>
                     </h2>
-                    <p class="chat-message">{{ room.data.lastMessage | slice:0:35}}</p><p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>
+                    <ng-container *ngIf="room.data.lastMessage != null">
+                        <p class="chat-message">{{ room.data.lastMessage | slice:0:35}}</p>
+                        <p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>
+                    </ng-container>
+                    <ng-container *ngIf="room.data.lastMessage == null">
+                            <p class="chat-message">There are no messages.</p>
+                            <p class="chat-time"> - </p>
+                    </ng-container>
                 </ion-item>
                 <ion-fab right bottom >
                     <button class="fab-button"  ion-fab color="red" (tap)="presentPopover($event)"><ion-icon name="add"></ion-icon></button>
@@ -35,13 +81,14 @@
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
                 <ion-item class="chat-item listBorder" *ngFor="let room of squadChatRooms" (click)="gotoSquadRoom(room)">
                     <h2 class="squadRoomName">{{ room.data.name | slice:0:25 }}</h2>
-                    <ion-icon class="squadMemberCount" name="person"> {{ generalMembers }}</ion-icon> 
+                    <ion-icon class="squadMemberCount" name="person"> {{ room.data.member_count }}</ion-icon> 
                     <ng-container *ngIf="room.data.lastMessage != null">
                         <p class="chat-message">{{ room.data.lastMessage | slice:0:35 }}</p>
                         <p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>
                     </ng-container>
                     <ng-container *ngIf="room.data.lastMessage == null">
                         <p class="chat-message">There are no messages.</p>
+                        <p class="chat-time"> - </p>
                     </ng-container>
                 </ion-item>
             </ion-list>

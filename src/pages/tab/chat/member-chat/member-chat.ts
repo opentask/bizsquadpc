@@ -1,12 +1,14 @@
+import { AccountService } from './../../../../providers/account/account';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService, IChatRoom, IRoomMessages } from '../../../../providers/chat.service';
 import { BizFireService } from '../../../../providers';
 import { User } from 'firebase';
-import { IUserState } from '../../../../providers/biz-fire/biz-fire';
-import { takeUntil } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { IUser } from '../../../../_models/message';
+import { filter, takeUntil } from 'rxjs/operators';
+import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 
 export interface Ichats {
   message: string,
@@ -30,6 +32,7 @@ export class MemberChatPage {
   @ViewChild(Content) contentArea: Content;
 
   private _unsubscribeAll;
+  private group: IBizGroup;
   editorMsg = '';
 
   message : string;
@@ -39,9 +42,9 @@ export class MemberChatPage {
   room_type : string = "chatRoom";
 
   // room info
-  roomMembers : IchatMember[] = [];
+  roomMembers: IUser[];
   roomCount : number;
-  chatTitle = "";
+  chatTitle = '';
   logout : any;
 
   constructor(
@@ -50,37 +53,45 @@ export class MemberChatPage {
     public chatService : ChatService,
     public bizFire : BizFireService,
     public electron: Electron,
+    public accountService : AccountService,
     public afAuth: AngularFireAuth,
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
           this.windowClose();
         }
-    })
-  }
+      })
+      // esc 버튼 클릭시 채팅창 닫기.
+      document.addEventListener('keydown', event => {
+        if(event.key === 'Escape' || event.keyCode === 27){
+          this.electron.windowClose();
+        }
+      })
+    }
   
 
   ngOnInit(): void {
     this.chatroom = this.navParams.get('roomData');
-    console.log(this.chatroom);
 
     if(this.chatroom != null) {
       // // * get USERS DATA !
-      Object.keys(this.chatroom.data.members).forEach(uid => {
-        console.log("uid",uid);
-        console.log("chatroom.uid",this.chatroom.uid)
-        if(uid != this.chatroom.uid){
-          this.roomMembers.push(this.chatroom.data.members[uid]);
-          console.log("roomMembers",this.roomMembers);
-          this.roomMembers.forEach(member =>{
-            this.chatTitle += member.name + ',';
-          })
-        }
-      });
       
+      let chatMembers = [];
 
-      this.roomCount = Object.keys(this.chatroom.data.members).length;
+      const c_members = this.chatroom.data.members;
+      chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
+      console.log(chatMembers);
+      this.accountService.getAllUserInfos(chatMembers).pipe(filter(m => m != null))
+      .subscribe(members => {
+        this.roomMembers = members.filter(m => m != null);
+        this.roomCount = this.roomMembers.length + 1;
+        console.log(this.roomMembers);
 
+        this.chatTitle = '';
+        this.roomMembers.forEach(m => {
+          this.chatTitle += m.data.displayName + ",";
+        })
+      })    
       
       // 입력한 메세지 배열에 담기
       this.bizFire.afStore.collection(`chats/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))

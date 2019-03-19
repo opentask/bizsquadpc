@@ -55,7 +55,13 @@ export class SquadChatPage {
         if(user == null){
           this.windowClose();
         }
-    })
+      })
+      // esc 버튼 클릭시 채팅창 닫기.
+      document.addEventListener('keydown', event => {
+        if(event.key === 'Escape' || event.keyCode === 27){
+          this.electron.windowClose();
+        }
+      })
   }
 
   ngOnInit(): void {
@@ -75,7 +81,7 @@ export class SquadChatPage {
       .subscribe(snap =>{
         if(snap.payload.exists){
           this.groupMember = ({gid: snap.payload.id, data: snap.payload.data()} as IBizGroup);
-          this.roomCount = Object.keys(this.groupMember.data.members).length;
+          this.roomCount = Object.keys(this.groupMember.data.members).length - Object.keys(this.groupMember.data.partners).length;
         }
       });
     }

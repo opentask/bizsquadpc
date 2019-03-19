@@ -1,11 +1,11 @@
 import { Electron } from './../../../providers/electron/electron';
 import { AccountService } from './../../../providers/account/account';
 import { ChatService, IChatRoom } from './../../../providers/chat.service';
-import { BizFireService } from './../../../providers/biz-fire/biz-fire';
+import { BizFireService, IBizGroup } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
-import { takeUntil, filter, map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { takeUntil, filter, map, switchMap } from 'rxjs/operators';
+import { Subject, combineLatest } from 'rxjs';
 import { IUser } from '../../../_models/message';
 import { SquadService, ISquad } from '../../../providers/squad.service';
 
@@ -27,9 +27,8 @@ export class ChatPage {
   squadrooms = [];
   memberCount : number;
   members = [];
-  myData : IUser;
-  generalMembers: number;
-  
+
+  allMembers: IUser[];
 
   constructor(
     public navCtrl: NavController, 
@@ -45,26 +44,67 @@ export class ChatPage {
   }
 
   ngOnInit() {
-    this.accountService.getUserObserver(this.bizFire.currentUID).pipe(takeUntil(this._unsubscribeAll))
-    .subscribe(userdata => {
-      this.myData = userdata;
-    });
-    
-    this.bizFire.onBizGroupSelected
-    .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
-    .subscribe(group => {
-        if(group.data.partners != null){
-          this.generalMembers = Object.keys(group.data.members).length - Object.keys(group.data.partners).length;
-        } else {
-          this.generalMembers = Object.keys(group.data.members).length
+
+    // 그룹 유저정보 가져오기.
+    this.members = Object.keys(this.bizFire.onBizGroupSelected.getValue().data.members).filter(uid => uid != this.bizFire.currentUID);
+    if(this.members != null && this.members.length > 0){
+      this.accountService.getAllUserInfos(this.members)
+      .pipe(filter(l => {
+        //null check
+        // getAllUserInfos returns, [null, null, {}, {}...];
+        let ret;
+        ret = l.filter(ll => ll != null).length === this.members.length;
+        return ret;
+        })
+        ,
+        takeUntil(this._unsubscribeAll)
+        )
+      .subscribe(members => {
+        this.allMembers = members;
+        this.chatRooms.forEach(room => {
+          room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
+          room.data.member_data.forEach(m => {
+            room.data.title = m.data.displayName + ',';
+          })
+          room.data.title = room.data.title.slice(0,room.data.title.length-1);
+        })
+      })
+    }
+
+    // 멤버 채팅방
+    this.chatService.onChatRoomListChanged
+    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
+    .subscribe((rooms) => {
+      rooms.forEach(room =>{
+        const newData = room.data;
+        newData["member_count"] = Object.keys(room.data.members).length;
+        if(room.data.lastMessageTime == null) {
+          newData["lastMessageTime"] = 1;
         }
+        if(this.allMembers != null){
+          room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
+          room.data.member_data.forEach(m => {
+            room.data.title = m.data.displayName + ',';
+          })
+          room.data.title = room.data.title.slice(0,room.data.title.length-1);
+        }
+      })
+      this.chatRooms = rooms.sort((a,b): number => {
+        return b.data.lastMessageTime - a.data.lastMessageTime;
+      });
+      console.log(this.chatRooms);
     });
-    
+
+    // 스쿼드 채팅방
     this.squadService.onSquadListChanged
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
     .subscribe(squad => {
       squad.forEach(squad =>{
         const newData = squad.data;
+        newData['member_count'] = Object.keys(squad.data.members).length;
+        if(newData['member_count'] == 1) {
+          newData['member_count'] = Object.keys(this.bizFire.onBizGroupSelected.getValue().data.members).length - Object.keys(this.bizFire.onBizGroupSelected.getValue().data.partners).length;
+        }
         if(squad.data.lastMessageTime == null){
           newData["lastMessageTime"] = 1;
         }
@@ -73,25 +113,9 @@ export class ChatPage {
          return b.data.lastMessageTime - a.data.lastMessageTime;
       });
     })
-     
-    this.chatService.onChatRoomListChanged
-    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
-    .subscribe((rooms) => {
-      rooms.forEach(room =>{
-        const newData = room.data;
-        newData["member_count"] = Object.keys(room.data.members).length;
-        if(room.data.lastMessageTime == null){
-          newData["lastMessageTime"] = 1;
-        }
-      })
-      this.chatRooms = rooms.sort((a,b): number => {
-        return b.data.lastMessageTime - a.data.lastMessageTime;
-      });
-      // context.rooms = chatRooms;
-      console.log("chatrooms tab3");
-      console.log(this.chatRooms);
-    });
+
   }
+
 
   roominfo(room){
     console.log(room)

@@ -88,7 +88,6 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         maxWidth:570,
         maxHeight:700,
         titleBarStyle: 'hidden-inset',
-        parent: win,
     });
     chatRoom.loadURL(url.format({
         pathname: path.join(__dirname,'../www/index.html'),

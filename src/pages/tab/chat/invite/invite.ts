@@ -1,8 +1,10 @@
+import { Electron } from './../../../../providers/electron/electron';
+import { ChatService, IChatRoom } from './../../../../providers/chat.service';
 import { AccountService } from './../../../../providers/account/account';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController, ViewController } from 'ionic-angular';
 import { BizFireService } from '../../../../providers';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil, map } from 'rxjs/operators';
 import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IUser } from '../../../../_models/message';
 import { Subject } from 'rxjs';
@@ -24,14 +26,15 @@ export class InvitePage {
   gid: string;
   allCollectedUsers: IUser[];
   mydata: IUser;
-  selectUser: IUser[];
-  selectedNum = 0;
-
+  isChecked : IUser[] = [];
+  selectedNum  = 0;
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public bizFire: BizFireService,
     public viewCtrl: ViewController,
+    public chatService: ChatService,
+    public electron : Electron,
     public accountService: AccountService) {
       this._unsubscribeAll = new Subject<any>();
   }
@@ -122,12 +125,42 @@ export class InvitePage {
     })
   }
   invite(){
-    console.log(this.selectUser);
-    console.log(this.allCollectedUsers);
+    let chatRooms = this.chatService.getChatRooms();
+    console.log("chatRooms",chatRooms);
+    let selectedRoom: IChatRoom;
+    let target_uid;
+    if(this.isChecked.length == 1){
+      target_uid = this.isChecked[0].uid;
+      console.log(target_uid);
+    }
+    for(let room of chatRooms) {
+      const member_list = room.data.members;
+      const member_count = Object.keys(member_list).length;
+      if(member_list){
+        if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(target_uid) && member_count == 2){
+          selectedRoom = room;
+          break;
+        }
+      }
+    }
+    if(selectedRoom == null){
+      this.chatService.createRoomByFabs("member",this.isChecked);
+      this.viewCtrl.dismiss();
+    } else {
+      this.chatService.onSelectChatRoom.next(selectedRoom);
+      this.electron.openChatRoom(selectedRoom);
+      this.viewCtrl.dismiss();
+    }
   }
 
   selectedUser() {
-    this.selectedNum = this.allCollectedUsers.filter(user => user.data.isChecked == true).length;
+    this.isChecked =this.allCollectedUsers.filter(u => u.data.isChecked == true);
+    console.log(this.isChecked)
+  }
+  badgeMember(member : IUser) {
+    member.data.isChecked = false;
+    this.isChecked =this.allCollectedUsers.filter(u => u.data.isChecked == true);
+    console.log(this.isChecked)
   }
 
   closePopup(){

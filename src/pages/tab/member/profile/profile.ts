@@ -35,7 +35,6 @@ export class ProfilePage {
   manager: any;
   partner: boolean = false;
   checkManager: boolean = false;
-
   notImg : string = '';
   imageSrc : string = '';
   displayName: string;
@@ -84,7 +83,6 @@ export class ProfilePage {
     console.log(this.myValue);
     console.log(this.targetValue);
     console.log("you partner?",this.partner);
-
 
     if(this.targetValue != null && this.targetValue.uid){
       this.checkManager = this.manager != null && this.manager[this.targetValue.uid] === true;
@@ -220,7 +218,7 @@ export class ProfilePage {
     });
   }
 
-  moveMemberChat(){
+  gotoChat(){
     let chatRooms = this.chatService.getChatRooms();
     console.log("chatRooms",chatRooms);
     let selectedRoom: IChatRoom;
@@ -235,7 +233,7 @@ export class ProfilePage {
       }
     }
     if(selectedRoom == null){
-      this.chatService.createRoomByMember("member",this.myValue,this.targetValue);
+      this.chatService.createRoomByProfile("member",this.myValue.uid,this.targetValue.uid);
     } else {
       this.chatService.onSelectChatRoom.next(selectedRoom);
       console.log("룸데이터 최신화되었는가",selectedRoom);

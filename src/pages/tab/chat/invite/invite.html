@@ -1,10 +1,10 @@
 <ion-header>
   <!-- 선택된 멤버가 없으면 텍스트 출력 -->
-  <p *ngIf="!selectedNum" class="title" no-margin>Select the member<br> you want to chat with in the list.</p>
+  <p *ngIf="isChecked.length == 0" class="title" no-margin>Select the member<br> you want to chat with in the list.</p>
   <ion-scroll class="scrollable" scrollY="true">
-    <div *ngIf="selectedNum" class="badge-memberCon">
+    <div *ngIf="isChecked && isChecked.length > 0" class="badge-memberCon">
       <ng-container *ngFor="let member of allCollectedUsers;">
-        <button *ngIf="member.data.isChecked" class="memberList-button" ion-button icon-end round color="light" (click)="member.data.isChecked = false">
+        <button *ngIf="member.data.isChecked" class="memberList-button" ion-button icon-end round color="light" (click)="badgeMember(member)">
             {{ member.data.displayName }}
             <ion-icon name="close"></ion-icon>
         </button>

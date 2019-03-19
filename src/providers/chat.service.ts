@@ -9,7 +9,6 @@ export interface IChatRoom {
     uid?: string,
     cid: string,
     data: IChatRoomData,
-    test?: IUser
   }
 export interface IChatRoomData {
     created: number,
@@ -17,9 +16,11 @@ export interface IChatRoomData {
     type: string,
     lastMessage?: string,
     lastMessageTime?: number,
-    members: any,
+    members?: any,
     notify?:boolean,
     member_count?:any,
+    member_data?: IUser[],
+    title?: string
 }
 
 export interface IRoomMessages {
@@ -69,27 +70,37 @@ export class ChatService {
         return chatRooms;
     }
 
-    createRoomByMember(type,me:IUser,member:IUser){
+    createRoomByProfile(type,me,target){
+        const now = new Date();
+        const newRoom:IChatRoomData = {
+            created:  now.getTime() / 1000 | 0,
+            gid: this.bizFire.onBizGroupSelected.getValue().gid,
+            type: type,
+            members: {
+                me : true,
+                target : true
+            }
+        }
+        this.createRoom(newRoom);
+    }
+    createRoomByFabs(type,members:IUser[]=[]) {
         const now = new Date();
         const newRoom:IChatRoomData = {
             created:  now.getTime() / 1000 | 0,
             gid: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
             members:{
-                [me.uid] : {
-                    name: me.data.displayName,
-                    photoURL : me.data.photoURL,
-                    uid: me.uid
-                },
-                [member.uid] : {
-                    name: member.data.displayName,
-                    photoURL : member.data.photoURL,
-                    uid: member.uid
-                }
-            },
+                [this.bizFire.currentUID]:true
+            }
         }
+        if(members.length > 0){
+            members.forEach(u => {
+                newRoom['members'][u.data.uid] = true;            
+            })
+        }
+        console.log(newRoom);
         this.createRoom(newRoom);
-      }
+    }
 
     createRoom(newRoom:IChatRoomData){
         if(newRoom != null){
@@ -106,7 +117,19 @@ export class ChatService {
             });
         }
     }
-    getMessagePath(type,id,gid?){
+    updateLastRead(room_type,uid){
+        return new Promise<void>( (resolve, reject) => {      
+          const now = new Date();
+          this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type)).update({
+            ['read.' + uid +".lastRead"]: now.getTime() / 1000 | 0
+          }).then(()=>{
+            resolve();
+          }).catch(error=>{
+            reject(error);
+          });  
+        });
+    }
+    getMessagePath(type,id?,gid?){
         switch(type){
             case 'member-chat':
               return 'chats/' + id +'/chat';
@@ -116,7 +139,7 @@ export class ChatService {
               return 'chats/' + id;
             case 'squad-chat-room':
               return 'bizgroups/'+ gid + '/squads/' + id;
-          }  
+        }  
     }
 
     sendMessage(room_type,txt_message,id,gid?) {

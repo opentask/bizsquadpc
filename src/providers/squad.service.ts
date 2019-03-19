@@ -19,7 +19,6 @@ export interface ISquad {
         lastMessageTime?:number,
     },
     members?: any,
-    bookmark?: boolean
 }
 
 export interface IUserDataDoc {

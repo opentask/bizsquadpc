@@ -131,19 +131,6 @@ export class TabsPage {
             }).map(d => ({cid: d.payload.doc.id, data: d.payload.doc.data()} as IChatRoom))
         )
     ).pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRooms) => {
-        chatRooms.map(room => {
-            Object.keys(room.data.members).filter(uid => uid != this.bizFire.currentUID).forEach(user =>{
-              this.accountService.getUserObserver(user).pipe(takeUntil(this._unsubscribeAll)).subscribe(userData => {
-                const newData = room;
-                newData['test'] = userData;
-                room = newData;
-              })
-            })
-          })
-        // chatRooms.forEach(msg =>{
-        //     this.chatRooms.push(msg);
-        //   })
-        console.log('채팅룸개수');
         console.log(chatRooms);
         this.chatService.onChatRoomListChanged.next(chatRooms);
 
