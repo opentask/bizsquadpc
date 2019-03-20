@@ -3,12 +3,13 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController,PopoverController } from 'ionic-angular';
 import { Electron } from './../../providers/electron/electron';
 import { BizFireService } from '../../providers';
-import { Subject } from 'rxjs';
-import { filter, takeUntil, map } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { filter, takeUntil, map, switchMap } from 'rxjs/operators';
 import { IBizGroup } from '../../providers/biz-fire/biz-fire';
 import { IUserData, INotification } from '../../_models/message';
 import { NotificationService } from '../../providers/notification.service';
 import { ChatService,IChatRoom } from '../../providers/chat.service';
+import { SquadService, ISquad } from '../../providers/squad.service';
 
 @IonicPage({  
   name: 'page-tabs',
@@ -27,7 +28,10 @@ export class TabsPage {
   currentUser: IUserData;
   groupList; // display Select
   currentGroupList: IBizGroup[];
-  roomMessageCounter = '';
+  memberNewMessage = 0;
+  squadNewMessage = 0;
+  squadChatRooms: ISquad[];
+  group: IBizGroup;
 
   backgroundColor: string; // menu right string background color.
 
@@ -67,6 +71,7 @@ export class TabsPage {
     public popoverCtrl :PopoverController,
     private noticeService: NotificationService,
     public chatService: ChatService,
+    private squadService: SquadService,
     public accountService : AccountService
     ) {
       // test notification count
@@ -133,14 +138,10 @@ export class TabsPage {
         )
     ).pipe(takeUntil(this._unsubscribeAll))
     .subscribe((chatRooms) => {
-        console.log(chatRooms);
         this.chatService.onChatRoomListChanged.next(chatRooms);
-        if(chatRooms.filter(c => this.chatService.checkIfHasNewMessage(c.data)).length){
-           this.roomMessageCounter = 'N';
-        }else {
-            this.roomMessageCounter = '';
-        }
-        console.log(this.roomMessageCounter);
+        this.memberNewMessage = chatRooms.filter(c => this.chatService.checkIfHasNewMessage(c)).length;
+        console.log("새로운메세지채팅방 개수:",this.memberNewMessage)
+
         if(this.chatService.onSelectChatRoom.value != null){
             const newChat = this.chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
             if(newChat){
@@ -148,7 +149,35 @@ export class TabsPage {
             }
         }
     });
+
+    this.bizFire.onBizGroupSelected
+    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),
+        switchMap(group => {
+            //* have group changed?
+            let reloadGroup = true;
+            if(this.group != null){
+                reloadGroup = this.group.gid !== group.gid;
+            }
+            this.group = group;
+            this.isPartner = this.bizFire.isPartner(group);
+
+            if(reloadGroup === true){
+                // group squads reloading...
+                return this.squadService.getMySquadLisObserver(this.group.gid);
+            } else {
+                // gid not changed.
+                return of(null);
+            }
+        }),
+        takeUntil(this._unsubscribeAll),
+      filter(l => l != null) // prevent same group reloading.
+    ).subscribe(list => {
+      this.squadService.onSquadListChanged.next(list);
+      this.squadNewMessage = list.filter(c => this.chatService.checkIfHasNewMessage(c)).length;
+    });
   }
+
+
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-menu',{}, {cssClass: 'page-menu'});
     popover.present({ev: ev});
@@ -177,6 +206,9 @@ export class TabsPage {
     console.log("tabs destroy?")
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
+    this.squadNewMessage = 0;
+    this.memberNewMessage = 0;
+
   }
 
 }

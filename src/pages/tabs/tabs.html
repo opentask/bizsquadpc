@@ -24,7 +24,7 @@
     <ion-tab [root]="tab1Root" tabIcon="customHome" tabTitle="Home"></ion-tab>
     <ion-tab [root]="tab2Root" tabIcon="customSquad" tabTitle="Squad"></ion-tab> 
     <ion-tab [root]="tab5Root" tabIcon="customMember" tabTitle="Member"></ion-tab>
-    <ion-tab [root]="tab3Root" tabIcon="customChat" tabTitle="Chat" tabBadgeStyle="danger" [tabBadge]="roomMessageCounter"></ion-tab>
+    <ion-tab [root]="tab3Root" tabIcon="customChat" tabTitle="Chat" tabBadgeStyle="danger" [tabBadge]="memberNewMessage + squadNewMessage"></ion-tab>
     <!-- <ion-tab [root]="tab4Root" tabTitle="Notify" tabIcon="notifications" tabBadgeStyle="danger" [tabBadge]="notification"></ion-tab> -->
     <!-- 그룹별 알림 표시 양식 -->
 </ion-tabs>

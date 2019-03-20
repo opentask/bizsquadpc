@@ -66,6 +66,7 @@ export class SquadChatPage {
 
   ngOnInit(): void {
     this.selectSquad = this.navParams.get("roomData");
+    console.log(this.selectSquad);
     if(this.selectSquad != null){
       // 스쿼드 데이터
       this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}/squads/${this.selectSquad.sid}`).snapshotChanges()
@@ -74,16 +75,24 @@ export class SquadChatPage {
             this.squad = ({sid: d.payload.id, data: d.payload.data()} as ISquad);
             // 스쿼드 채팅이름.
             this.roomName = this.squad.data.name;
+            if(this.squad.data.type == "private")
+            this.roomCount = Object.keys(this.squad.data.members).length;
         }
       })
       // 비즈그룹 데이터 방 인원 수. 일단 한번 가져온 후 값 변경 시 변경
-      this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}`).snapshotChanges()
-      .subscribe(snap =>{
-        if(snap.payload.exists){
-          this.groupMember = ({gid: snap.payload.id, data: snap.payload.data()} as IBizGroup);
-          this.roomCount = Object.keys(this.groupMember.data.members).length - Object.keys(this.groupMember.data.partners).length;
-        }
-      });
+      if(this.selectSquad){
+        this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}`).snapshotChanges()
+        .subscribe(snap =>{
+          if(snap.payload.exists){
+            this.groupMember = ({gid: snap.payload.id, data: snap.payload.data()} as IBizGroup);
+            if(this.selectSquad.data.type == "public" && this.groupMember.data.partners != null){
+              this.roomCount = Object.keys(this.groupMember.data.members).length -  Object.keys(this.groupMember.data.partners).length;
+            } else if (this.selectSquad.data.type == "public"){
+              this.roomCount = Object.keys(this.groupMember.data.members).length;
+            }
+          }
+        });
+      }
     }
 
     // 입력한 메세지 배열에 담기
@@ -99,6 +108,7 @@ export class SquadChatPage {
         this.messages.push(msg);
       })
       this.onFocus();
+      this.chatService.updateLastRead("squad-chat-room",this.bizFire.currentUID,this.selectSquad.sid,this.selectSquad.data.gid)
     })
   }
 

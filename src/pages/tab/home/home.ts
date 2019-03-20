@@ -88,7 +88,8 @@ export class HomePage implements OnInit {
   ngOnInit(): void {
     // 토큰 저장
     this.customToken = this.tokenService.customToken;
-
+    this.group = this.bizFire.onBizGroupSelected.getValue();
+    
     // * current User for RIGHT MENU
     this.bizFire.currentUser
       .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
@@ -113,63 +114,36 @@ export class HomePage implements OnInit {
           this.fullName = user.displayName;
       });
 
-      this.bizFire.onBizGroupSelected
-      .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),
-          switchMap(group => {
-              //* have group changed?
-              let reloadGroup = true;
-              if(this.group != null){
-                  reloadGroup = this.group.gid !== group.gid;
-              }
-              this.group = group;
-              this.isPartner = this.bizFire.isPartner(group);
+      if(this.group){
+        this.isPartner = this.bizFire.isPartner(this.group);
+        this.manager = this.group.data.manager != null && this.group.data.manager[this.bizFire.currentUID] === true;
+      }
 
-              // bbs 가져오기
-              const path = `${STRINGS.STRING_BIZGROUPS}/${group.gid}/bbs`;
-              this.bizFire.afStore.collection(path, ref=> ref.orderBy('created', 'desc').limit(4)).snapshotChanges()
-                .pipe(takeUntil(this._unsubscribeAll), takeUntil(this.bizFire.onUserSignOut),
-                map(docs => {
-                    return docs.map(s => ({bbsId: s.payload.doc.id, data: s.payload.doc.data()} as IBbsItem));
-                }))
-                .subscribe(msgs => {
-                    msgs.forEach(msg =>{
-                      if(msg){
-                        if(msg.data.sender && msg.data.sender.displayName){
-                          msg.data.senderName = msg.data.sender.displayName;
-                        } else{
-                          msg.data.senderName = msg.data.sender.email;
-                        }
-                      }
-                    })
-                    if(msgs.length == 0 || msgs == null){
-                      this.noBbs = true;
-                    } else if (msgs.length > 0 || msgs != null){
-                      this.noBbs = false;
-                    }
-                    this.messages = msgs;
-                    console.log(this.messages);
-                });
-              console.log(this.group);
-              // is me a manager?
-              this.manager = this.group.data.manager != null &&
-              this.group.data.manager[this.bizFire.currentUID] === true;
-              console.log(this.manager);
-              // ----------------------------------------------------------------------------//
-              if(reloadGroup === true){
-                  // group squads reloading...
-                  return this.squadService.getMySquadLisObserver(this.group.gid);
-              } else {
-                  // gid not changed.
-                  return of(null);
+      // bbs 가져오기
+      const path = `${STRINGS.STRING_BIZGROUPS}/${this.group.gid}/bbs`;
+      this.bizFire.afStore.collection(path, ref=> ref.orderBy('created', 'desc').limit(4)).snapshotChanges()
+        .pipe(takeUntil(this._unsubscribeAll), takeUntil(this.bizFire.onUserSignOut),
+        map(docs => {
+            return docs.map(s => ({bbsId: s.payload.doc.id, data: s.payload.doc.data()} as IBbsItem));
+        }))
+        .subscribe(msgs => {
+            msgs.forEach(msg =>{
+              if(msg){
+                if(msg.data.sender && msg.data.sender.displayName){
+                  msg.data.senderName = msg.data.sender.displayName;
+                } else{
+                  msg.data.senderName = msg.data.sender.email;
+                }
               }
-              // ----------------------------------------------------------------------------//
-          }),
-          takeUntil(this._unsubscribeAll),
-        filter(l => l != null) // prevent same group reloading.
-      ).subscribe(list => {
-        console.log('squad list reloaded', list);
-        this.squadService.onSquadListChanged.next(list);
-      });
+            })
+            if(msgs.length == 0 || msgs == null){
+              this.noBbs = true;
+            } else if (msgs.length > 0 || msgs != null){
+              this.noBbs = false;
+            }
+            this.messages = msgs;
+            console.log(this.messages);
+        });
 }
 
   // profile menu toggle

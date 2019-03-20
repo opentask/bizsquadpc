@@ -1,7 +1,7 @@
 import { Electron } from './electron/electron';
 import { Injectable } from '@angular/core';
 import { BizFireService } from './biz-fire/biz-fire';
-import { SquadService } from './squad.service';
+import { SquadService, ISquad } from './squad.service';
 import { BehaviorSubject } from 'rxjs';
 import { IUser } from '../_models/message';
 
@@ -158,10 +158,10 @@ export class ChatService {
             }).catch(error => console.error("메세지작성에러",error));
     }
 
-    updateLastRead(room_type,uid,cid){
+    updateLastRead(room_type,uid,cid,gid?){
         return new Promise<void>( (resolve, reject) => {  
           const now = new Date();
-          this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,cid)).set({
+          this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,cid,gid)).set({
             read :{ [uid]: now.getTime() / 1000 | 0 }
           },{merge : true}).then(()=>{
             resolve();
@@ -170,16 +170,26 @@ export class ChatService {
           });  
         });
     }
-    checkIfHasNewMessage(data:any) {
-        if(data.read == undefined){
-          return true;
+    checkIfHasNewMessage(d) {
+        // return true;
+        if(d.data.read == null){
+          return false;
         }else{
-          if(data.read[this.bizFire.currentUID] == undefined){
-            return true;
-          }else{
-            return data.read[this.bizFire.currentUID] < data.lastMessageTime;
-          }
+            if(d.data.lastMessageTime == null){
+              return false;
+            }else{
+                if(d.data.lastMessageTime != null && d.data.read[this.bizFire.currentUID] == null){
+                    return true;
+                }else {
+                    if(d.data.lastMessageTime == d.data.read[this.bizFire.currentUID]){
+                        return false;
+                    } else {
+                        return d.data.read[this.bizFire.currentUID] < d.data.lastMessageTime;
+                    }
+                }
+
+            }
         }
-      }
+    }
 
 }

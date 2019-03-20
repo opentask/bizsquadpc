@@ -103,7 +103,6 @@ export class SquadPage {
     .subscribe(([userData, squadList]) => {
         if(userData.gid === this.currentBizGroup.gid){
             squadList.forEach(squad =>{
-                console.log(squad);
                 const newData = squad.data;
                 newData["member_count"] = Object.keys(squad.data.members).length;
             })

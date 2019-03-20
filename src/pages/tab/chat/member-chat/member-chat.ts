@@ -32,7 +32,6 @@ export class MemberChatPage {
   @ViewChild(Content) contentArea: Content;
 
   private _unsubscribeAll;
-  private group: IBizGroup;
   editorMsg = '';
 
   message : string;

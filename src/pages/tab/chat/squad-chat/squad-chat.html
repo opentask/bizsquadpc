@@ -10,7 +10,8 @@
         </div>
         <div class="squadChatTitleCon">
           <h2 class="chatName"> {{ roomName }}</h2>
-          <p class="members"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
+          <p class="members" *ngIf="roomCount > 1"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
+          <p class="members" *ngIf="roomCount == 1"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
         </div>
     </ion-item>
   </ion-header>

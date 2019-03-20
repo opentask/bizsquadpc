@@ -69,7 +69,7 @@ export class LoginPage implements OnInit {
           this.navCtrl.setRoot('page-member-chat',{roomData : roomData});
           console.log("룸데이터가있습니다.",roomData); // "select member data" 출력)
         } else {
-          console.log("스쿼드채팅입니다.");
+          console.log("스쿼드채팅입니다.",roomData);
           this.navCtrl.setRoot('page-squad-chat',{roomData : roomData});
         }
       } else {
