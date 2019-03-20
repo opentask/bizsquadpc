@@ -174,6 +174,7 @@ export class TabsPage {
     ).subscribe(list => {
       this.squadService.onSquadListChanged.next(list);
       this.squadNewMessage = list.filter(c => this.chatService.checkIfHasNewMessage(c)).length;
+      console.log("새로운메세지채팅방 개수:",this.squadNewMessage)
     });
   }
 

@@ -150,9 +150,7 @@ export class ChatService {
                 this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',id,gid)).set({
                     lastMessage : txt_message,
                     lastMessageTime : now.getTime() / 1000 | 0,
-                    read : {
-                        [this.bizFire.currentUID] : now.getTime() / 1000 | 0
-                    }
+                    read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
                 },{merge : true}).catch(error => console.log("라스트 메세지 작성에러",error))
                 // this.onSelectChatRoom.next(selectedRoom);
             }).catch(error => console.error("메세지작성에러",error));
@@ -162,7 +160,7 @@ export class ChatService {
         return new Promise<void>( (resolve, reject) => {  
           const now = new Date();
           this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,cid,gid)).set({
-            read :{ [uid]: now.getTime() / 1000 | 0 }
+              read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
           },{merge : true}).then(()=>{
             resolve();
           }).catch(error=>{
@@ -175,16 +173,16 @@ export class ChatService {
         if(d.data.read == null){
           return false;
         }else{
-            if(d.data.lastMessageTime == null){
+            if(d.data.lastMessageTime == null && d.data.lastMessageTime == 1){
               return false;
             }else{
                 if(d.data.lastMessageTime != null && d.data.read[this.bizFire.currentUID] == null){
                     return true;
                 }else {
-                    if(d.data.lastMessageTime == d.data.read[this.bizFire.currentUID]){
+                    if(d.data.lastMessageTime == d.data.read[this.bizFire.currentUID].lastRead){
                         return false;
                     } else {
-                        return d.data.read[this.bizFire.currentUID] < d.data.lastMessageTime;
+                        return d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
                     }
                 }
 
