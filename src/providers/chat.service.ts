@@ -170,6 +170,12 @@ export class ChatService {
     }
     checkIfHasNewMessage(d) {
         // return true;
+
+
+        // let ret = d.data.lastMessageTime != null && d.data.read[this.bizFire.currentUID] == null;
+        // return ret;
+
+
         if(d.data.read == null){
           return false;
         }else{
