@@ -34,6 +34,7 @@ export class SquadChatPage {
   roomCount : number;
   roomName = "";
   currentGroup : IBizGroup;
+  opacity = 100;
 
   selectSquad : ISquad;
   squad : ISquad;
@@ -140,6 +141,9 @@ export class SquadChatPage {
     }, 200)
   }
 
+  changes(v){
+    this.electron.setOpacity(v);
+  }
   windowClose() {
     this.electron.windowClose();
   }

@@ -1,17 +1,31 @@
 <ion-header>
     <ion-item class="drag listBorder" no-margin no-padding no-lines>
-        <div class="top-menu">
+        <div class="electron-menu">
+          <ion-item class="opacity">
+            <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="changes(opacity)"></ion-range>
+          </ion-item>
           <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
             <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
           </button>
           <button ion-button icon-only clear small color="light" (click)="windowClose()">
             <ion-icon class="login-top-menu" name="md-close"></ion-icon>
-          </button> 
+          </button>
         </div>
         <div class="squadChatTitleCon">
           <h2 class="chatName"> {{ roomName }}</h2>
           <p class="members" *ngIf="roomCount > 1"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
           <p class="members" *ngIf="roomCount == 1"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
+          <div class="header-menu">
+            <button ion-button clear icon-only small color="dark">
+              <ion-icon name="search"></ion-icon>
+            </button>
+            <button ion-button clear icon-only small color="dark">
+              <ion-icon name="notifications"></ion-icon>
+            </button>
+            <button ion-button clear icon-only small color="dark">
+              <ion-icon name="menu"></ion-icon>
+            </button>
+          </div>
         </div>
     </ion-item>
   </ion-header>

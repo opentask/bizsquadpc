@@ -15,10 +15,16 @@ page-squad-chat {
     .windowMimimize{
         padding-top: 8px;
     }
-    .top-menu{
+    .electron-menu{
         position: absolute;
         top: 1px;
         right: 1px;
+    }
+    .opacity{
+        position: absolute;
+        right: 70px;
+        top: -8px;
+        -webkit-app-region: no-drag;
     }
     .no-padding-topAndBot{
         padding-top: 0;
@@ -35,6 +41,10 @@ page-squad-chat {
     .members{
         padding-top: 5px;
         display: inline-block;
+    }
+    .header-menu{
+        float:right;
+        -webkit-app-region: no-drag;
     }
     .squadChatTitleCon{
         padding-left: 15px;
