@@ -33,6 +33,7 @@ export class MemberChatPage {
 
   private _unsubscribeAll;
   editorMsg = '';
+  opacity = 100;
 
   message : string;
   messages = [];
@@ -140,6 +141,10 @@ export class MemberChatPage {
     }
     this.editorMsg = '';
     this.onFocus();
+  }
+
+  changes(v){
+    this.electron.setOpacity(v);
   }
 
 

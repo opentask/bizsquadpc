@@ -47,7 +47,7 @@ function createWindow() {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
     
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -87,6 +87,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         minHeight:600,
         maxWidth:570,
         maxHeight:700,
+        opacity: 1,
         titleBarStyle: 'hidden-inset',
     });
     chatRoom.loadURL(url.format({
@@ -95,7 +96,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         slashes: true,
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    chatRoom.webContents.openDevTools();
+    // chatRoom.webContents.openDevTools();
 });
 
 ipcMain.on('resetValue',(e) =>{

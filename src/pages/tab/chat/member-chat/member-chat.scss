@@ -12,10 +12,24 @@ page-member-chat {
         -webkit-app-region: no-drag;
         color: #757272;
     }
+    .opacity{
+        position: absolute;
+        right: 70px;
+        top: -8px;
+        -webkit-app-region: no-drag;
+    }
+    .range-md .range-knob{
+        border: 2px solid silver;
+        background: white !important;
+    }
+    .header-menu{
+        float:right;
+        -webkit-app-region: no-drag;
+    }
     .windowMimimize{
         padding-top: 8px;
     }
-    .top-menu{
+    .electron-menu{
         position: absolute;
         top: 1px;
         right: 1px;

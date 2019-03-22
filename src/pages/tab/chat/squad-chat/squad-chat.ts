@@ -97,7 +97,7 @@ export class SquadChatPage {
 
     // 입력한 메세지 배열에 담기
     this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}/squads/${this.selectSquad.sid}/chat`, ref => ref.orderBy('created',"asc"))
-    .stateChanges().subscribe(snap => {
+    .stateChanges(['added']).subscribe(snap => {
       this.readMessages = snap.map(d => (
         {
           rid: d.payload.doc.id,

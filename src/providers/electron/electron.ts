@@ -8,6 +8,7 @@ export class Electron {
   // electron 에서 a링크 사용하기 위한..
   ipc : any;
   onlineStatus : boolean = true;
+  opacity = 0 ;
   
   constructor(public bizFire : BizFireService,) {
     this.ipc = electron.ipcRenderer;
@@ -22,6 +23,14 @@ export class Electron {
   }
   showErrorMessages(title,message){
     electron.remote.dialog.showErrorBox(title,message);
+  }
+  setOpacity(v){
+      v = v / 100;
+      v = Number.parseFloat(v).toFixed(1);
+      this.opacity = v * 1;
+      if(this.opacity){
+        electron.remote.getCurrentWindow().setOpacity(this.opacity)
+      }
   }
 
   updateOnlineStatus(){
