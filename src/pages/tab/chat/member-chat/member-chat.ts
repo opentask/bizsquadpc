@@ -40,6 +40,7 @@ export class MemberChatPage {
   readMessages : IRoomMessages[];
   chatroom : IChatRoom;
   room_type : string = "chatRoom";
+  ipc : any;
 
   // room info
   roomMembers: IUser[];
@@ -69,6 +70,7 @@ export class MemberChatPage {
           this.electron.windowClose();
         }
       })
+      this.ipc = electron.ipc;
     }
   
 
@@ -147,17 +149,9 @@ export class MemberChatPage {
   //   element.scrollIntoView();
   // }
 
-
-  windowClose() {
-    this.electron.windowClose();
-  }
-
-  windowMimimize() {
-    this.electron.windowMimimize();
-  }
-  ngOnDestroy(): void {
-    this._unsubscribeAll.next();
-    this._unsubscribeAll.complete();
+  downloadFile(path){
+    console.log(path);
+    this.ipc.send('loadGH',path);
   }
 
   scrollToBottom() {
@@ -175,5 +169,17 @@ export class MemberChatPage {
   }
   ngAfterViewChecked(){
     this.onFocus();
+  }
+
+  windowClose() {
+    this.electron.windowClose();
+  }
+
+  windowMimimize() {
+    this.electron.windowMimimize();
+  }
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   }
 }

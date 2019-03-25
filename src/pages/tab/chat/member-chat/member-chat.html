@@ -82,8 +82,10 @@
               </div>
             </div>
             <div class="msg-content-file" *ngIf="msg.data.file != ''">
-              <ion-spinner *ngIf="msg.data.status" name="circles"></ion-spinner>
-              <img *ngIf="!msg.data.status" class="msg-file" src="{{msg.data.file}}">
+              <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.file)">
+                <ion-icon name="download"></ion-icon>
+              </button>
+              <img class="msg-file" src="{{msg.data.file}}">
               <span class="triangle" *ngIf="!msg.data.file && msg.data.senderId == chatroom.uid"></span>
               <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
                 <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
