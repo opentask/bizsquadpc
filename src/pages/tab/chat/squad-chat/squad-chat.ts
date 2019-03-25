@@ -43,6 +43,7 @@ export class SquadChatPage {
   allCollectedUsers: IUser[];
   mydata: IUser;
   editorMsg = '';
+  ipc : any;
 
   constructor(
      public navCtrl: NavController,
@@ -63,6 +64,7 @@ export class SquadChatPage {
           this.electron.windowClose();
         }
       })
+      this.ipc = electron.ipc;
   }
 
   ngOnInit(): void {
@@ -126,13 +128,6 @@ export class SquadChatPage {
       }
     }
     this.editorMsg = '';
-    this.onFocus();
-  }
-
-
-  onFocus() {
-    this.contentArea.resize();
-    this.scrollToBottom();
   }
 
   file(file){
@@ -147,17 +142,26 @@ export class SquadChatPage {
     }
   }
 
-
   scrollToBottom() {
-    setTimeout(() => {
-      if (this.contentArea.scrollToBottom) {
-        this.contentArea.scrollToBottom();
-      }
-    }, 200)
+    if (this.contentArea.scrollToBottom) {
+      this.contentArea.scrollToBottom();
+    }
   }
 
+  onFocus() {
+    this.contentArea.resize();
+    this.scrollToBottom();
+  }
+
+  downloadFile(path){
+    console.log(path);
+    this.ipc.send('loadGH',path);
+  }
   changes(v){
     this.electron.setOpacity(v);
+  }
+  ngAfterViewChecked(){
+    this.onFocus();
   }
   windowClose() {
     this.electron.windowClose();

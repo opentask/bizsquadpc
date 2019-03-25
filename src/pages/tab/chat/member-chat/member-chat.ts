@@ -111,6 +111,7 @@ export class MemberChatPage {
             console.log(msg);
           }
         })
+        this.onFocus();
         this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid)
       })
     }
