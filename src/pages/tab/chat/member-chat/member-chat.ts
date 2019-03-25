@@ -2,8 +2,8 @@ import { AccountService } from './../../../../providers/account/account';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
-import { ChatService, IChatRoom, IRoomMessages } from '../../../../providers/chat.service';
-import { BizFireService } from '../../../../providers';
+import { ChatService, IChatRoom, IRoomMessages, IChatRoomData } from '../../../../providers/chat.service';
+import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { IUser } from '../../../../_models/message';
@@ -37,7 +37,7 @@ export class MemberChatPage {
 
   message : string;
   messages = [];
-  readMessages: IRoomMessages[];
+  readMessages : IRoomMessages[];
   chatroom : IChatRoom;
   room_type : string = "chatRoom";
 
@@ -46,6 +46,7 @@ export class MemberChatPage {
   roomCount : number;
   chatTitle = '';
   logout : any;
+  fileSpinner = false;
 
   constructor(
     public navCtrl: NavController, 
@@ -55,6 +56,7 @@ export class MemberChatPage {
     public electron: Electron,
     public accountService : AccountService,
     public afAuth: AngularFireAuth,
+    private loading: LoadingProvider,
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -94,7 +96,7 @@ export class MemberChatPage {
       
       // 입력한 메세지 배열에 담기
       this.bizFire.afStore.collection(`chats/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))
-      .stateChanges(['added']).subscribe(snap => {
+      .stateChanges().subscribe(snap => {
         this.readMessages = snap.map(d => (
           {
             rid: d.payload.doc.id,
@@ -102,22 +104,50 @@ export class MemberChatPage {
           } as IRoomMessages
         ));
         this.readMessages.forEach(msg =>{
-          this.messages.push(msg);
-          console.log(msg.data.message);
+          if(msg.data.message != '' || msg.data.file){
+            this.messages.push(msg);
+            console.log(msg);
+          }
         })
-        this.onFocus();
         this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid)
       })
     }
     // this.chatService.createRoom(null);
 
   }
-
-  ionViewDidEnter(){
-    setTimeout(() => { 
-      this.scrollToBottom();
-    },1500)
+  file(file){
+    if(file.target.files.length === 0 ) {
+      return;
+    }
+    if(file && file.target.files[0].size > 10000000){
+      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+      return;
+    } else {
+      this.chatService.sendMessage("member-chat",'',this.chatroom.cid,this.chatroom.data.gid,file.target.files[0]);
+    }
   }
+  sendMsg(){
+    // 앞, 뒤 공백제거 => resultString
+    if(this.editorMsg !=null){
+      const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
+      this.editorMsg = '';
+      if(resultString != '') {
+          this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
+      }
+    }
+    this.editorMsg = '';
+  }
+
+  changes(v){
+    this.electron.setOpacity(v);
+  }
+
+  // scrollToBottom(){
+  //   const element = document.getElementById('last');
+  //   element.scrollIntoView();
+  // }
+
+
   windowClose() {
     this.electron.windowClose();
   }
@@ -130,35 +160,20 @@ export class MemberChatPage {
     this._unsubscribeAll.complete();
   }
 
-  sendMsg(){
-    // 앞, 뒤 공백제거 => resultString
-    if(this.editorMsg !=null){
-      const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
-      this.editorMsg = '';
-      if(resultString != ''){
-          this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
+  scrollToBottom() {
+      if (this.contentArea.scrollToBottom) {
+        this.contentArea.scrollToBottom();
       }
-    }
-    this.editorMsg = '';
-    this.onFocus();
   }
-
-  changes(v){
-    this.electron.setOpacity(v);
-  }
-
-
-
   onFocus() {
     this.contentArea.resize();
     this.scrollToBottom();
   }
-
-  scrollToBottom() {
-    setTimeout(() => {
-      if (this.contentArea.scrollToBottom) {
-        this.contentArea.scrollToBottom();
-      }
-    }, 200)
+  scrollToBottomN(){
+    const element = document.getElementById('last');
+    element.scrollIntoView();
+  }
+  ngAfterViewChecked(){
+    this.onFocus();
   }
 }

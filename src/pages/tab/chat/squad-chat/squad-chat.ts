@@ -98,7 +98,7 @@ export class SquadChatPage {
 
     // 입력한 메세지 배열에 담기
     this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}/squads/${this.selectSquad.sid}/chat`, ref => ref.orderBy('created',"asc"))
-    .stateChanges(['added']).subscribe(snap => {
+    .stateChanges().subscribe(snap => {
       this.readMessages = snap.map(d => (
         {
           rid: d.payload.doc.id,
@@ -106,7 +106,10 @@ export class SquadChatPage {
         } as IRoomMessages
       ));
       this.readMessages.forEach(msg =>{
-        this.messages.push(msg);
+        if(msg.data.message != '' || msg.data.file){
+          this.messages.push(msg);
+          console.log(msg);
+        }
       })
       this.onFocus();
       this.chatService.updateLastRead("squad-chat-room",this.bizFire.currentUID,this.selectSquad.sid,this.selectSquad.data.gid)
@@ -130,6 +133,18 @@ export class SquadChatPage {
   onFocus() {
     this.contentArea.resize();
     this.scrollToBottom();
+  }
+
+  file(file){
+    if(file.target.files.length === 0 ) {
+      return;
+    }
+    if(file && file.target.files[0].size > 10000000){
+      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+      return;
+    } else {
+      this.chatService.sendMessage("squad-chat",'',this.selectSquad.sid,this.selectSquad.data.gid,file.target.files[0]);
+    }
   }
 
 

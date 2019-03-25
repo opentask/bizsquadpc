@@ -80,15 +80,15 @@
                     <button class="fab-button"  ion-fab color="red" (tap)="presentPopover($event)"><ion-icon name="customNewRoom"></ion-icon></button>
                 </ion-fab>
             </ion-list>
-            
+
             <!-- 스쿼드 채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
                 <ion-item class="chat-item listBorder" *ngFor="let room of squadChatRooms" (click)="gotoSquadRoom(room)">
                     <h2 class="squadRoomName">{{ room.data.name | slice:0:25 }}</h2>
-                    <ion-icon *ngIf="icon_mail && room.data.member_count > 1 && this.chatService.checkIfHasNewMessage(room)" [ngClass]="{'new_message_icon': icon_mail && room.data.member_count > 1 && this.chatService.checkIfHasNewMessage(room)}" class="new_message_icon" name="mail"></ion-icon>
-                    <ion-icon *ngIf="icon_mail && room.data.member_count === 1 && this.chatService.checkIfHasNewMessage(room)" class="new_message_general_icon" name="mail"></ion-icon>
+                    <ion-icon *ngIf="icon_mail && room.data.member_count > 1 && this.chatService.checkIfHasNewMessage(room)" class="new_message_icon" name="mail"></ion-icon>
+                    <ion-icon *ngIf="icon_mail && room.data.member_count == 1 && this.chatService.checkIfHasNewMessage(room)" class="new_message_general_icon" name="mail"></ion-icon>
                     <ion-icon *ngIf="room.data.member_count > 1" class="squadMemberCount" name="person"> {{ room.data.member_count }}</ion-icon> 
-                    <ion-icon *ngIf="room.data.member_count == 1" class="squadMemberCount"></ion-icon>
+                    <ion-icon *ngIf="room.data.member_count == 1" class="squadMemberCount">General</ion-icon>
                     <ng-container *ngIf="room.data.lastMessage != null">
                         <p class="chat-message">{{ room.data.lastMessage | slice:0:35 }}</p>
                         <p class="chat-time">{{ room.data.lastMessageTime * 1000 | date: 'HH:mm MM/dd' }}</p>

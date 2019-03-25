@@ -45,11 +45,10 @@ export class LoginPage implements OnInit {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public electronProvider: Electron,
+    public electron: Electron,
     private bizFire: BizFireService,
     private loading: LoadingProvider,
     public formBuilder: FormBuilder,
-    public electron: Electron,
     private tokenService : TokenProvider,
     ) {
       this.hideForm = true;
@@ -57,7 +56,7 @@ export class LoginPage implements OnInit {
         email: ['', this.emailValidator],
         password: ['', this.passwordValidator]
       });
-      this.ipc = electronProvider.ipc;
+      this.ipc = electron.ipc;
       this._unsubscribeAll = new Subject<any>();
   }
   ionViewCanEnter(){
@@ -116,7 +115,7 @@ export class LoginPage implements OnInit {
       // 폼 값이 없으면 로그인 에러창 출력
       // alert("you entered an incorrect email address or password.");
       this.loading.hide();
-      this.electronProvider.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
+      this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
     } else {
       // 로그인 정보 인증
         this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user => {
@@ -130,7 +129,7 @@ export class LoginPage implements OnInit {
         }).catch(err => {
           // 로그인 인증 실패 
           this.loading.hide();
-          this.electronProvider.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
+          this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
         });
     }
   }
@@ -138,10 +137,10 @@ export class LoginPage implements OnInit {
   // * electron function.
   // ------------------------------------------------------------------
   windowClose() {
-    this.electronProvider.windowClose();
+    this.electron.windowClose();
   }
 
   windowMimimize() {
-    this.electronProvider.windowMimimize();
+    this.electron.windowMimimize();
   }
 }

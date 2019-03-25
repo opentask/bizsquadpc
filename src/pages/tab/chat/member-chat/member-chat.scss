@@ -118,7 +118,7 @@ page-member-chat {
     // scroll bar
     .scrollable{
         height: 100%;
-        overflow: auto !important;
+        overflow: scroll !important;
     }
     ::-webkit-scrollbar,
     *::-webkit-scrollbar {
@@ -219,6 +219,13 @@ page-member-chat {
             border-style: solid;
           }
         }
+        .input-menu {
+            padding: 0 5px;
+            display: flex;
+            height: 35px;
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #e0e0e0;
+        }
       
         .message-wrap {
           padding: 0 10px;
@@ -249,7 +256,7 @@ page-member-chat {
                 position: absolute;
                 width: 45px;
                 height: 45px;
-                top:15%;
+                top:5px;
             }
       
             .msg-detail {
@@ -290,6 +297,32 @@ page-member-chat {
                   position: absolute;
                 }
               }
+              .msg-content-file {
+                position: relative;
+                margin-top: 5px;
+                border-radius: 5px;
+                color: black;
+                width: auto;
+                max-width: 170px;
+                font-size: 13px;
+                span.triangle {
+                  background-color: #fff;
+                  border-radius: 1px;
+                  height: 8px;
+                  width: 8px;
+                  top: 5px;
+                  display: block;
+                  border-style: solid;
+                  border-color: #ddd;
+                  border-width: 1px;
+                  -webkit-transform: rotate(45deg);
+                  transform: rotate(45deg);
+                  position: absolute;
+                }
+                .msg-file{
+                    border-radius: 5px;
+                }
+              }
             }
           }
       
@@ -298,6 +331,9 @@ page-member-chat {
               background-color: $toUserBackgroundColor;
               float: left;
             }
+            .msg-content-file {
+                float: left;
+              }
             .msg-time-content{
                 position: absolute;
                 display: inline-block;
@@ -325,6 +361,14 @@ page-member-chat {
                 left: -5px;
               }
             }
+            .msg-content-file {
+                color: #343434;
+                span.triangle {
+                  border-top-width: 0;
+                  border-right-width: 0;
+                  left: -5px;
+                }
+              }
       
           }
       
@@ -368,6 +412,9 @@ page-member-chat {
                 right: -5px;
               }
             }
+            .msg-content-file {
+                float: right;
+              }
       
           }
       

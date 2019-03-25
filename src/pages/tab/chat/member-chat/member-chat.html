@@ -57,44 +57,60 @@
   </ion-item>
 </ion-header>
 
- <ion-content>
-    <div class="message-wrap">
-      <div *ngFor="let msg of messages"
-           class="message"
-           [class.left]="msg.data.senderId != chatroom.uid"
-           [class.right]="msg.data.senderId === chatroom.uid">
-        <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != chatroom.uid">
-          <span class="senderName">{{ msg.data.senderName | slice:0:2 }}</span>
-        </ion-avatar>
-        <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != chatroom.uid">
-          <img class="user-img" src="{{msg.data.photoURL}}">
-        </ion-avatar>
-        <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
-        <div class="msg-detail">
-          <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid">
-            <p>{{msg.data.senderName}}</p>
-          </div>
-          <div class="msg-content">
-            <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
-            <p class="line-breaker">{{msg.data.message}}</p>
-            <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
+ <ion-content id="messagesContent" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+      <div class="message-wrap">
+        <div *ngFor="let msg of messages"
+            class="message"
+            [class.left]="msg.data.senderId != chatroom.uid"
+            [class.right]="msg.data.senderId === chatroom.uid">
+          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != chatroom.uid">
+            <span class="senderName">{{ msg.data.senderName | slice:0:2 }}</span>
+          </ion-avatar>
+          <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != chatroom.uid">
+            <img class="user-img" src="{{msg.data.photoURL}}">
+          </ion-avatar>
+          <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
+          <div class="msg-detail">
+            <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid">
+              <p>{{msg.data.senderName}}</p>
+            </div>
+            <div class="msg-content" *ngIf="msg.data.file == '' && msg.data.message != ''">
+              <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
+              <p class="line-breaker">{{msg.data.message}}</p>
+              <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
+                <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+              </div>
+            </div>
+            <div class="msg-content-file" *ngIf="msg.data.file != ''">
+              <ion-spinner *ngIf="msg.data.status" name="circles"></ion-spinner>
+              <img *ngIf="!msg.data.status" class="msg-file" src="{{msg.data.file}}">
+              <span class="triangle" *ngIf="!msg.data.file && msg.data.senderId == chatroom.uid"></span>
+              <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
+                <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+              </div>
+            </div>
+            <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid">
               <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
             </div>
           </div>
-          <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid">
-            <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
-          </div>
         </div>
       </div>
-    </div>
   </ion-content>
   <ion-footer no-border>
+    <div class="input-menu">
+      <button ion-button clear icon-only small color="dark" (click)="fileAttach.click()">
+        <ion-icon name="attach"></ion-icon>
+      </button>
+      <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
+      <button ion-button clear icon-only small color="dark">
+        <ion-icon name="happy"></ion-icon>
+      </button> 
+    </div>
     <div class="input-wrap">
       <textarea #chat_input
                 placeholder=""
                 [(ngModel)]="editorMsg"
-                (keyup.enter)="sendMsg()"
-                (focusin)="onFocus()">
+                (keyup.enter)="sendMsg()">
       </textarea>  
       <button class="sendButton" ion-button item-right (click)="sendMsg()">
         send
