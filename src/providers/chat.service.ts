@@ -36,7 +36,12 @@ export interface IRoomMessages {
 
 export interface IRoomMessagesData {
     created: number,
-    file?: string,
+    file?: {
+        name: string,
+        path: string,
+        type: string,
+        size: number,
+    }
     message: string,
     photoURL: string,
     senderId: string,
@@ -135,28 +140,28 @@ export class ChatService {
               return 'bizgroups/'+ gid + '/squads/' + cid;
         }  
     }
-    getUploadPath(type,cid,gid,message_id){
+    getUploadPath(type,cid,gid,fileName){
         switch(type){
           case 'member-chat':
-            return 'chat/'+ gid +'/'+ cid +'/chat/' + message_id;
+            return 'chat/'+ gid +'/'+ cid + '/' + fileName;
           case 'squad-chat':
-            return 'chatsquad/'+ gid + '/' + cid +'/chat/' + message_id;
+            return 'chatsquad/'+ gid + '/' + cid + '/' + fileName; 
         }
       }
 
-    sendMessage(room_type,txt_message,id,gid?,file?) {
+    sendMessage(room_type,txt_message,id,gid?,file?:File) {
             const now = new Date();
+            let checkFileText = txt_message;
+            if(file != null){
+                checkFileText = '';
+                this.loading.show();
+            }
             const newMessage: IRoomMessagesData = {
-                file : '',
-                message: txt_message,
+                message: checkFileText,
                 created: now.getTime() / 1000 | 0,
                 senderId: this.bizFire.currentUID,
                 senderName: this.bizFire.currentUserValue.displayName,
                 photoURL: this.bizFire.currentUserValue.photoURL,
-            }
-            if(file != null){
-                txt_message = 'photo has been sent.';
-                this.loading.show();
             }
 
             this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(message =>{
@@ -167,18 +172,25 @@ export class ChatService {
                     read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
                 },{merge : true}).then(() => {
                     if(file != null) {
-                        this.uploadFilesToChat(file,room_type,id,gid,message.id).then(url =>{
-                            message.update({
-                                file : url,
-                            }).then(() => {
+                        this.uploadFilesToChat(file,room_type,id,gid,file.name).then(url =>{
+                            message.set({
+                                file: {
+                                    name: file.name,
+                                    path: url,
+                                    type:file.type,
+                                    size:file.size,
+                                }
+                            },{merge : true}).then(() => {
                                 this.loading.hide();
                                 resolve(url);
                             }).catch(err => {
+                                this.loading.hide();
                                 rejects(err);
                             })
                         })
                     } else {
                         resolve('');
+                        this.loading.hide();
                     }
                 }).catch(error => console.log("라스트 메세지 작성에러",error))
                 // this.onSelectChatRoom.next(selectedRoom);
@@ -186,15 +198,13 @@ export class ChatService {
             }).catch(error => console.error("메세지작성에러",error));
     }
 
-    uploadFilesToChat(file,type,id,gid,message_id): Promise<any> {
+    uploadFilesToChat(file,type,id,gid,fileName): Promise<any> {
         return new Promise<string>((resolve, reject) => {
             let storageRef;
-            const filePath = this.getUploadPath(type,id,gid,message_id);
-            console.log(filePath);
-            console.log(file,type,id,gid,message_id);
+            const filePath = this.getUploadPath(type,id,gid,fileName);
+
             storageRef = this.bizFire.afStorage.storage.ref(filePath);
             storageRef.put(file).then(fileSnapshot => {
-
                 fileSnapshot.ref.getDownloadURL().then((url) => {
                     resolve(url);
                 }).catch(err => {

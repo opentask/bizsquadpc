@@ -159,11 +159,6 @@ page-squad-chat {
         .line-breaker {
           white-space: pre-line;
         }
-        .download_button{
-            position: absolute;
-            left: -35px;
-            bottom: 9px;
-        }
     
         .input-wrap {
           padding: 5px;
@@ -288,6 +283,11 @@ page-squad-chat {
               background-color: $toUserBackgroundColor;
               float: left;
             }
+            .download_button{
+                position: absolute;
+                right: -35px;
+                bottom: 12px;
+            }
             .msg-content-file {
                 float: left;
             }
@@ -326,6 +326,11 @@ page-squad-chat {
               .msg-info {
                 text-align: right;
               }
+            }
+            .download_button{
+                position: absolute;
+                left: -35px;
+                bottom: 9px;
             }
             .msg-time-content{
                 position: absolute;

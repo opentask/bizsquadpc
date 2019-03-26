@@ -119,6 +119,8 @@ export class MemberChatPage {
 
   }
   file(file){
+    let fileInfo;
+    fileInfo = file.target.files[0];
     if(file.target.files.length === 0 ) {
       return;
     }
@@ -126,7 +128,7 @@ export class MemberChatPage {
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
       return;
     } else {
-      this.chatService.sendMessage("member-chat",'',this.chatroom.cid,this.chatroom.data.gid,file.target.files[0]);
+      this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.gid,fileInfo);
     }
   }
   sendMsg(){

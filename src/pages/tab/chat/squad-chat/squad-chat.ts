@@ -1,5 +1,4 @@
 import { AccountService } from './../../../../providers/account/account';
-import { SquadService } from './../../../../providers/squad.service';
 import { Electron } from './../../../../providers/electron/electron';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';

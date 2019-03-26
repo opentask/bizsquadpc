@@ -69,14 +69,12 @@ export class ChatPage {
         this.allMembers = members;
         if(this.chatRooms != null){
           this.chatRooms.forEach(room => {
-            console.log(room);
             room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
             room.data.title = '';
             room.data.member_data.forEach(m => {
                 room.data.title += m.data.displayName + ',';
             })
             room.data.title = room.data.title.slice(0,room.data.title.length-1);
-            console.log("1차",room.data.title);
           })
         }
       })
@@ -89,9 +87,6 @@ export class ChatPage {
       rooms.forEach(room =>{
         const newData = room.data;
         newData["member_count"] = Object.keys(room.data.members).length;
-        if(room.data.read != null){
-          console.log(room.data.read[this.bizFire.currentUID]);
-        }
         if(room.data.lastMessageTime == null) {
           newData["lastMessageTime"] = 1;
         }
@@ -102,7 +97,6 @@ export class ChatPage {
             room.data.title += m.data.displayName + ',';
           })
           room.data.title = room.data.title.slice(0,room.data.title.length-1);
-          console.log("2차",room.data.title);
         }
       })
       this.chatRooms = rooms.sort((a,b): number => {
@@ -128,7 +122,6 @@ export class ChatPage {
         });
         // console.log("스쿼드채팅방목록 : ",this.squadChatRooms)
         this.squadNewMessage = this.squadChatRooms.filter(c => this.chatService.checkIfHasNewMessage(c)).length
-        console.log("이거",this.squadChatRooms)
     })
 
   }
