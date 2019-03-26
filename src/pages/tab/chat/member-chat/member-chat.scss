@@ -364,17 +364,29 @@ page-member-chat {
               background-color: $toUserBackgroundColor;
               float: left;
             }
-            .msg-content-file {
-                background-color: $toUserBackgroundColor;
-                float: left;
-              }
             .msg-content-img {
                 float: left;
+                color: #343434;
+                span.triangle {
+                  border-top-width: 0;
+                  border-right-width: 0;
+                  left: -5px;
+                }
               }
             .download_button{
                 position: absolute;
                 right: -35px;
                 bottom: 12px;
+            }
+            .msg-content-file {
+                background-color: $toUserBackgroundColor;
+                float: left;
+                color: #343434;
+                span.triangle {
+                    border-top-width: 0;
+                    border-right-width: 0;
+                    left: -5px;
+                }
             }
             .msg-time-content{
                 position: absolute;
@@ -403,23 +415,6 @@ page-member-chat {
                 left: -5px;
               }
             }
-            .msg-content-file {
-                color: #343434;
-                span.triangle {
-                  border-top-width: 0;
-                  border-right-width: 0;
-                  left: -5px;
-                }
-              }
-            .msg-content-img {
-                color: #343434;
-                span.triangle {
-                  border-top-width: 0;
-                  border-right-width: 0;
-                  left: -5px;
-                }
-              }
-      
           }
       
           .message.right {
@@ -476,7 +471,7 @@ page-member-chat {
                   border-left-width: 0;
                   right: -5px;
                 }
-              }
+            }
             .msg-content-img {
                 float: right;
               }

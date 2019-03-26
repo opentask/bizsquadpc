@@ -106,7 +106,7 @@ export class MemberChatPage {
           } as IRoomMessages
         ));
         this.readMessages.forEach(msg =>{
-          if(msg.data.message != '' || msg.data.file){
+          if(msg.data.message != '') {
             this.messages.push(msg);
             console.log(msg);
           }

@@ -150,9 +150,10 @@ export class ChatService {
       }
 
     sendMessage(room_type,txt_message,id,gid?,file?:File) {
+            console.log("fileInfo",file)
             const now = new Date();
             let checkFileText = txt_message;
-            if(file != null){
+            if(file != null) {
                 checkFileText = '';
                 this.loading.show();
             }
@@ -174,6 +175,7 @@ export class ChatService {
                     if(file != null) {
                         this.uploadFilesToChat(file,room_type,id,gid,file.name).then(url =>{
                             message.set({
+                                message: file.name,
                                 file: {
                                     name: file.name,
                                     path: url,

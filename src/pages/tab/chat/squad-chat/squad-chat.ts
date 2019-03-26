@@ -107,7 +107,7 @@ export class SquadChatPage {
         } as IRoomMessages
       ));
       this.readMessages.forEach(msg =>{
-        if(msg.data.message != '' || msg.data.file){
+        if(msg.data.message != '') {
           this.messages.push(msg);
           console.log(msg);
         }
@@ -130,6 +130,8 @@ export class SquadChatPage {
   }
 
   file(file){
+    let fileInfo;
+    fileInfo = file.target.files[0];
     if(file.target.files.length === 0 ) {
       return;
     }
@@ -137,7 +139,7 @@ export class SquadChatPage {
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
       return;
     } else {
-      this.chatService.sendMessage("squad-chat",'',this.selectSquad.sid,this.selectSquad.data.gid,file.target.files[0]);
+      this.chatService.sendMessage("squad-chat",fileInfo.name,this.selectSquad.sid,this.selectSquad.data.gid,fileInfo);
     }
   }
 

@@ -112,6 +112,10 @@ page-squad-chat {
         white-space: pre-line;
         margin: 0 0 8px 0;
     }
+    .file-volume{
+        color: #777;
+        font-size: 12px;
+    }
 
 
     // scroll bar
@@ -253,6 +257,31 @@ page-squad-chat {
                 position: relative;
                 margin-top: 5px;
                 border-radius: 5px;
+                padding: 8px;
+                border: 1px solid #ddd;
+                color: black;
+                width: auto;
+                max-width: 60%;
+                font-size: 13px;
+                span.triangle {
+                  background-color: #fff;
+                  border-radius: 1px;
+                  height: 8px;
+                  width: 8px;
+                  top: 5px;
+                  display: block;
+                  border-style: solid;
+                  border-color: #ddd;
+                  border-width: 1px;
+                  -webkit-transform: rotate(45deg);
+                  transform: rotate(45deg);
+                  position: absolute;
+                }
+              }
+              .msg-content-img {
+                position: relative;
+                margin-top: 5px;
+                border-radius: 5px;
                 color: black;
                 width: auto;
                 max-width: 170px;
@@ -271,8 +300,12 @@ page-squad-chat {
                   transform: rotate(45deg);
                   position: absolute;
                 }
-                .msg-file{
+                .msg-img{
                     border-radius: 5px;
+                }
+                .msg-img-svg{
+                    width:170px;
+                    max-height: 100px;
                 }
               }
             }
@@ -283,13 +316,29 @@ page-squad-chat {
               background-color: $toUserBackgroundColor;
               float: left;
             }
+            .msg-content-img {
+                float: left;
+                color: #343434;
+                span.triangle {
+                  border-top-width: 0;
+                  border-right-width: 0;
+                  left: -5px;
+                }
+              }
             .download_button{
                 position: absolute;
                 right: -35px;
                 bottom: 12px;
             }
             .msg-content-file {
+                background-color: $toUserBackgroundColor;
                 float: left;
+                color: #343434;
+                span.triangle {
+                  border-top-width: 0;
+                  border-right-width: 0;
+                  left: -5px;
+                }
             }
             .msg-time-content{
                 position: absolute;
@@ -367,6 +416,16 @@ page-squad-chat {
               }
             }
             .msg-content-file {
+                background-color: $userBackgroundColor;
+                float: right;
+                span.triangle {
+                  background-color: $userBackgroundColor;
+                  border-bottom-width: 0;
+                  border-left-width: 0;
+                  right: -5px;
+                }
+            }
+            .msg-content-img {
                 float: right;
             }
       
