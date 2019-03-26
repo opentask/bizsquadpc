@@ -128,7 +128,7 @@ export class MemberChatPage {
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
       return;
     } else {
-      if(fileInfo.type = ''){
+      if(fileInfo.type == ''){
         fileInfo.type = 'app/window';
       }
       this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.gid,fileInfo);
