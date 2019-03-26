@@ -57,7 +57,7 @@
               </div>
               <!-- 파일 폼 -->
               <ng-container *ngIf="msg.data.file != null">
-                <div class="msg-content-file" *ngIf="msg.data.file.type.substring(0,3) == 'app'">
+                <div class="msg-content-file" *ngIf="msg.data.file.type == '' || msg.data.file.type.substring(0,3) == 'app' || msg.data.file.type.substring(0,4) == 'text'">
                   <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.file.path)">
                     <ion-icon name="download"></ion-icon>
                   </button>
