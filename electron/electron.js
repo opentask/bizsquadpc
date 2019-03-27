@@ -57,6 +57,8 @@ function createWindow() {
         win = null;
     });
 }
+
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -98,6 +100,16 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     chatRoom.webContents.openDevTools();
 });
+
+ipcMain.on('notification',(title,body) =>{
+    const myNotification = {
+        title: 'BTC Alert',
+        body: 'BTC just beat your target price!',
+        icon: path.join(__dirname, 'logo512.png')
+    }
+    const notification = new window.Notification(myNotification.title,myNotification);
+});
+
 
 ipcMain.on('resetValue',(e) =>{
     selectChatRoom = null;

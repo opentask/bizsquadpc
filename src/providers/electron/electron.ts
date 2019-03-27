@@ -42,6 +42,9 @@ export class Electron {
       console.log('오프라인 상태입니다.');
     }
   }
+  notification(){
+    electron.ipcRenderer.send('notification');
+  }
 
   openChatRoom(ChatRoom){
     electron.ipcRenderer.send('createChatRoom',ChatRoom);

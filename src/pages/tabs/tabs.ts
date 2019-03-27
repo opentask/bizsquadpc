@@ -137,8 +137,8 @@ export class TabsPage {
     ).pipe(takeUntil(this._unsubscribeAll))
     .subscribe((chatRooms) => {
         this.chatService.onChatRoomListChanged.next(chatRooms);
-        this.memberNewMessage = chatRooms.filter(c => this.chatService.checkIfHasNewMessage(c)).length;
-        console.log("새로운메세지채팅방 개수:",this.memberNewMessage)
+
+        this.memberNewMessage = chatRooms.filter(c => this.chatService.checkIfHasNewMessageNotify(c)).length;
 
         if(this.chatService.onSelectChatRoom.value != null){
             const newChat = this.chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
@@ -171,11 +171,11 @@ export class TabsPage {
       filter(l => l != null) // prevent same group reloading.
     ).subscribe(list => {
       this.squadService.onSquadListChanged.next(list);
-      this.squadNewMessage = list.filter(c => this.chatService.checkIfHasNewMessage(c)).length;
-      console.log("새로운메세지채팅방 개수:",this.squadNewMessage)
+
+      this.squadNewMessage = list.filter(c => this.chatService.checkIfHasNewMessageNotify(c)).length;
+
     });
   }
-
 
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-menu',{}, {cssClass: 'page-menu'});

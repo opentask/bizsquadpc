@@ -150,7 +150,6 @@ export class ChatService {
       }
 
     sendMessage(room_type,txt_message,id,gid?,file?:File) {
-            console.log("fileInfo",file)
             const now = new Date();
             let checkFileText = txt_message;
             if(file != null) {
@@ -224,9 +223,9 @@ export class ChatService {
         return new Promise<void>( (resolve, reject) => {
           const now = new Date();
           this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,cid,gid)).set({
-              read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
-          },{merge : true}).then(()=>{
-            resolve();
+              read : { [uid] : {lastRead: now.getTime() / 1000 | 0}}
+          },{merge : true}).then((s)=>{
+            resolve(s);
           }).catch(error=>{
             reject(error);
           });  
@@ -238,10 +237,34 @@ export class ChatService {
             if(d.data.read !=null && d.data.read[this.bizFire.currentUID] != null){
                 let ret = d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
                 return ret;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    checkIfHasNewMessageNotify(d) {
+        if(d.data.lastMessageTime != null){
+            if(d.data.read !=null && d.data.read[this.bizFire.currentUID] != null){
+                let ret = d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
+                if(ret){
+                    this.onNotification(d.data.lastMessage);
+                }
+                return ret;
+            } else {
+                return true;
             }
         } else {
             return false;
         }
     }
 
+    onNotification(msg){
+        Notification.requestPermission().then(() => {
+            let myNotification = new Notification('There is a new message.',{
+            'body': msg,
+            });
+        })
+    }
 }

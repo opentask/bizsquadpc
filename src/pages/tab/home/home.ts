@@ -2,11 +2,10 @@ import { Electron } from './../../../providers/electron/electron';
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams,App } from 'ionic-angular';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { Subject, Subscription, of } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { IUserData, IUser } from '../../../_models/message';
-import { filter, takeUntil, switchMap, map } from 'rxjs/operators';
+import { filter, takeUntil, map } from 'rxjs/operators';
 import { IBizGroup,BizFireService } from '../../../providers/biz-fire/biz-fire';
-import { SquadService } from '../../../providers/squad.service';
 import { STRINGS } from '../../../biz-common/commons';
 import { Http } from '@angular/http';
 import { TokenProvider } from '../../../providers/token/token';
@@ -25,7 +24,7 @@ interface IBbsItem {
   }
 }
 
-@IonicPage({  
+@IonicPage({
   name: 'page-home',
   segment: 'home',
   priority: 'high'
@@ -74,7 +73,6 @@ export class HomePage implements OnInit {
     public electron: Electron,
     public bizFire : BizFireService,
     public afAuth: AngularFireAuth,
-    private squadService: SquadService,
     public http: Http,
     private tokenService : TokenProvider,
     public _app : App) {
@@ -86,10 +84,11 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit(): void {
+
     // 토큰 저장
     this.customToken = this.tokenService.customToken;
     this.group = this.bizFire.onBizGroupSelected.getValue();
-    
+
     // * current User for RIGHT MENU
     this.bizFire.currentUser
       .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
@@ -145,7 +144,6 @@ export class HomePage implements OnInit {
             console.log(this.messages);
         });
 }
-
   // profile menu toggle
   showMenu() {
     if(this.menuShow){
