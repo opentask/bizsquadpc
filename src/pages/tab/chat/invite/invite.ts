@@ -143,13 +143,15 @@ export class InvitePage {
         }
       }
     }
-    if(selectedRoom == null){
-      this.chatService.createRoomByFabs("member",this.isChecked);
-      this.viewCtrl.dismiss();
-    } else {
-      this.chatService.onSelectChatRoom.next(selectedRoom);
-      this.electron.openChatRoom(selectedRoom);
-      this.viewCtrl.dismiss();
+    if(this.isChecked.length > 0){
+      if(selectedRoom == null){
+        this.chatService.createRoomByFabs("member",this.isChecked);
+        this.viewCtrl.dismiss();
+      } else {
+        this.chatService.onSelectChatRoom.next(selectedRoom);
+        this.electron.openChatRoom(selectedRoom);
+        this.viewCtrl.dismiss();
+      }
     }
   }
 

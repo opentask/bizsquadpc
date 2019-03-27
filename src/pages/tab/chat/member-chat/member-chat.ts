@@ -65,11 +65,11 @@ export class MemberChatPage {
         }
       })
       // esc 버튼 클릭시 채팅창 닫기.
-      document.addEventListener('keydown', event => {
-        if(event.key === 'Escape' || event.keyCode === 27){
-          this.electron.windowClose();
-        }
-      })
+      // document.addEventListener('keydown', event => {
+      //   if(event.key === 'Escape' || event.keyCode === 27){
+      //     this.electron.windowClose();
+      //   }
+      // })
       this.ipc = electron.ipc;
     }
   

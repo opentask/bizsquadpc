@@ -7,7 +7,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { ISquad } from '../../../../providers/squad.service';
 import { BizFireService } from '../../../../providers';
 import { STRINGS } from '../../../../biz-common/commons';
-import { filter, map, takeUntil } from 'rxjs/operators';
 import { IUser } from '../../../../_models/message';
 import { ChatService, IRoomMessages } from '../../../../providers/chat.service';
 import { IchatMember } from '../member-chat/member-chat';
@@ -58,11 +57,11 @@ export class SquadChatPage {
         }
       })
       // esc 버튼 클릭시 채팅창 닫기.
-      document.addEventListener('keydown', event => {
-        if(event.key === 'Escape' || event.keyCode === 27){
-          this.electron.windowClose();
-        }
-      })
+      // document.addEventListener('keydown', event => {
+      //   if(event.key === 'Escape' || event.keyCode === 27){
+      //     this.electron.windowClose();
+      //   }
+      // })
       this.ipc = electron.ipc;
   }
 
