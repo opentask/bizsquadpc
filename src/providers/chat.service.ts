@@ -249,7 +249,7 @@ export class ChatService {
             if(d.data.read !=null && d.data.read[this.bizFire.currentUID] != null){
                 let ret = d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
                 if(ret){
-                    // this.onNotification(d.data.lastMessage);
+                    this.onNotification(d.data.lastMessage);
                 }
                 return ret;
             } else {

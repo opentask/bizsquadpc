@@ -64,7 +64,7 @@ export class MemberChatPage {
           this.windowClose();
         }
       })
-      // esc 버튼 클릭시 채팅창 닫기.
+      // esc 버튼 클릭시 채팅창 닫기. node_module keycode
       // document.addEventListener('keydown', event => {
       //   if(event.key === 'Escape' || event.keyCode === 27){
       //     this.electron.windowClose();
