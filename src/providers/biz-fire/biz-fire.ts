@@ -36,6 +36,8 @@ export interface IBizGroup {
             photoURL?: string,
             team_icon?: string,
             group_members?: number,
+            general_squad_count?: number,
+            agile_squad_count?: number,
             notifyLength?: Number,
             badgeVisible?: boolean,
         }

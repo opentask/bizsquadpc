@@ -8,10 +8,6 @@ page-group-list {
     .titleButton{
         cursor:default;
     }
-    ion-item:hover {
-        background-color: #f6f6f6;
-        cursor: pointer;
-    }
     ion-avatar{
         border-radius: 15%;
         color:white;
@@ -19,7 +15,12 @@ page-group-list {
         text-align: center;
         line-height: 2.5;
     }
-    ion-item:hover a { 
+
+    ion-list:hover {
+        background-color: #f6f6f6;
+        cursor: pointer;
+    }
+    ion-list:hover a { 
         background-color: slategray !important; 
     }
 
@@ -27,6 +28,14 @@ page-group-list {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+    }
+    .groupInfo{
+        text-align: center;
+        background-color: rgba(91, 156, 237, 0.1);
+
+        .InfoTitle{
+            padding-bottom: 5px;
+        }
     }
     
     // scroll bar

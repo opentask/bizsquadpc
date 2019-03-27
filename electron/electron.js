@@ -30,13 +30,13 @@ let videoRoom;
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
-        width: 360,
-        height: 600,
+        width: 400,
+        height: 650,
         frame: false,
-        minWidth:360,
-        minHeight:600,
-        maxWidth:570,
-        maxHeight:700,
+        minWidth:400,
+        minHeight:650,
+        maxWidth:600,
+        maxHeight:750,
         titleBarStyle: 'hidden-inset',
     });
 
@@ -47,7 +47,7 @@ function createWindow() {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
     
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -96,7 +96,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         slashes: true,
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // chatRoom.webContents.openDevTools();
+    chatRoom.webContents.openDevTools();
 });
 
 ipcMain.on('resetValue',(e) =>{

@@ -19,16 +19,31 @@
 <ion-content no-padding>
   <ion-scroll class="scrollable" scrollY="true">
     <ion-list no-margin *ngFor="let group of groups" (click)="gotoTeam(group)">
-      <ion-item>
+      <ion-item no-lines>
         <ion-avatar *ngIf="!group.data.photoURL" item-start [style.background-color]="group.data.team_color">
           {{ group.data.team_icon }}
         </ion-avatar> 
         <ion-avatar *ngIf="group.data.photoURL" item-start [style.background-color]="group.data.team_color">
           <img style="border-radius: 15%;" src="{{ group.data.photoURL }}">
         </ion-avatar>
-        <h2 class="groupName">{{ group.data.team_name }}</h2> 
-        <p><ion-icon name="person"></ion-icon> {{ group.data.group_members }}</p> 
+        <h2 class="groupName">{{ group.data.team_name }}</h2>
       </ion-item>
+      <ion-grid class="groupInfo">
+        <ion-row>
+          <ion-col>
+              <div class="InfoTitle">Members</div>
+              {{ group.data.group_members }}
+          </ion-col>
+          <ion-col>
+              <div class="InfoTitle">Agile</div>
+              {{ group.data.agile_squad_count }}
+          </ion-col>
+          <ion-col>
+              <div class="InfoTitle">General</div>
+              {{ group.data.general_squad_count }}
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-list>
   </ion-scroll>
 </ion-content>

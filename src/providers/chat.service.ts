@@ -133,7 +133,7 @@ export class ChatService {
             case 'member-chat':
               return 'chats/' + cid +'/chat';
             case 'squad-chat':
-              return 'bizgroups/'+ gid + '/squads/' + cid +'/chat';
+              return 'bizgroups/'+ gid + '/squads/' + cid + '/chat';
             case 'member-chat-room':
               return 'chats/' + cid;
             case 'squad-chat-room':

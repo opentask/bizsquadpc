@@ -121,8 +121,6 @@ export class TabsPage {
         this.notification = this.messages.filter(m => m.data.statusInfo.done !== true).length;
     });
 
-
-    
     this.bizFire.afStore.collection("chats", ref => ref.where("gid","==",this.currentGroup.gid))
     .snapshotChanges()
     .pipe(takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut),

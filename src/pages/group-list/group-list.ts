@@ -64,14 +64,24 @@ export class GroupListPage {
                   }
                   // get group_squads number
                   this.bizFire.afStore.firestore.collection(`bizgroups/${group.gid}/squads`).get().then(snap => {
+                    let general = 0;
+                    let agile = 0;
+                    snap.forEach(list => {
+                      if(list.data().type === 'public'){
+                        general += 1;
+                      } else {
+                        agile += 1;
+                      }
+                    })
+                    newData['general_squad_count'] = general;
+                    newData['agile_squad_count'] = agile;
                     newData['group_squads'] = snap.docs.length;
                   });
                 }
             });
             this.groups = bizGroups;
-            setTimeout(() => { 
-              this.loading.hide();
-            },2000)
+            console.log(this.groups);
+            this.loading.hide();
         });
 
     //파이어베이스에서 토큰 키를 tokenService의 customToken변수에 저장.
