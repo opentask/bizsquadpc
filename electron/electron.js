@@ -4,9 +4,10 @@ const { ipcMain,dialog } = require('electron');
 const { shell } = require('electron');
 const url = require('url');
 const path = require('path');
+const contextMenu = require('electron-context-menu');
 // const {dialog} = require('electron');
 // Module to control application life.
-const { app,Notification } = electron;
+const { app,Notification,Menu } = electron;
 // Module to create native browser window.
 const { BrowserWindow } = electron;
 
@@ -27,6 +28,7 @@ let chatRoom;
 let selectChatRoom;
 let videoRoom;
 
+
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
@@ -45,7 +47,6 @@ function createWindow() {
         protocol: 'file:',
         slashes: true
     }))
-    
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     win.webContents.openDevTools();
     
@@ -97,8 +98,10 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         protocol: 'file:',
         slashes: true,
     }))
+    
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     chatRoom.webContents.openDevTools();
+    
 });
  
 ipcMain.on('resetValue',(e) =>{

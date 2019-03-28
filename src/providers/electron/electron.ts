@@ -12,6 +12,7 @@ export class Electron {
   
   constructor(public bizFire : BizFireService,) {
     this.ipc = electron.ipcRenderer;
+    
   }
 
   // 디폴트 상태창 숨기고 X버튼에 프로그램 종료이벤트 추가.
@@ -32,6 +33,12 @@ export class Electron {
         electron.remote.getCurrentWindow().setOpacity(this.opacity)
       }
   }
+
+  setAppBadge(count){
+    electron.remote.app.setBadgeCount(count);
+  }
+
+
 
   updateOnlineStatus(){
     let k = window.navigator.onLine ? 'online' : 'offline'

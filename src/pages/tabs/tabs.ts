@@ -139,7 +139,7 @@ export class TabsPage {
         this.chatService.onChatRoomListChanged.next(chatRooms);
 
         this.memberNewMessage = chatRooms.filter(c => this.chatService.checkIfHasNewMessageNotify(c)).length;
-
+        this.electron.setAppBadge(this.squadNewMessage + this.memberNewMessage);
         if(this.chatService.onSelectChatRoom.value != null){
             const newChat = this.chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
             if(newChat){
@@ -173,7 +173,7 @@ export class TabsPage {
       this.squadService.onSquadListChanged.next(list);
 
       this.squadNewMessage = list.filter(c => this.chatService.checkIfHasNewMessageNotify(c)).length;
-
+      this.electron.setAppBadge(this.squadNewMessage + this.memberNewMessage);
     });
   }
 
