@@ -80,7 +80,7 @@
               <p>{{msg.data.senderName}}</p>
             </div>
             <!-- 메세지 폼 -->
-            <div class="msg-content" *ngIf="msg.data.file == null && msg.data.message != ''">
+            <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
               <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
               <p class="line-breaker textdrag">{{msg.data.message}}</p>
               <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
@@ -88,26 +88,26 @@
               </div>
             </div>
             <!-- 파일 폼 -->
-            <ng-container *ngIf="msg.data.file != null">
-              <div class="msg-content-file" *ngIf="msg.data.file.type == '' || msg.data.file.type.substring(0,3) == 'app' || msg.data.file.type.substring(0,4) == 'text'">
-                <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.file.path)">
+            <ng-container *ngIf="msg.data.files != null">
+              <div class="msg-content-file" *ngIf="msg.data.files.type == '' || msg.data.files.type.substring(0,3) == 'app' || msg.data.files.type.substring(0,4) == 'text'">
+                <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
                   <ion-icon name="download"></ion-icon>
                 </button>
-                <p class="line-breaker textdrag">{{msg.data.file.name}}</p>
-                <p class="line-breaker file-volume">Size: {{ msg.data.file.size / 1000 | number: '1.0-1' }}KB</p>
+                <p class="line-breaker textdrag">{{msg.data.files.name}}</p>
+                <p class="line-breaker file-volume">Size: {{ msg.data.files.size / 1000 | number: '1.0-1' }}KB</p>
                 <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>
               </div>
             </ng-container>
             <!-- 파일이 이미지일 경우 폼 -->
-            <ng-container *ngIf="msg.data.file != null">
-              <div class="msg-content-img" *ngIf="msg.data.file.type.substring(0,5)=='image'">
-                <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.file.path)">
+            <ng-container *ngIf="msg.data.files != null">
+              <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image'">
+                <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
                   <ion-icon name="download"></ion-icon>
                 </button>
-                <img class="msg-img" [ngClass]="{'msg-img-svg': msg.data.file.type == 'image/svg+xml'}" [src]="msg.data.file.path">
-                <span class="triangle" *ngIf="!msg.data.file && msg.data.senderId == chatroom.uid"></span>
+                <img class="msg-img" [ngClass]="{'msg-img-svg': msg.data.files.type == 'image/svg+xml'}" [src]="msg.data.files.url">
+                <span class="triangle" *ngIf="!msg.data.files && msg.data.senderId == chatroom.uid"></span>
                 <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>

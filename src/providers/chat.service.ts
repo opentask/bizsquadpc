@@ -6,7 +6,6 @@ import { BehaviorSubject } from 'rxjs';
 import { IUser } from '../_models/message';
 import { resolve } from 'path';
 import { rejects } from 'assert';
-import { text } from '@angular/core/src/render3';
 import { LoadingProvider } from './loading/loading';
 import * as firebase from 'firebase';
 
@@ -38,16 +37,18 @@ export interface IRoomMessages {
 
 export interface IRoomMessagesData {
     created: number,
-    file?: {
-        name: string,
-        path: string,
-        type: string,
-        size: number,
-    }
+    files?: IFiles,
     message: string,
     photoURL: string,
     senderId: string,
     senderName: string,
+}
+export interface IFiles{
+    name:string,
+    size:number,
+    type:string,
+    storagePath:string,
+    url:string
 }
 
 @Injectable({
@@ -144,18 +145,19 @@ export class ChatService {
               return 'bizgroups/'+ gid + '/squads/' + cid;
         }  
     }
-    getUploadPath(type,cid,gid,fileName){
+    getUploadPath(type,cid,gid,message_id,fileName){
         switch(type){
           case 'member-chat':
-            return 'chat/'+ gid +'/'+ cid + '/' + fileName;
+            return 'chat/'+ gid +'/'+ cid + '/' + 'chat/'+ message_id + '/' +fileName;
           case 'squad-chat':
-            return 'chatsquad/'+ gid + '/' + cid + '/' + fileName; 
+            return 'chatsquad/'+ gid + '/' + cid + '/' + 'chat/'+ message_id + '/' + fileName; 
         }
       }
 
     sendMessage(room_type,txt_message,id,gid?,file?:File) {
             const now = new Date();
             let checkFileText = txt_message;
+            let filePath;
             if(file != null) {
                 checkFileText = '';
                 this.loading.show();
@@ -175,15 +177,19 @@ export class ChatService {
                     lastMessageTime : now.getTime() / 1000 | 0,
                     read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
                 },{merge : true}).then(() => {
+                    if(room_type == "squad-chat"){
+                        filePath = `chatsquad/${gid}/${id}/chat/${message.id}/${file.name}`
+                    }
                     if(file != null) {
-                        this.uploadFilesToChat(file,room_type,id,gid,file.name).then(url =>{
+                        this.uploadFilesToChat(file,room_type,id,gid,message.id,file.name).then(url =>{
                             message.set({
                                 message: file.name,
-                                file: {
+                                files: {
                                     name: file.name,
-                                    path: url,
                                     type:file.type,
+                                    storagePath: filePath,
                                     size:file.size,
+                                    url: url
                                 }
                             },{merge : true}).then(() => {
                                 this.loading.hide();
@@ -203,10 +209,10 @@ export class ChatService {
             }).catch(error => console.error("메세지작성에러",error));
     }
 
-    uploadFilesToChat(file,type,id,gid,fileName): Promise<any> {
-        return new Promise<string>((resolve, reject) => {
+    uploadFilesToChat(file,type,id,gid,message_id,fileName): Promise<any> {
+        return new Promise<{storagePath: string, url: String}>((resolve, reject) => {
             let storageRef;
-            const filePath = this.getUploadPath(type,id,gid,fileName);
+            const filePath = this.getUploadPath(type,id,gid,message_id,fileName);
 
             storageRef = this.bizFire.afStorage.storage.ref(filePath);
             storageRef.put(file).then(fileSnapshot => {
