@@ -90,7 +90,7 @@ page-member-chat {
         width: calc(100% - 20px);
         margin-left: 10px;
         background-color: #fff;
-        font-size: 1.2em;
+        font-size: 14px;
         resize: none;
         border: none;
     }   
@@ -99,7 +99,7 @@ page-member-chat {
         opacity: 0.8;
         border-radius: 7px;
         text-transform: capitalize;
-        width:70px;
+        width:80px;
     }
     ion-item {
         background-color: map-get($colors, light) !important;
@@ -221,7 +221,7 @@ page-member-chat {
         .input-wrap {
           padding: 5px;
           display: flex;
-          height: 75px;
+          height: 90px;
           textarea {
             flex: 1;
             border: 0;
