@@ -63,7 +63,8 @@
                         <img src="imgs/main512.png">
                     </ion-avatar> -->
                     <h2>
-                        <span class="room_title">{{ room.data.title }}</span>
+                        <span class="room_title" *ngIf="room.data.member_count > 1">{{ room.data.title }}</span>
+                        <span class="room_title_noMember" *ngIf="room.data.member_count === 1">No conversation member</span>
                         <ion-icon *ngIf="icon_mail && this.chatService.checkIfHasNewMessage(room)" class="new_message_icon" name="mail"></ion-icon>
                         <ion-icon class="chat-count" name="person"> {{ room.data.member_count }}</ion-icon>
                     </h2> 

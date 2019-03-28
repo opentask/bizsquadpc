@@ -48,15 +48,16 @@ function createWindow() {
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     // win.webContents.openDevTools();
-    
+
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
-    // 윈도우 객체의 참조를 삭제합니다. 보통 멀티 윈도우 지원을 위해
-    // 윈도우 객체를 배열에 저장하는 경우가 있는데 이 경우
-    // 해당하는 모든 윈도우 객체의 참조를 삭제해 주어야 합니다.
-        win = null;
+        // 윈도우 객체의 참조를 삭제합니다. 보통 멀티 윈도우 지원을 위해
+        // 윈도우 객체를 배열에 저장하는 경우가 있는데 이 경우
+        // 해당하는 모든 윈도우 객체의 참조를 삭제해 주어야 합니다.
+            win = null;
     });
 }
+
 
 
 // This method will be called when Electron has finished
@@ -73,6 +74,7 @@ app.on('window-all-closed', () => {
         app.quit();
     }
 });
+
 ipcMain.on('loadGH', (event, arg) => {
     shell.openExternal(arg);
 });

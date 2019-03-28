@@ -1,6 +1,6 @@
 import { AccountService } from './../../../../providers/account/account';
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService, IChatRoom, IRoomMessages, IChatRoomData } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
@@ -57,7 +57,7 @@ export class MemberChatPage {
     public electron: Electron,
     public accountService : AccountService,
     public afAuth: AngularFireAuth,
-    private loading: LoadingProvider,
+    public popoverCtrl :PopoverController,
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -82,6 +82,7 @@ export class MemberChatPage {
       // // * get USERS DATA !
       let chatMembers = [];
       const c_members = this.chatroom.data.members;
+      console.log("c_members",c_members);
       chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
       console.log(chatMembers);
       this.accountService.getAllUserInfos(chatMembers).pipe(filter(m => m != null))
@@ -89,7 +90,6 @@ export class MemberChatPage {
         this.roomMembers = members.filter(m => m != null);
         this.roomCount = this.roomMembers.length + 1;
         console.log(this.roomMembers);
-
         this.chatTitle = '';
         this.roomMembers.forEach(m => {
           this.chatTitle += m.data.displayName + ",";
@@ -171,18 +171,24 @@ export class MemberChatPage {
     this.editorMsg = '';
   }
 
-  changes(v){
+  // 
+  opacityChanges(v){
     this.electron.setOpacity(v);
   }
-
-  // scrollToBottom(){
-  //   const element = document.getElementById('last');
-  //   element.scrollIntoView();
-  // }
 
   downloadFile(path){
     console.log(path);
     this.ipc.send('loadGH',path);
+  }
+
+  presentPopover(ev): void {
+    let roomData;
+    roomData = {
+      uid : this.chatroom.uid,
+      cid : this.chatroom.cid
+    }
+    let popover = this.popoverCtrl.create('page-member-chat-menu',{roomData : roomData}, {cssClass: 'page-member-chat-menu'});
+    popover.present({ev: ev});
   }
 
   scrollToBottom() {

@@ -34,8 +34,14 @@ export class Electron {
       }
   }
 
+  // macOS에서만 적용
   setAppBadge(count){
     electron.remote.app.setBadgeCount(count);
+  }
+  // windowsOS Badge 대체
+  TrayLight(){
+    let tray = null;
+    electron.remote.Tray
   }
 
 

@@ -8,6 +8,7 @@ import { resolve } from 'path';
 import { rejects } from 'assert';
 import { text } from '@angular/core/src/render3';
 import { LoadingProvider } from './loading/loading';
+import * as firebase from 'firebase';
 
 export interface IChatRoom {
     uid?: string,
@@ -25,7 +26,8 @@ export interface IChatRoomData {
     member_count?:any,
     member_data?: IUser[],
     title?: string,
-    read?: any
+    read?: any,
+    is_group: number,
 }
 
 export interface IRoomMessages {
@@ -87,6 +89,7 @@ export class ChatService {
             created:  now.getTime() / 1000 | 0,
             gid: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
+            is_group: 0,
             members: {
                 [me] : true,
                 [target] : true
@@ -100,6 +103,7 @@ export class ChatService {
             created:  now.getTime() / 1000 | 0,
             gid: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
+            is_group: 1,
             members:{
                 [this.bizFire.currentUID]:true
             }
@@ -217,6 +221,20 @@ export class ChatService {
                 reject(err);
             })
         })
+    }
+
+
+    removeMember(uid,cid){
+        return new Promise<void>( (resolve, reject) => {
+        this.bizFire.afStore.firestore.doc("chats/" + cid).update({
+            ['members.' + uid]: firebase.firestore.FieldValue.delete()
+        }).then(()=>{
+            this.electron.windowClose();
+            resolve();
+        }).catch(error=>{
+            reject(error);
+        });  
+        });
     }
 
     updateLastRead(room_type,uid,cid,gid?){

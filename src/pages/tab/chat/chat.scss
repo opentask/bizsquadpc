@@ -134,6 +134,15 @@ page-chat {
         overflow: hidden;
         white-space: nowrap;
     }
+    .room_title_noMember{
+        color: #444;
+        display: inline-block;
+        font-size: 15px;
+        width: 65%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
     .notPhoto{
         background-color:#c96a5c;
         text-align: center;

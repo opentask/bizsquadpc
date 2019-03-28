@@ -183,7 +183,7 @@ export class SquadChatPage {
     console.log(path);
     this.ipc.send('loadGH',path);
   }
-  changes(v){
+  opacityChanges(v){
     this.electron.setOpacity(v);
   }
   ngAfterViewChecked(){

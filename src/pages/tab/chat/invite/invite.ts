@@ -137,7 +137,7 @@ export class InvitePage {
       const member_list = room.data.members;
       const member_count = Object.keys(member_list).length;
       if(member_list){
-        if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(target_uid) && member_count == 2){
+        if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(target_uid) && room.data.is_group != 1){
           selectedRoom = room;
           break;
         }

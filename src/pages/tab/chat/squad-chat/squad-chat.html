@@ -2,7 +2,7 @@
     <ion-item class="drag listBorder" no-margin no-padding no-lines>
         <div class="electron-menu">
           <ion-item class="opacity">
-            <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="changes(opacity)"></ion-range>
+            <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="opacityChanges(opacity)"></ion-range>   
           </ion-item>
           <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
             <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>

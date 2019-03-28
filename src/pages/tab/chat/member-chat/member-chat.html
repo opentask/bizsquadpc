@@ -2,7 +2,7 @@
   <ion-item class="drag listBorder" no-margin no-padding no-lines>
       <div class="electron-menu">
         <ion-item class="opacity">
-          <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="changes(opacity)"></ion-range>
+          <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="opacityChanges(opacity)"></ion-range> 
         </ion-item> 
         <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
           <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
@@ -40,9 +40,14 @@
           </ion-avatar>
         </ng-container>
       </ng-container>
+      <ng-container *ngIf="roomCount === 1">
+        <!-- 방에 혼자 있다면... -->
+        <div style="height:40px; width:20px; position: relative; float: left;"></div>
+      </ng-container>
 
-      <h2 class="chatName">{{ chatTitle | slice : 0 : chatTitle.length - 1 }}</h2>
-      <p class="members" *ngIf="chatTitle != ''"><ion-icon name="person"></ion-icon> {{this.roomCount}} </p>
+      <h2 class="chatName" *ngIf="roomCount > 1">{{ chatTitle | slice : 0 : chatTitle.length - 1 }}</h2>
+      <h2 class="chatName" *ngIf="roomCount === 1">No conversation member</h2>
+      <p class="members"><ion-icon name="person"></ion-icon> {{this.roomCount}} </p>
       <div class="header-menu">
         <button ion-button clear icon-only small color="dark">
           <ion-icon name="search"></ion-icon>
@@ -50,7 +55,7 @@
         <button ion-button clear icon-only small color="dark">
           <ion-icon name="notifications"></ion-icon>
         </button>
-        <button ion-button clear icon-only small color="dark">
+        <button ion-button clear icon-only small color="dark" (tap)="presentPopover($event)">
           <ion-icon name="menu"></ion-icon>
         </button>
       </div>
