@@ -4,7 +4,6 @@ const { ipcMain,dialog } = require('electron');
 const { shell } = require('electron');
 const url = require('url');
 const path = require('path');
-const contextMenu = require('electron-context-menu');
 // const {dialog} = require('electron');
 // Module to control application life.
 const { app,Notification,Menu } = electron;
@@ -48,7 +47,7 @@ function createWindow() {
         slashes: true
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
     
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -100,7 +99,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    chatRoom.webContents.openDevTools();
+    // chatRoom.webContents.openDevTools();
     
 });
  
