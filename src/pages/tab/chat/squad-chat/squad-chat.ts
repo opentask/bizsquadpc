@@ -57,11 +57,11 @@ export class SquadChatPage {
         }
       })
       // esc 버튼 클릭시 채팅창 닫기.
-      // document.addEventListener('keydown', event => {
-      //   if(event.key === 'Escape' || event.keyCode === 27){
-      //     this.electron.windowClose();
-      //   }
-      // })
+      document.addEventListener('keydown', event => {
+        if(event.key === 'Escape' || event.keyCode === 27){
+          this.electron.windowClose();
+        }
+      })
       this.ipc = electron.ipc;
   }
 
@@ -94,6 +94,18 @@ export class SquadChatPage {
           }
         });
       }
+      const drag_file = document.getElementById('drag-file');
+      drag_file.addEventListener('drop',(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let data = e.dataTransfer;
+        if(data.items){
+          for (var i=0; i < data.files.length; i++) {
+              console.log(data.files[i]);
+              this.dragFile(data.files[i]);
+            }
+        }
+      })
     }
 
     // 입력한 메세지 배열에 담기
@@ -115,6 +127,8 @@ export class SquadChatPage {
       this.chatService.updateLastRead("squad-chat-room",this.bizFire.currentUID,this.selectSquad.sid,this.selectSquad.data.gid)
     })
   }
+
+  
 
   sendMsg(){
     // 앞, 뒤 공백제거 => resultString
@@ -139,6 +153,18 @@ export class SquadChatPage {
       return;
     } else {
       this.chatService.sendMessage("squad-chat",fileInfo.name,this.selectSquad.sid,this.selectSquad.data.gid,fileInfo);
+    }
+  }
+
+  dragFile(file){
+    if(file.length === 0 ) {
+      return;
+    }
+    if(file && file.size > 10000000){
+      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+      return;
+    } else {
+      this.chatService.sendMessage("squad-chat",file.name,this.selectSquad.sid,this.selectSquad.data.gid,file);
     }
   }
 

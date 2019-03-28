@@ -77,7 +77,7 @@
             <!-- 메세지 폼 -->
             <div class="msg-content" *ngIf="msg.data.file == null && msg.data.message != ''">
               <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
-              <p class="line-breaker">{{msg.data.message}}</p>
+              <p class="line-breaker textdrag">{{msg.data.message}}</p>
               <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
                 <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
               </div>
@@ -88,7 +88,7 @@
                 <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.file.path)">
                   <ion-icon name="download"></ion-icon>
                 </button>
-                <p class="line-breaker">{{msg.data.file.name}}</p>
+                <p class="line-breaker textdrag">{{msg.data.file.name}}</p>
                 <p class="line-breaker file-volume">Size: {{ msg.data.file.size / 1000 | number: '1.0-1' }}KB</p>
                 <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
@@ -120,13 +120,14 @@
       <button ion-button clear icon-only small color="dark" (click)="fileAttach.click()">
         <ion-icon name="attach"></ion-icon>
       </button>
-      <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
+      <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event.file.target.files[0])">
       <button ion-button clear icon-only small color="dark">
         <ion-icon name="happy"></ion-icon>
       </button> 
     </div>
     <div class="input-wrap">
-      <textarea #chat_input
+      <textarea id="drag-file" 
+                #chat_input
                 placeholder=""
                 [(ngModel)]="editorMsg"
                 (keyup.enter)="sendMsg()">

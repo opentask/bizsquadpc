@@ -50,7 +50,7 @@
             <!-- 메세지 폼 -->
             <div class="msg-content" *ngIf="msg.data.file == null && msg.data.message != ''">
                 <span class="triangle" *ngIf="msg.data.senderId == this.bizFire.currentUID"></span>
-                <p class="line-breaker">{{msg.data.message}}</p>
+                <p class="line-breaker textdrag">{{msg.data.message}}</p>
                 <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>
@@ -99,7 +99,8 @@
         </button> 
       </div>
       <div class="input-wrap">
-        <textarea #chat_input
+        <textarea id="drag-file"
+                  #chat_input
                   placeholder=""
                   [(ngModel)]="editorMsg"
                   (keyup.enter)="sendMsg()"

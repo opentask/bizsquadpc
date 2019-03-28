@@ -233,7 +233,7 @@ export class ChatService {
     }
 
     checkIfHasNewMessage(d) {
-        if(d.data.lastMessageTime != null){
+        if(d.data.lastMessageTime != null && d.data.lastMessageTime > 1){
             if(d.data.read !=null && d.data.read[this.bizFire.currentUID] != null){
                 let ret = d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
                 return ret;
@@ -245,7 +245,7 @@ export class ChatService {
         }
     }
     checkIfHasNewMessageNotify(d) {
-        if(d.data.lastMessageTime != null){
+        if(d.data.lastMessageTime != null && d.data.lastMessageTime > 1){
             if(d.data.read !=null && d.data.read[this.bizFire.currentUID] != null){
                 let ret = d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
                 if(ret){

@@ -65,11 +65,11 @@ export class MemberChatPage {
         }
       })
       // esc 버튼 클릭시 채팅창 닫기. node_module keycode
-      // document.addEventListener('keydown', event => {
-      //   if(event.key === 'Escape' || event.keyCode === 27){
-      //     this.electron.windowClose();
-      //   }
-      // })
+      document.addEventListener('keydown', event => {
+        if(event.key === 'Escape' || event.keyCode === 27){
+          this.electron.windowClose();
+        }
+      })
       this.ipc = electron.ipc;
     }
   
@@ -115,6 +115,19 @@ export class MemberChatPage {
         this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid);
       })
 
+      const drag_file = document.getElementById('drag-file');
+      drag_file.addEventListener('drop',(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let data = e.dataTransfer;
+        if(data.items){
+          for (var i=0; i < data.files.length; i++) {
+              console.log(data.files[i]);
+              this.dragFile(data.files[i]);
+            }
+        }
+      })
+
     }
     // this.chatService.createRoom(null);
 
@@ -132,6 +145,20 @@ export class MemberChatPage {
       this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.gid,fileInfo);
     }
   }
+  dragFile(file){
+    console.log(file.size);
+    console.log(file.name);
+    if(file.length === 0 ) {
+      return;
+    }
+    if(file && file.size > 10000000){
+      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+      return;
+    } else {
+      this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.gid,file);
+    }
+  }
+
   sendMsg(){
     // 앞, 뒤 공백제거 => resultString
     if(this.editorMsg !=null){

@@ -8,6 +8,9 @@ page-squad-chat {
     .drag{
         -webkit-app-region: drag;
     }
+    .textdrag{
+        -webkit-user-select: text;
+    }
     .login-top-menu{
         -webkit-app-region: no-drag;
         color: #757272;
@@ -43,7 +46,9 @@ page-squad-chat {
         display: inline-block;
     }
     .header-menu{
-        float:right;
+        position: absolute;
+        right: 0;
+        bottom: 10px;
         -webkit-app-region: no-drag;
     }
     .squadChatTitleCon{
@@ -71,6 +76,7 @@ page-squad-chat {
         line-height: 2.5;
     }
     .listBorder{
+        height: 84px;
         border-bottom: 1px solid #e0e0e0 !important;
     }
 
