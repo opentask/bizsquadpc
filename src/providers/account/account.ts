@@ -21,6 +21,7 @@ export class AccountService {
      });
   }
 
+
     getUserObserver(uid: string): Observable<IUser | null> {
         if(this.userObserverMap[uid] != null){
             return this.userObserverMap[uid].asObservable(); //pipe needed?
@@ -76,6 +77,7 @@ export class AccountService {
             return combineLatest(push);
         }
     }
+    
 
     static userInfoSorter(a: IUser, b: IUser): number {
         let index = 0;

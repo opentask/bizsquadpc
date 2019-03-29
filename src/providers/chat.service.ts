@@ -51,6 +51,12 @@ export interface IFiles{
     url:string
 }
 
+export interface IroomData{
+    cid : string,
+    data : IChatRoomData,
+    uid : string
+}
+
 @Injectable({
     providedIn: 'root'
 })

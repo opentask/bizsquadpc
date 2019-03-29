@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, PopoverController } from 'ionic-angular';
 import { Electron } from '../../../../../providers/electron/electron';
 import { AlertProvider } from '../../../../../providers/alert/alert';
+import { IroomData } from '../../../../../providers/chat.service';
 
 /**
  * Generated class for the MemberChatMenuPage page.
@@ -21,16 +22,14 @@ import { AlertProvider } from '../../../../../providers/alert/alert';
 })
 export class MemberChatMenuPage {
 
-  roomData : {
-    uid : string,
-    cid : string,
-  }
+  roomData : IroomData;
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public viewCtrl: ViewController,
     public electron: Electron,
+    public popoverCtrl :PopoverController,
     public alertCtrl : AlertProvider,) {
   }
 
@@ -38,15 +37,19 @@ export class MemberChatMenuPage {
   ngOnInit(): void {
 
     this.roomData = this.navParams.get('roomData');
-
   }
 
-  Invite(){
+  Invite(ev){
     console.log(this.roomData);
-    // this.viewCtrl.dismiss();
+    let popover = this.popoverCtrl.create('page-invite-room',{roomData : this.roomData}, {cssClass: 'page-invite-room'});
+    popover.present({ev: ev}).then(() => this.viewCtrl.dismiss());
   }
 
   leaveChatRoom(){
+    this.viewCtrl.dismiss();
     this.alertCtrl.leaveRoomAlert(this.roomData.uid,this.roomData.cid)
+  }
+  close(){
+    this.viewCtrl.dismiss(); 
   }
 }

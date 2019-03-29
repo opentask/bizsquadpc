@@ -77,6 +77,20 @@ ion-item:hover a {
         border-bottom-right-radius: 5px;
     }
 }
+.page-invite-room{
+    .popover-content{
+        right: 15px !important;
+        left: auto !important;
+        width: 280px;
+        height: 400px;
+        border: 3px;
+        background-color: #f6f6f6 !important;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+}
 // member page - popover template
 .page-member-chat-menu{
     .popover-content{
@@ -84,7 +98,7 @@ ion-item:hover a {
         left: auto !important;
         right: 18px;
         width: 130px;
-        height: 50px;
+        height: 72px;
         border: 3px;
         background-color: #f6f6f6 !important;
         border-radius: 5px;

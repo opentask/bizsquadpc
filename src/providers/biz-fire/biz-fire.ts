@@ -42,6 +42,20 @@ export interface IBizGroup {
             badgeVisible?: boolean,
         }
 }
+export interface Igroup {
+    created?: number,
+    manageInfo?: {
+        password: string
+    },
+    manager: any,
+    members: any,
+    photoURL?: string,
+    status?: number,
+    team_color?: string,
+    team_description?: string,
+    team_id?: string,
+    team_name?: string,
+}
 
 @Injectable({
     providedIn: 'root'

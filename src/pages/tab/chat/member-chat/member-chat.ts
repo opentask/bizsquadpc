@@ -6,9 +6,8 @@ import { ChatService, IChatRoom, IRoomMessages, IChatRoomData } from '../../../.
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { IUser } from '../../../../_models/message';
-import { filter, takeUntil } from 'rxjs/operators';
-import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
+import { IUser, IUserData } from '../../../../_models/message';
+import { filter, takeUntil, take } from 'rxjs/operators';
 
 export interface Ichats {
   message: string,
@@ -76,27 +75,42 @@ export class MemberChatPage {
 
   ngOnInit(): void {
     this.chatroom = this.navParams.get('roomData');
-    console.log(this.chatroom);
 
     if(this.chatroom != null) {
       // // * get USERS DATA !
       let chatMembers = [];
       const c_members = this.chatroom.data.members;
-      console.log("c_members",c_members);
       chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
       console.log(chatMembers);
-      this.accountService.getAllUserInfos(chatMembers).pipe(filter(m => m != null))
+      this.accountService.getAllUserInfos(chatMembers).pipe(filter(m => m != null),take(1))
       .subscribe(members => {
         this.roomMembers = members.filter(m => m != null);
-        this.roomCount = this.roomMembers.length + 1;
-        console.log(this.roomMembers);
         this.chatTitle = '';
+        this.roomCount = Object.keys(members).length + 1;
         this.roomMembers.forEach(m => {
           this.chatTitle += m.data.displayName + ",";
         })
-      })    
-      
-      // 입력한 메세지 배열에 담기
+      })
+
+      // 채팅방 정보 가져오기
+      this.bizFire.afStore.doc(`chats/${this.chatroom.cid}`).valueChanges().subscribe((roomData : IChatRoomData) => {
+        let chatMembers = [];
+        chatMembers = Object.keys(roomData.members).filter(uid => roomData.members[uid] === true && uid != this.chatroom.uid);
+        this.roomCount = Object.keys(roomData.members).length;
+
+        this.accountService.getAllUserInfos(chatMembers).pipe(filter(m => m != null),take(1))
+        .subscribe(members => {
+          this.roomMembers = members.filter(m => m != null);
+          this.chatTitle = '';
+          this.roomMembers.forEach(m => {
+            this.chatTitle += m.data.displayName + ",";
+          })
+        })
+        console.log("valueChanges",roomData);
+      })
+
+
+      // 입력한 메세지 배열에 담기. 누군가 메세지를 입력했다면 라스트 리드 업데이트
       this.bizFire.afStore.collection(`chats/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))
       .stateChanges().subscribe(snap => {
         this.readMessages = snap.map(d => (
@@ -115,6 +129,8 @@ export class MemberChatPage {
         this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid);
       })
 
+
+      // 드래그해서 파일 첨부 기능.
       const drag_file = document.getElementById('drag-file');
       drag_file.addEventListener('drop',(e) => {
         e.preventDefault();
@@ -182,12 +198,7 @@ export class MemberChatPage {
   }
 
   presentPopover(ev): void {
-    let roomData;
-    roomData = {
-      uid : this.chatroom.uid,
-      cid : this.chatroom.cid
-    }
-    let popover = this.popoverCtrl.create('page-member-chat-menu',{roomData : roomData}, {cssClass: 'page-member-chat-menu'});
+    let popover = this.popoverCtrl.create('page-member-chat-menu',{roomData : this.chatroom}, {cssClass: 'page-member-chat-menu'});
     popover.present({ev: ev});
   }
 
