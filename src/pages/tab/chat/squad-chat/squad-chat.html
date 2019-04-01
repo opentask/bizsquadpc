@@ -36,15 +36,33 @@
              class="message"
              [class.left]="msg.data.senderId != this.bizFire.currentUID"
              [class.right]="msg.data.senderId === this.bizFire.currentUID">
-          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID">
+          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
             <span class="senderName">{{ msg.data.senderName | slice:0:2 }}</span>
           </ion-avatar>
           <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
             <img class="user-img" src="{{msg.data.photoURL}}">
           </ion-avatar>
           <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
+
+          <!-- 날짜 표시 컨텐츠 -->
+          <div class="notice_content" *ngIf="msg.data.notice === 1">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-4>
+                    <hr>
+                </ion-col>
+                <ion-col col-4 class="time_notice">
+                    <div>{{ msg.data.created * 1000 | date: 'MMMM d'}}th, {{ msg.data.created * 1000 | date: 'yyyy' }}</div>
+                </ion-col>
+                <ion-col col-4>
+                    <hr>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <!-- 메세지 컨텐츠 -->
           <div class="msg-detail">
-            <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID">
+            <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
               <p>{{msg.data.senderName}}</p>
             </div>
             <!-- 메세지 폼 -->
@@ -81,7 +99,7 @@
                   </div>
                 </div>
               </ng-container>
-            <div class="msg-time-content" *ngIf="msg.data.senderId != this.bizFire.currentUID">
+            <div class="msg-time-content" *ngIf="msg.data.senderId != this.bizFire.currentUID  && msg.data.notice != 1">
               <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
             </div>
           </div>
@@ -103,7 +121,6 @@
                   #chat_input
                   placeholder=""
                   [(ngModel)]="editorMsg"
-                  (keyup.enter)="sendMsg()"
                   (focusin)="onFocus()">
         </textarea>  
         <button class="sendButton" ion-button item-right (click)="sendMsg()">

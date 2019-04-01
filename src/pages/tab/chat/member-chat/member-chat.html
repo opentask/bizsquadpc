@@ -84,7 +84,7 @@
                     <hr>
                 </ion-col>
                 <ion-col col-4 class="time_notice">
-                    <div>{{ msg.data.created * 1000 | date: 'yyyy년 MM월 dd일'}}</div>
+                    <div>{{ msg.data.created * 1000 | date: 'MMMM d'}}th, {{ msg.data.created * 1000 | date: 'yyyy' }}</div>
                 </ion-col>
                 <ion-col col-4>
                     <hr>
@@ -113,7 +113,7 @@
                 </button>
                 <p class="line-breaker textdrag">{{msg.data.files.name}}</p>
                 <p class="line-breaker file-volume">Size: {{ msg.data.files.size / 1000 | number: '1.0-1' }}KB</p>
-                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid && msg.data.message != ''">
+                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>
               </div>
@@ -126,12 +126,12 @@
                 </button>
                 <img class="msg-img" [ngClass]="{'msg-img-svg': msg.data.files.type == 'image/svg+xml'}" [src]="msg.data.files.url">
                 <span class="triangle" *ngIf="!msg.data.files && msg.data.senderId == chatroom.uid"></span>
-                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid && msg.data.message != ''">
+                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>
               </div>
             </ng-container>
-            <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid && msg.data.message != ''">
+            <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid && msg.data.notice != 1">
               <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
             </div>
           </div>
@@ -143,7 +143,7 @@
       <button ion-button clear icon-only small color="dark" (click)="fileAttach.click()">
         <ion-icon name="attach"></ion-icon>
       </button>
-      <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event.file.target.files[0])">
+      <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
       <button ion-button clear icon-only small color="dark">
         <ion-icon name="happy"></ion-icon>
       </button> 
@@ -152,7 +152,8 @@
       <textarea id="drag-file" 
                 #chat_input
                 placeholder=""
-                [(ngModel)]="editorMsg">
+                [(ngModel)]="editorMsg"
+                (focusin)="onFocus()">
       </textarea>  
       <button class="sendButton" ion-button item-right (click)="sendMsg()">
         send

@@ -213,6 +213,21 @@ page-squad-chat {
                 margin-left: 0 !important;
             }
 
+            .notice_content {
+                position: relative;
+                margin-top: 5px;
+                color: black;
+                width: 100%;
+                text-align: center;
+                height: 10px;
+                .time_notice{
+                    font-size: 12px;
+                    font-weight: 500;
+                    color:#333;
+                    padding: 5px 0;
+                }
+              }
+
             ion-avatar{
                 border-radius: 100%;
                 position: absolute;

@@ -43,6 +43,7 @@ export interface IRoomMessagesData {
     senderId: string,
     senderName: string,
     notice?: number,
+    timeStamp?: any
 }
 export interface IFiles{
     name:string,
@@ -168,6 +169,7 @@ export class ChatService {
 
     sendMessage(room_type,txt_message,id,gid?,file?:File) {
             const now = new Date();
+            const serverNow = firebase.firestore.FieldValue.serverTimestamp();
             let checkFileText = txt_message;
             let filePath;
             if(file != null) {
@@ -180,6 +182,7 @@ export class ChatService {
                 senderId: this.bizFire.currentUID,
                 senderName: this.bizFire.currentUserValue.displayName,
                 photoURL: this.bizFire.currentUserValue.photoURL,
+                timeStamp: serverNow
             }
             this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(message =>{
                 const uid = this.bizFire.currentUID;
@@ -188,8 +191,10 @@ export class ChatService {
                     lastMessageTime : now.getTime() / 1000 | 0,
                     read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
                 },{merge : true}).then(() => {
-                    if(room_type == "squad-chat"){
+                    if(room_type == "squad-chat" && file != null){
                         filePath = `chatsquad/${gid}/${id}/chat/${message.id}/${file.name}`
+                    } else if(room_type == "member-chat" && file != null){
+                        filePath = `chat/${gid}/${id}/chat/${message.id}/${file.name}`
                     }
                     if(file != null) {
                         this.uploadFilesToChat(file,room_type,id,gid,message.id,file.name).then(url =>{
@@ -215,7 +220,6 @@ export class ChatService {
                         this.loading.hide();
                     }
                 }).catch(error => console.log("라스트 메세지 작성에러",error))
-                // this.onSelectChatRoom.next(selectedRoom);
 
             }).catch(error => console.error("메세지작성에러",error));
     }
@@ -227,7 +231,7 @@ export class ChatService {
             created: now.getTime() / 1000 - 1 | 0,
             senderId: 'Dev',
             senderName: 'Notice',
-            notice: 1
+            notice: 1,
         }
         this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(() =>{
             if(txt_message != '')

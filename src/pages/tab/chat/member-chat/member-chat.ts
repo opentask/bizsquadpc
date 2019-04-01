@@ -3,11 +3,12 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService, IChatRoom, IRoomMessages, IChatRoomData } from '../../../../providers/chat.service';
-import { BizFireService, LoadingProvider } from '../../../../providers';
-import { User, database } from 'firebase';
+import { BizFireService } from '../../../../providers';
+import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { IUser, IUserData } from '../../../../_models/message';
-import { filter, takeUntil, take } from 'rxjs/operators';
+import { IUser } from '../../../../_models/message';
+import { filter, take } from 'rxjs/operators';
+import firebase from 'firebase';
 
 export interface Ichats {
   message: string,
@@ -75,6 +76,7 @@ export class MemberChatPage {
   
 
   ngOnInit(): void {
+    console.log(this.chatroom);
     this.chatroom = this.navParams.get('roomData');
 
     if(this.chatroom != null) {
@@ -114,16 +116,16 @@ export class MemberChatPage {
       // 입력한 메세지 배열에 담기. 누군가 메세지를 입력했다면 라스트 리드 업데이트
       this.bizFire.afStore.collection(`chats/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))
       .stateChanges().subscribe(snap => {
-        this.readMessages = snap.map(d => (
-          {
-            rid: d.payload.doc.id,
-            data:d.payload.doc.data()
-          } as IRoomMessages
-        ));
-        this.readMessages.forEach(msg =>{
-          if(msg.data.message != '' || msg.data.notice === 1) {
-            this.messages.push(msg);
-            console.log(msg);
+        snap.forEach(d => {
+          const msgData = {rid: d.payload.doc.id, data:d.payload.doc.data()} as IRoomMessages;
+          if(d.type == 'added' && msgData.data.message != '' || msgData.data.notice === 1){
+            this.messages.push(msgData);
+          }
+          if(d.type == 'modified'){
+            let ret = msgData.data.files != null && msgData.data.message != '';
+            if(ret){
+              this.messages.push(msgData);
+            }
           }
         })
         this.onFocus();
@@ -181,10 +183,12 @@ export class MemberChatPage {
 
   sendMsg(){
     // 앞, 뒤 공백제거 => resultString
+    console.log("sendMsg() 실행")
     if(this.editorMsg !=null){
       const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
       this.editorMsg = '';
       const now = new Date();
+
       const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
 
       if(resultString != '' && now.getDay() <= lastmessage.getDay()){
