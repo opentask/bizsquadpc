@@ -135,7 +135,6 @@ export class ChatPage {
   gotoRoom(value:IChatRoom){
       value.uid = this.bizFire.currentUID;
       this.chatService.onSelectChatRoom.next(value);
-      console.log("룸데이터 최신화되었는가",value);
       this.electron.openChatRoom(value);
   }
   gotoSquadRoom(value : ISquad){

@@ -236,7 +236,6 @@ export class ProfilePage {
       this.chatService.createRoomByProfile("member",this.myValue.uid,this.targetValue.uid);
     } else {
       this.chatService.onSelectChatRoom.next(selectedRoom);
-      console.log("룸데이터 최신화되었는가",selectedRoom);
       this.electron.openChatRoom(selectedRoom);
     }
     this.closePopover();

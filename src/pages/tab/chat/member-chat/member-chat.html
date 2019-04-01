@@ -68,16 +68,34 @@
             class="message"
             [class.left]="msg.data.senderId != chatroom.uid"
             [class.right]="msg.data.senderId === chatroom.uid">
-          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != chatroom.uid">
+          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != chatroom.uid && msg.data.message != ''">
             <span class="senderName">{{ msg.data.senderName | slice:0:2 }}</span>
           </ion-avatar>
           <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != chatroom.uid">
             <img class="user-img" src="{{msg.data.photoURL}}">
           </ion-avatar>
           <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
+
+          <!-- 날짜 표시 컨텐츠 -->
+          <div class="notice_content" *ngIf="msg.data.notice === 1">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-4>
+                    <hr>
+                </ion-col>
+                <ion-col col-4 class="time_notice">
+                    <div>{{ msg.data.created * 1000 | date: 'yyyy년 MM월 dd일'}}</div>
+                </ion-col>
+                <ion-col col-4>
+                    <hr>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <!-- 메세지 컨텐츠 -->
           <div class="msg-detail">
-            <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid">
-              <p>{{msg.data.senderName}}</p>
+            <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid && msg.data.message != ''">
+              ㄱ<p>{{msg.data.senderName}}</p>
             </div>
             <!-- 메세지 폼 -->
             <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
@@ -95,7 +113,7 @@
                 </button>
                 <p class="line-breaker textdrag">{{msg.data.files.name}}</p>
                 <p class="line-breaker file-volume">Size: {{ msg.data.files.size / 1000 | number: '1.0-1' }}KB</p>
-                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
+                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid && msg.data.message != ''">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>
               </div>
@@ -108,12 +126,12 @@
                 </button>
                 <img class="msg-img" [ngClass]="{'msg-img-svg': msg.data.files.type == 'image/svg+xml'}" [src]="msg.data.files.url">
                 <span class="triangle" *ngIf="!msg.data.files && msg.data.senderId == chatroom.uid"></span>
-                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
+                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid && msg.data.message != ''">
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>
               </div>
             </ng-container>
-            <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid">
+            <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid && msg.data.message != ''">
               <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
             </div>
           </div>
@@ -134,8 +152,7 @@
       <textarea id="drag-file" 
                 #chat_input
                 placeholder=""
-                [(ngModel)]="editorMsg"
-                (keyup.enter)="sendMsg()">
+                [(ngModel)]="editorMsg">
       </textarea>  
       <button class="sendButton" ion-button item-right (click)="sendMsg()">
         send

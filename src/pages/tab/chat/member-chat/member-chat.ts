@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, Content, PopoverController } from 
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService, IChatRoom, IRoomMessages, IChatRoomData } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
-import { User } from 'firebase';
+import { User, database } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { IUser, IUserData } from '../../../../_models/message';
 import { filter, takeUntil, take } from 'rxjs/operators';
@@ -40,6 +40,7 @@ export class MemberChatPage {
   chatroom : IChatRoom;
   room_type : string = "chatRoom";
   ipc : any;
+  roomData : IChatRoomData;
 
   // room info
   roomMembers: IUser[];
@@ -94,6 +95,7 @@ export class MemberChatPage {
 
       // 채팅방 정보 가져오기
       this.bizFire.afStore.doc(`chats/${this.chatroom.cid}`).valueChanges().subscribe((roomData : IChatRoomData) => {
+        this.roomData = roomData;
         let chatMembers = [];
         chatMembers = Object.keys(roomData.members).filter(uid => roomData.members[uid] === true && uid != this.chatroom.uid);
         this.roomCount = Object.keys(roomData.members).length;
@@ -106,7 +108,6 @@ export class MemberChatPage {
             this.chatTitle += m.data.displayName + ",";
           })
         })
-        console.log("valueChanges",roomData);
       })
 
 
@@ -120,7 +121,7 @@ export class MemberChatPage {
           } as IRoomMessages
         ));
         this.readMessages.forEach(msg =>{
-          if(msg.data.message != '') {
+          if(msg.data.message != '' || msg.data.notice === 1) {
             this.messages.push(msg);
             console.log(msg);
           }
@@ -128,7 +129,6 @@ export class MemberChatPage {
         this.onFocus();
         this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid);
       })
-
 
       // 드래그해서 파일 첨부 기능.
       const drag_file = document.getElementById('drag-file');
@@ -143,10 +143,14 @@ export class MemberChatPage {
             }
         }
       })
-
+      // angular keydown.enter는 이벤트가 두번실행 되므로 이벤트 리스너로 대체 해결.
+      drag_file.addEventListener('keydown',(e) => {
+        if(e.key === 'Escape' || e.keyCode === 13){
+          this.sendMsg();
+        }
+      })
     }
     // this.chatService.createRoom(null);
-
   }
   file(file){
     let fileInfo;
@@ -180,8 +184,14 @@ export class MemberChatPage {
     if(this.editorMsg !=null){
       const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
       this.editorMsg = '';
-      if(resultString != '') {
-          this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
+      const now = new Date();
+      const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
+
+      if(resultString != '' && now.getDay() <= lastmessage.getDay()){
+        this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
+      } else if(resultString != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null){
+        console.log("여기실행");
+        this.chatService.writeTodayAndSendMsg("member-chat",resultString,this.chatroom.cid);
       }
     }
     this.editorMsg = '';

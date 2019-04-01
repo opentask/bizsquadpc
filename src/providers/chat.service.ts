@@ -39,9 +39,10 @@ export interface IRoomMessagesData {
     created: number,
     files?: IFiles,
     message: string,
-    photoURL: string,
+    photoURL?: string,
     senderId: string,
     senderName: string,
+    notice?: number,
 }
 export interface IFiles{
     name:string,
@@ -106,11 +107,16 @@ export class ChatService {
     }
     createRoomByFabs(type,members:IUser[]=[]) {
         const now = new Date();
+        let is_group = 1;
+        // fabs invite에서 초대 한 멤버가 한명일 경우 그룹채팅이 아니다.
+        if(members.length === 1){
+            is_group = 0;
+        }
         const newRoom:IChatRoomData = {
             created:  now.getTime() / 1000 | 0,
             gid: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
-            is_group: 1,
+            is_group: is_group,
             members:{
                 [this.bizFire.currentUID]:true
             }
@@ -175,7 +181,6 @@ export class ChatService {
                 senderName: this.bizFire.currentUserValue.displayName,
                 photoURL: this.bizFire.currentUserValue.photoURL,
             }
-
             this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(message =>{
                 const uid = this.bizFire.currentUID;
                 this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',id,gid)).set({
@@ -213,6 +218,21 @@ export class ChatService {
                 // this.onSelectChatRoom.next(selectedRoom);
 
             }).catch(error => console.error("메세지작성에러",error));
+    }
+
+    writeTodayAndSendMsg(room_type,txt_message,id,gid?,file?:File){
+        const now = new Date();
+        const newMessage: IRoomMessagesData = {
+            message: '',
+            created: now.getTime() / 1000 - 1 | 0,
+            senderId: 'Dev',
+            senderName: 'Notice',
+            notice: 1
+        }
+        this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(() =>{
+            if(txt_message != '')
+            this.sendMessage(room_type,txt_message,id,gid,file);
+        })
     }
 
     uploadFilesToChat(file,type,id,gid,message_id,fileName): Promise<any> {
@@ -289,6 +309,8 @@ export class ChatService {
             return false;
         }
     }
+
+    check
 
     onNotification(msg){
         Notification.requestPermission().then(() => {
