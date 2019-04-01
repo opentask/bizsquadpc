@@ -95,7 +95,7 @@
           <!-- 메세지 컨텐츠 -->
           <div class="msg-detail">
             <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid && msg.data.message != ''">
-              ㄱ<p>{{msg.data.senderName}}</p>
+              <p>{{msg.data.senderName}}</p>
             </div>
             <!-- 메세지 폼 -->
             <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
