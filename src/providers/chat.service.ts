@@ -1,7 +1,7 @@
 import { Electron } from './electron/electron';
 import { Injectable } from '@angular/core';
 import { BizFireService } from './biz-fire/biz-fire';
-import { SquadService, ISquad } from './squad.service';
+import { SquadService } from './squad.service';
 import { BehaviorSubject } from 'rxjs';
 import { IUser } from '../_models/message';
 import { resolve } from 'path';
@@ -43,9 +43,8 @@ export interface IRoomMessagesData {
     senderId: string,
     senderName: string,
     notice?: number,
-    timeStamp?: any
 }
-export interface IFiles{
+export interface IFiles {
     name:string,
     size:number,
     type:string,
@@ -169,7 +168,7 @@ export class ChatService {
 
     sendMessage(room_type,txt_message,id,gid?,file?:File) {
             const now = new Date();
-            const serverNow = firebase.firestore.FieldValue.serverTimestamp();
+
             let checkFileText = txt_message;
             let filePath;
             if(file != null) {
@@ -182,7 +181,6 @@ export class ChatService {
                 senderId: this.bizFire.currentUID,
                 senderName: this.bizFire.currentUserValue.displayName,
                 photoURL: this.bizFire.currentUserValue.photoURL,
-                timeStamp: serverNow
             }
             this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(message =>{
                 const uid = this.bizFire.currentUID;
