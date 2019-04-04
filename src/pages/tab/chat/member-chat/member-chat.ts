@@ -192,7 +192,7 @@ export class MemberChatPage {
       let selectUserData:IUserData;
       if(snap.exists){
         selectUserData = snap.data();
-        if(selectUserData.onlineStatus == 'online' && selectUserData.videoCall == false){
+        if(selectUserData.onlineStatus == 'online' && selectUserData.videoCall == false || selectUserData.videoCall == null){
           this.bizFire.afStore.doc(path).set({
             videoCall : true
           },{merge: true}).then(() => {
