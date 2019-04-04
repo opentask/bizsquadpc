@@ -27,6 +27,24 @@ let chatRoom;
 let selectChatRoom;
 let videoRoom;
 
+ipcMain.on('openVideoCam', (event) => {
+
+    videoRoom = new BrowserWindow({
+        width: 800,
+        height: 450,
+        frame: true,
+    });
+    videoRoom.loadURL(url.format({
+        pathname: path.join(__dirname,'../www/opentok.html'),
+        protocol: 'file:',
+        slashes: true,
+    }))
+    
+    // 개발자 도구를 엽니다. 개발완료 시 주석.
+    videoRoom.webContents.openDevTools();
+    
+});
+
 
 function createWindow() {
     // Create the browser window.
