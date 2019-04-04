@@ -179,6 +179,7 @@ export class SquadPage {
   }
   onvideocam(ev){
     ev.stopPropagation();
+    this.electron.openVedioRoom();
   }
 
   ngOnDestroy(): void {

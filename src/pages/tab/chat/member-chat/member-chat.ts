@@ -180,25 +180,33 @@ export class MemberChatPage {
       this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.gid,file);
     }
   }
+  smile(){
+    console.log(this.editorMsg);
+  }
 
-  sendMsg(){
+  sendMsg() {
+    let clear = '';
+    console.log(this.editorMsg,this.editorMsg.length);
+    let resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
+    resultString = resultString.replace('\n', '');
+    console.log(this.editorMsg, this.editorMsg.length);
     // 앞, 뒤 공백제거 => resultString
-    console.log("sendMsg() 실행")
-    if(this.editorMsg !=null){
-      const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
-      this.editorMsg = '';
-      const now = new Date();
 
+    this.editorMsg = '';
+
+    if(resultString.length > 0){
+
+      const now = new Date();
       const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
 
       if(resultString != '' && now.getDay() <= lastmessage.getDay()){
         this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
-      } else if(resultString != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null){
-        console.log("여기실행");
+      } else if(resultString != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
         this.chatService.writeTodayAndSendMsg("member-chat",resultString,this.chatroom.cid);
       }
     }
-    this.editorMsg = '';
+
+    
   }
 
   // 
