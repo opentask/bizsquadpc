@@ -10,6 +10,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { IUser } from '../../../../_models/message';
 import { filter, take } from 'rxjs/operators';
 import firebase from 'firebase';
+import { AlertProvider } from '../../../../providers/alert/alert';
 
 export interface Ichats {
   message: string,
@@ -61,6 +62,7 @@ export class MemberChatPage {
     public accountService : AccountService,
     public afAuth: AngularFireAuth,
     public popoverCtrl :PopoverController,
+    public alertCtrl: AlertProvider
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -196,6 +198,8 @@ export class MemberChatPage {
           },{merge: true}).then(() => {
               this.electron.openVedioRoom();
           })
+        } else {
+          this.alertCtrl.logoutSelectUser();
         }
       }
     })

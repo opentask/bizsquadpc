@@ -21,6 +21,14 @@ export class AlertProvider {
     });
     alert.present();
   }
+  logoutSelectUser() {
+    const alert = this.alertCtrl.create({
+      title: 'info',
+      subTitle: 'Your opponent is not online.',
+      buttons: ['OK']
+    });
+    alert.present();
+  }
 
   VideoCall(){
     const alert = this.alertCtrl.create({
