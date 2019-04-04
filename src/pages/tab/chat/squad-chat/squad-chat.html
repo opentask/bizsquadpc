@@ -88,7 +88,7 @@
               </ng-container>
               <!-- 파일이 이미지일 경우 폼 -->
               <ng-container *ngIf="msg.data.files != null">
-                <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image'">
+                <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image' || msg.data.files.type.substring(0,5)=='jpg'">
                   <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
                     <ion-icon name="download"></ion-icon>
                   </button>
