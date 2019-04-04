@@ -1,3 +1,4 @@
+import { BizFireService } from './../biz-fire/biz-fire';
 import { ChatService } from './../chat.service';
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
@@ -9,6 +10,7 @@ export class AlertProvider {
     public alertCtrl: AlertController,
     public chatService: ChatService,
     public electron : Electron,
+    public bizFire : BizFireService,
     ) { }
 
   showAlert() {
@@ -18,6 +20,26 @@ export class AlertProvider {
       buttons: ['OK']
     });
     alert.present();
+  }
+
+  VideoCall(){
+    const alert = this.alertCtrl.create({
+      title: 'Video Call',
+      message: 'Someone made a video call to you.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        }, {
+          text: 'Connect',
+          handler: () => {
+            this.electron.openVedioRoom();
+            this.bizFire.videoCallSuccess();
+          }
+        }
+      ]
+    })
+    return alert.present();
   }
 
   leaveRoomAlert(uid,cid){

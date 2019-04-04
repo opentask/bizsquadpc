@@ -336,6 +336,11 @@ export class BizFireService {
         }, {merge: true})
     }
   }
+  videoCallSuccess(){
+    return this.afStore.doc(`users/${this.currentUID}`).set({
+        videoCall : false
+      }, {merge: true})
+  }
   getUserOnlineStatus() {
     return this.afStore.doc(`users/${this.currentUID}`).set({
       onlineStatus : 'offline'

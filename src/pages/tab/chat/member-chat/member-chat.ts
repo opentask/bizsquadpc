@@ -1,3 +1,4 @@
+import { IUserData } from './../../../../_models/message';
 import { AccountService } from './../../../../providers/account/account';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
@@ -42,6 +43,7 @@ export class MemberChatPage {
   room_type : string = "chatRoom";
   ipc : any;
   roomData : IChatRoomData;
+  chatMembers = [];
 
   // room info
   roomMembers: IUser[];
@@ -81,11 +83,10 @@ export class MemberChatPage {
 
     if(this.chatroom != null) {
       // // * get USERS DATA !
-      let chatMembers = [];
       const c_members = this.chatroom.data.members;
-      chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
-      console.log(chatMembers);
-      this.accountService.getAllUserInfos(chatMembers).pipe(filter(m => m != null),take(1))
+      this.chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
+      console.log(this.chatMembers);
+      this.accountService.getAllUserInfos(this.chatMembers).pipe(filter(m => m != null),take(1))
       .subscribe(members => {
         this.roomMembers = members.filter(m => m != null);
         this.chatTitle = '';
@@ -182,6 +183,22 @@ export class MemberChatPage {
   }
   smile(){
     console.log(this.editorMsg);
+  }
+  videoCall(){
+    const path = `users/${this.chatMembers[0]}`;
+    this.bizFire.afStore.doc(path).get().subscribe(snap => {
+      let selectUserData:IUserData;
+      if(snap.exists){
+        selectUserData = snap.data();
+        if(selectUserData.onlineStatus == 'online' && selectUserData.videoCall == false){
+          this.bizFire.afStore.doc(path).set({
+            videoCall : true
+          },{merge: true}).then(() => {
+              this.electron.openVedioRoom();
+          })
+        }
+      }
+    })
   }
 
   sendMsg() {

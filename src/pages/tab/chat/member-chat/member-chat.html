@@ -144,16 +144,18 @@
         <ion-icon name="attach"></ion-icon>
       </button>
       <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
-      <button ion-button clear icon-only small color="dark" (click)="smile()"> 
+      <button ion-button clear icon-only small color="dark" (click)="smile()">
         <ion-icon name="happy"></ion-icon>
+      </button> 
+      <button *ngIf="roomCount === 2" ion-button clear icon-only small color="dark" (click)="videoCall()" style="position: absolute; right:5px">
+        <ion-icon name="videocam"></ion-icon>
       </button> 
     </div>
     <div class="input-wrap">
       <textarea id="drag-file" 
                 #chat_input
                 [(ngModel)]="editorMsg"
-                (keydown)="sendMsg($event)"
-                (focusin)="onFocus()"></textarea>  
+                (focusin)="onFocus()"></textarea>
       <button class="sendButton" ion-button item-right (click)="sendMsg()">
         send
       </button>

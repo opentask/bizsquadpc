@@ -1,10 +1,6 @@
 {
   "name": "bizsquad",
-<<<<<<< HEAD
-  "version": "2.3.8",
-=======
-  "version": "2.3.7",
->>>>>>> 737283df622fdbbc80f9e21b7f7a4388a38976b0
+  "version": "2.3.9",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -39,7 +35,6 @@
     "@ionic-native/splash-screen": "~4.19.0",
     "@ionic-native/status-bar": "~4.19.0",
     "@ionic/storage": "2.2.0",
-    "@opentok/client": "^2.15.10",
     "@swimlane/ngx-datatable": "^14.0.0",
     "electron-log": "^3.0.1",
     "electron-updater": "^4.0.6",

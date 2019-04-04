@@ -1,3 +1,4 @@
+import { AlertProvider } from './../../providers/alert/alert';
 import { AccountService } from './../../providers/account/account';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController,PopoverController } from 'ionic-angular';
@@ -72,7 +73,8 @@ export class TabsPage {
     private noticeService: NotificationService,
     public chatService: ChatService,
     private squadService: SquadService,
-    public accountService : AccountService
+    public accountService : AccountService,
+    public alertCtrl: AlertProvider
     ) {
       // test notification count
       this._unsubscribeAll = new Subject<any>();
@@ -86,6 +88,11 @@ export class TabsPage {
             this.currentUser = user;
             this.displayName = this.bizFire.getDiplayNameInitial();
             this.fullName = user.displayName || user.email;
+            if(user.videoCall){
+                this.alertCtrl.VideoCall().then(() => {
+                    
+                });
+            }
     });
     this.bizFire.onBizGroups
         .pipe(filter(g=>g!=null),
