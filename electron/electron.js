@@ -65,7 +65,7 @@ function createWindow() {
         slashes: true
     }))
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
