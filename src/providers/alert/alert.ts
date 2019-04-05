@@ -42,7 +42,6 @@ export class AlertProvider {
           text: 'Connect',
           handler: () => {
             this.electron.openVedioRoom();
-            this.bizFire.videoCallSuccess();
           }
         }
       ]

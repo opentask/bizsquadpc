@@ -93,9 +93,11 @@ export class BizFireService {
   }
   // * Firestore data + auth.currentUser data.*
   private _currentUser = new BehaviorSubject<IUserData>(null);
+
   get currentUser(): Observable<IUserData>{
       return this._currentUser.asObservable().pipe(filter(u=>u!=null));
   }
+
   get currentUserValue(): IUserData {
       return this._currentUser.getValue();
   }
@@ -338,7 +340,7 @@ export class BizFireService {
   }
   videoCallSuccess(){
     return this.afStore.doc(`users/${this.currentUID}`).set({
-        videoCall : false
+        videoCall : ''
       }, {merge: true})
   }
   getUserOnlineStatus() {

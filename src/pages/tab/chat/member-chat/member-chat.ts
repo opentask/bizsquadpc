@@ -8,7 +8,7 @@ import { BizFireService } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { IUser } from '../../../../_models/message';
-import { filter, take } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import firebase from 'firebase';
 import { AlertProvider } from '../../../../providers/alert/alert';
 
@@ -45,6 +45,9 @@ export class MemberChatPage {
   ipc : any;
   roomData : IChatRoomData;
   chatMembers = [];
+
+  // 화상채팅 보낸 이
+  senderUser: IUserData;
 
   // room info
   roomMembers: IUser[];
@@ -154,6 +157,14 @@ export class MemberChatPage {
           this.sendMsg();
         }
       })
+
+      this.bizFire.currentUser
+      .pipe(filter(d=>d!=null))
+      .subscribe(user => {
+        this.senderUser = user;
+        console.log("currentuser",user);
+      })
+
     }
     // this.chatService.createRoom(null);
   }
@@ -192,9 +203,9 @@ export class MemberChatPage {
       let selectUserData:IUserData;
       if(snap.exists){
         selectUserData = snap.data();
-        if(selectUserData.onlineStatus == 'online' && selectUserData.videoCall == false || selectUserData.videoCall == null){
+        if(selectUserData.onlineStatus == 'online' && selectUserData.videoCall == '' || selectUserData.videoCall == null){
           this.bizFire.afStore.doc(path).set({
-            videoCall : true
+            videoCall : this.senderUser.displayName
           },{merge: true}).then(() => {
               this.electron.openVedioRoom();
           })

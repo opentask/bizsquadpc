@@ -24,7 +24,7 @@ export interface IUserData {
     isChecked?: boolean,
     onlineStatus?: string,
     user_onlineColor?: string,
-    videoCall?: boolean
+    videoCall?: string
 }
 
 

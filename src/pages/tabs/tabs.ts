@@ -89,9 +89,14 @@ export class TabsPage {
             this.displayName = this.bizFire.getDiplayNameInitial();
             this.fullName = user.displayName || user.email;
             if(user.videoCall){
-                this.alertCtrl.VideoCall().then(() => {
-                    
+                Notification.requestPermission().then(() => {
+                    let myNotification = new Notification('Video Call',{
+                    'body': `video call came from ${this.currentUser.videoCall}`,
+                    });
                 });
+                this.alertCtrl.VideoCall().then( () => {
+                    this.bizFire.videoCallSuccess();
+                })
             }
     });
     this.bizFire.onBizGroups
