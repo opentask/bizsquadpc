@@ -43,7 +43,7 @@ export class GroupListPage {
     // get user's bizgroup.
     this.bizFire.onBizGroups
         .pipe(filter(g=>g!=null),
-            takeUntil(this._unsubscribeAll))
+            )
         .subscribe(bizGroups => {
             bizGroups.forEach(group => {
                 if(group){
@@ -67,10 +67,12 @@ export class GroupListPage {
                     let general = 0;
                     let agile = 0;
                     snap.forEach(list => {
-                      if(list.data().type === 'public'){
-                        general += 1;
-                      } else {
-                        agile += 1;
+                      if(list.data().status === 1){
+                        if(list.data().type === 'public'){
+                          general += 1;
+                        } else {
+                          agile += 1;
+                        }
                       }
                     })
                     newData['general_squad_count'] = general;

@@ -19,7 +19,7 @@
 <ion-content no-padding>
   <ion-scroll class="scrollable" scrollY="true">
     <ion-list no-margin *ngFor="let group of groups" (click)="gotoTeam(group)">
-      <ion-item no-lines>
+      <ion-item class="groupListItem" no-lines>
         <ion-avatar *ngIf="!group.data.photoURL" item-start [style.background-color]="group.data.team_color">
           {{ group.data.team_icon }}
         </ion-avatar> 

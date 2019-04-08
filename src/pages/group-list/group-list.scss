@@ -16,6 +16,9 @@ page-group-list {
         line-height: 2.5;
     }
 
+    .groupListItem {
+        background-color: inherit;
+    }
     ion-list:hover {
         background-color: #f6f6f6;
         cursor: pointer;
