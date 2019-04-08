@@ -8,7 +8,8 @@ export class Electron {
   // electron 에서 a링크 사용하기 위한..
   ipc : any;
   onlineStatus : boolean = true;
-  opacity = 0 ;
+  opacity = 0;
+  ses = electron.remote.session;
   
   constructor(public bizFire : BizFireService,) {
     this.ipc = electron.ipcRenderer;
@@ -74,4 +75,10 @@ export class Electron {
     electron.ipcRenderer.send('resetValue');
   }
 
+  setCookie(cookie_name,value) {
+    const cookie = {url:'https://www.bizsquad.net',name : cookie_name, value : value}
+    this.ses.defaultSession.cookies.set(cookie, (error) => {
+      if(error) console.log(error);
+    })
+  }
 }

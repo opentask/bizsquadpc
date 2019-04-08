@@ -152,11 +152,13 @@
       </button> 
     </div>
     <div class="input-wrap">
-      <textarea id="drag-file" 
+      <textarea id="drag-file"
                 #chat_input
-                [(ngModel)]="editorMsg"
-                (focusin)="onFocus()"></textarea>
-      <button class="sendButton" ion-button item-right (click)="sendMsg()">
+                [(ngModel)]="editorMsg" 
+                (keydown)="keydown($event)"
+                (focusin)="onFocus()">
+      </textarea>
+      <button class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)">
         send
       </button>
     </div>

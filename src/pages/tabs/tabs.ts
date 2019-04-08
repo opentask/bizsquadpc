@@ -76,7 +76,7 @@ export class TabsPage {
     public accountService : AccountService,
     public alertCtrl: AlertProvider
     ) {
-      // test notification count
+      // test notification count   
       this._unsubscribeAll = new Subject<any>();
   }
 

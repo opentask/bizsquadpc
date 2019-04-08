@@ -19,13 +19,15 @@ import { IChatRoomData, IChatRoom } from '../../providers/chat.service';
   selector: 'page-login',
   templateUrl: 'login.html',
 })
+
 export class LoginPage implements OnInit {
 
-  autoLogin : boolean;
+  rememberId : boolean = false;
   loginForm: FormGroup;
   version: any;
   hideForm = true;
   imgPath = "imgs/main512.png";
+  userEmail = '';
 
   // 새 창으로 열기위해..
   ipc: any;
@@ -75,10 +77,21 @@ export class LoginPage implements OnInit {
         this.hideForm = true;
       }
     })
+
+    this.electron.ses.defaultSession.cookies.get({url :'https://www.bizsquad.net',name:"rememberCheckValue"}, (error, checkValue_Cookies) => {
+      if(checkValue_Cookies[0].value == "true"){
+        // 쿠키의 값이 true이면 체크박스에 체크표시
+        this.rememberId = true;
+        // 기억 한 아이디를 가져와서 폼데이터에 넣음
+        this.electron.ses.defaultSession.cookies.get({url : 'https://www.bizsquad.net',name:"rememberID"}, (error, id_Cookies) => {
+          this.userEmail = id_Cookies[0].value;
+          console.log(checkValue_Cookies[0].value,id_Cookies[0].value)
+        })
+      }
+    })
   }
 
-  ngOnInit() { 
-
+  ngOnInit() {
     // on/offline check
     window.addEventListener('online',this.electron.updateOnlineStatus);
     window.addEventListener('offline',this.electron.updateOnlineStatus);
@@ -120,6 +133,14 @@ export class LoginPage implements OnInit {
       // 로그인 정보 인증
         this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user => {
           this.loading.hide();
+          // remember me 체크 여부 확인 후 체크했다면 쿠키를 bizsquad.net에 저장.
+          if(this.rememberId){
+            this.electron.setCookie("rememberID",this.loginForm.value['email']);
+            console.log(this.rememberId);
+            this.electron.setCookie("rememberCheckValue","true");
+          } else {
+            this.electron.setCookie("rememberCheckValue","false");
+          }
           // 로그인 시 기존과 다르게 이제 비즈그룹을 선택 후 메인페이지로 이동.
           // this.navCtrl.setRoot('page-tabs').catch(error => console.error(error));
           this.bizFire.getUserOnlineStatus().then(() =>{

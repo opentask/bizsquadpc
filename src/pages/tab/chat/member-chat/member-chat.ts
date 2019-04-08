@@ -152,11 +152,11 @@ export class MemberChatPage {
         }
       })
       // angular keydown.enter는 이벤트가 두번실행 되므로 이벤트 리스너로 대체 해결.
-      drag_file.addEventListener('keydown',(e) => {
-        if(e.key === 'Escape' || e.keyCode === 13){
-          this.sendMsg();
-        }
-      })
+      // drag_file.addEventListener('keydown',(e) => {
+      //   if(e.key === 'Escape' || e.keyCode === 13){
+      //     this.sendMsg();
+      //   }
+      // })
 
       this.bizFire.currentUser
       .pipe(filter(d=>d!=null))
@@ -216,25 +216,39 @@ export class MemberChatPage {
     })
   }
 
-  sendMsg() {
-    let clear = '';
-    console.log(this.editorMsg,this.editorMsg.length);
-    let resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
-    resultString = resultString.replace('\n', '');
-    console.log(this.editorMsg, this.editorMsg.length);
+  keydown(e : any){
+    if (e.keyCode == 13  ) {
+      if(e.shiftKey === false){
+          // prevent default behavior
+          e.preventDefault();
+          // call submit
+          let value = e.target.value;
+          value = value.trim();
+          if(value.length > 0){
+              this.sendMsg(value);
+          }
+      } else {
+          // shift + enter. Let textarea insert new line.
+      }
+  }
+  }
+
+  sendMsg(value) {
+
+    // let resultString = value.replace(/(^\s*)|(\s*$)/g, '');
     // 앞, 뒤 공백제거 => resultString
 
     this.editorMsg = '';
 
-    if(resultString.length > 0){
+    if(value.length > 0){
 
       const now = new Date();
       const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
 
-      if(resultString != '' && now.getDay() <= lastmessage.getDay()){
-        this.chatService.sendMessage("member-chat",resultString,this.chatroom.cid);
-      } else if(resultString != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
-        this.chatService.writeTodayAndSendMsg("member-chat",resultString,this.chatroom.cid);
+      if(value != '' && now.getDay() <= lastmessage.getDay()){
+        this.chatService.sendMessage("member-chat",value,this.chatroom.cid);
+      } else if(value != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
+        this.chatService.writeTodayAndSendMsg("member-chat",value,this.chatroom.cid);
       }
     }
 
