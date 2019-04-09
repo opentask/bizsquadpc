@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { LoadingProvider,BizFireService } from './../../providers';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
 import { TokenProvider } from '../../providers/token/token';
@@ -77,21 +77,13 @@ export class LoginPage implements OnInit {
         this.hideForm = true;
       }
     })
-
-    this.electron.ses.defaultSession.cookies.get({url :'https://www.bizsquad.net',name:"rememberCheckValue"}, (error, checkValue_Cookies) => {
-      if(checkValue_Cookies[0].value == "true"){
-        // 쿠키의 값이 true이면 체크박스에 체크표시
-        this.rememberId = true;
-        // 기억 한 아이디를 가져와서 폼데이터에 넣음
-        this.electron.ses.defaultSession.cookies.get({url : 'https://www.bizsquad.net',name:"rememberID"}, (error, id_Cookies) => {
-          this.userEmail = id_Cookies[0].value;
-          console.log(checkValue_Cookies[0].value,id_Cookies[0].value)
-        })
-      }
-    })
   }
 
   ngOnInit() {
+
+    // 아이디 쿠키정보가 있을 시 가져옴.
+    this.getCookieID();
+
     // on/offline check
     window.addEventListener('online',this.electron.updateOnlineStatus);
     window.addEventListener('offline',this.electron.updateOnlineStatus);
@@ -133,14 +125,7 @@ export class LoginPage implements OnInit {
       // 로그인 정보 인증
         this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user => {
           this.loading.hide();
-          // remember me 체크 여부 확인 후 체크했다면 쿠키를 bizsquad.net에 저장.
-          if(this.rememberId){
-            this.electron.setCookie("rememberID",this.loginForm.value['email']);
-            console.log(this.rememberId);
-            this.electron.setCookie("rememberCheckValue","true");
-          } else {
-            this.electron.setCookie("rememberCheckValue","false");
-          }
+          this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
           // 로그인 시 기존과 다르게 이제 비즈그룹을 선택 후 메인페이지로 이동.
           // this.navCtrl.setRoot('page-tabs').catch(error => console.error(error));
           this.bizFire.getUserOnlineStatus().then(() =>{
@@ -157,6 +142,14 @@ export class LoginPage implements OnInit {
   // ------------------------------------------------------------------
   // * electron function.
   // ------------------------------------------------------------------
+
+  getCookieID() {
+    this.electron.ses.defaultSession.cookies.get({url : 'https://www.bizsquad.net',name: 'rememberID'},(err,cookies) => {
+      if(cookies.length > 0) {
+        this.userEmail = cookies[0].value;
+      }
+    })
+  }
   windowClose() {
     this.electron.windowClose();
   }

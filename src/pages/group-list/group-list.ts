@@ -42,8 +42,7 @@ export class GroupListPage {
     this.loading.show();
     // get user's bizgroup.
     this.bizFire.onBizGroups
-        .pipe(filter(g=>g!=null),
-            )
+        .pipe(filter(g=>g!=null))
         .subscribe(bizGroups => {
             bizGroups.forEach(group => {
                 if(group){

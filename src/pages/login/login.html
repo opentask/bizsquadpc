@@ -15,13 +15,13 @@
       <input type="password" formControlName="password" placeholder="Password" id="password" />
       <button (click)="onLogin()" id="signinBtn" ion-button round full>login</button>
     </form>
-    <div class="textLabel">
+    <!-- <div class="textLabel">
       <div class="left">
         <div class="box"> 
           <label class="txt"><ion-checkbox [(ngModel)]="rememberId"></ion-checkbox><span> Remember me</span></label>
         </div>
       </div>
-    </div>
+    </div> -->
     <div id="footer">
       <span class="txt left">New to Bizsquad?</span>
       <button type="button" class="right txt"><a target="_blank" (click)="ipc.send('loadGH','https://www.bizsquad.net/login/signup');">Sign up</a></button>

@@ -45,8 +45,6 @@ export class Electron {
     electron.remote.Tray
   }
 
-
-
   updateOnlineStatus(){
     let k = window.navigator.onLine ? 'online' : 'offline'
     if(k == 'online'){
@@ -56,6 +54,18 @@ export class Electron {
       console.log('오프라인 상태입니다.');
     }
   }
+
+  setCookieID(url :string,name :string,value :string) {
+    let expiration = new Date();
+    let hour = expiration.getHours();
+    hour = hour + 6;
+    expiration.setHours(hour * 365);
+    const cookie = { url: url, expirationDate: expiration.getTime(), name : name, value : value }
+    this.ses.defaultSession.cookies.set(cookie , (error) => {
+      if(error) console.log(error);
+    })
+  }
+
   notification(){
     electron.ipcRenderer.send('notification');
   }
@@ -73,12 +83,5 @@ export class Electron {
   resetValue(){
     // signOut할 경우 정상적으로 로그인페이지가 표시되도록 하기 위함.
     electron.ipcRenderer.send('resetValue');
-  }
-
-  setCookie(cookie_name,value) {
-    const cookie = {url:'https://www.bizsquad.net',name : cookie_name, value : value}
-    this.ses.defaultSession.cookies.set(cookie, (error) => {
-      if(error) console.log(error);
-    })
   }
 }
