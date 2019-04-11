@@ -30,7 +30,7 @@
   </ion-item>
   <div id="popup" *ngIf="menuShow">
     <ul>
-        <li id="profileSetting" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/account?token='+'customToken')">My Account</li>
+        <li id="profileSetting" (click)="ipc.send('loadGH','https://product.bizsquad.net/teamlist/account?token='+'customToken')">My Account</li>
         <li id="signoutBtn" (click)="logout()">Sign out</li>
         <li id="exitBtn" (click)="windowClose()">Exit</li>
     </ul>
@@ -46,19 +46,19 @@
     <span>Taskbox</span>
         <ul>
             <li>
-                <button id="extMember" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
+                <button id="extMember" (click)="ipc.send('loadGH','https://product.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
                     <img src="imgs/member.svg"> 
                     <span class="title">Member</span> 
                 </button>
             </li>
             <li>
-                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://www.bizsquad.net/main/bbs?gid='+group.gid+'&token='+customToken);">
+                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/bbs?gid='+group.gid+'&token='+customToken);">
                     <img src="imgs/notice.svg">
                     <span class="title">Notice</span>
                 </button>
             </li>
             <li>
-                <button [disabled]="!manager" (click)="ipc.send('loadGH','https://www.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
+                <button [disabled]="!manager" (click)="ipc.send('loadGH','https://product.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
                     <img src="imgs/setting.svg">
                     <span class="title">Management</span>
                 </button>

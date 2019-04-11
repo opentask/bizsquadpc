@@ -261,30 +261,30 @@ export class NotificationService {
         if(data == null) return ret;
         if(data.type === 'invitation' && data.invitation) {
             if(data.invitation.type === 'group'){
-                 ret = 'https://www.bizsquad.net/teamlist/teamlist?token='+this.customToken;
+                 ret = 'https://product.bizsquad.net/teamlist/teamlist?token='+this.customToken;
             }
              if(data.invitation.type === 'squad'){
-                 ret = 'https://www.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
+                 ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
              }
          }
          if(data.type === 'notify' && data.notify != null){
             if(data.notify.type === 'squad' || data.notify.type === 'group'){
                 if(data.notify.type === 'squad'){
-                    ret = 'https://www.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
+                    ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
                 }
                 if(data.notify.type === 'group'|| data.notify.what === 'joined'){
-                    ret = 'https://www.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
+                    ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
                 }
                 if(data.notify.type === 'squad' && data.notify.what === 'exit'){
-                    ret = 'https://www.bizsquad.net/main/squad/view?gid='+ data.gid+'&token='+this.customToken;
+                    ret = 'https://product.bizsquad.net/main/squad/view?gid='+ data.gid+'&token='+this.customToken;
                 }
                 if(data.notify.type === 'group' && data.notify.what === 'exit'){
-                    ret = 'https://www.bizsquad.net/teamlist/teamlist?token='+this.customToken;
+                    ret = 'https://product.bizsquad.net/teamlist/teamlist?token='+this.customToken;
                 }
             } else if(data.notify.type === 'post' || data.notify.type === 'comment'){
-                ret = 'https://www.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
+                ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
             } else if(data.notify.type === 'bbs'){
-                ret = 'https://www.bizsquad.net/main/bbs?gid='+data.gid+'&token='+this.customToken;
+                ret = 'https://product.bizsquad.net/main/bbs?gid='+data.gid+'&token='+this.customToken;
             }
          }
         return ret;

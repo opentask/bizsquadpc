@@ -119,6 +119,7 @@ export class BizFireService {
   // Usage: bizFire.onLang().subscribe(l => l.pack('squad'))
   //-----------------------------------------------------------------------------//
   private _lang = new LangService();
+  
 
   _onLang = new BehaviorSubject<LangService>(null);
   get lang(): LangService {
