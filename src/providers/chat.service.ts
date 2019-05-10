@@ -19,6 +19,8 @@ export interface IChatRoomData {
     gid: string,
     type: string,
     lastMessage?: string,
+    lastMessageTo?: string,
+    lastMessageUid?: string,
     lastMessageTime?: number,
     members?: any,
     notify?:boolean,
@@ -186,6 +188,8 @@ export class ChatService {
                 const uid = this.bizFire.currentUID;
                 this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',id,gid)).set({
                     lastMessage : txt_message,
+                    lastMessageTo : this.bizFire.currentUserValue.displayName,
+                    lastMessageUid : uid,
                     lastMessageTime : now.getTime() / 1000 | 0,
                     read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
                 },{merge : true}).then(() => {
