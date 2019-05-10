@@ -47,12 +47,12 @@ export class InviteRoomPage {
     this.roomData = this.navParams.get('roomData');
     console.log(this.roomData);
 
-    this.bizFire.afStore.doc(`chats/${this.roomData.cid}`).valueChanges()
+    this.bizFire.afStore.doc(`chat/${this.roomData.cid}`).valueChanges()
     .pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRoom : IChatRoomData) => {
       this.observableRoom = chatRoom;
     })
 
-    this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.roomData.data.gid}`).valueChanges().pipe(takeUntil(this._unsubscribeAll))
+    this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.roomData.data.group_id}`).valueChanges().pipe(takeUntil(this._unsubscribeAll))
     .subscribe((group : Igroup) => {
       this.currentGroup = group;
       if(this.currentGroup){
@@ -120,7 +120,7 @@ export class InviteRoomPage {
     })
     console.log(members);
 
-    this.bizFire.afStore.doc(`chats/${this.roomData.cid}`).set({
+    this.bizFire.afStore.doc(`chat/${this.roomData.cid}`).set({
       members : members
     },{merge : true}).then(() =>{
       this.viewCtrl.dismiss();

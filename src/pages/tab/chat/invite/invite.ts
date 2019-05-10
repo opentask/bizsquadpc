@@ -134,7 +134,7 @@ export class InvitePage {
       console.log(target_uid);
     }
     for(let room of chatRooms) {
-      const member_list = room.data.members;
+      const member_list = room.data.manager;
       const member_count = Object.keys(member_list).length;
       if(member_list){
         if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(target_uid) && room.data.is_group != 1){
@@ -143,6 +143,7 @@ export class InvitePage {
         }
       }
     }
+    console.log("체크포인트",selectedRoom);
     if(this.isChecked.length > 0){
       if(selectedRoom == null){
         this.chatService.createRoomByFabs("member",this.isChecked);

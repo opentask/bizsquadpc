@@ -8,7 +8,7 @@
                         <img src="{{ msg.data.sender.photoURL }}">
                     </div>
                     <ion-avatar class="cd-timeline-picture text-center notPhoto" item-start *ngIf="msg.data.sender.photoURL == null">
-                        <span class="displayName">{{ msg.data.sender.displayName | slice:0:2 }}</span>
+                        <span class="displayName">{{ msg.data.sender.displayName | slice:0:1 }}</span>
                     </ion-avatar>
                     <div class="cd-timeline-content padding white" (click)="ipc.send('loadGH',msg.path);"> 
                     <!-- <div class="cd-timeline-content padding white" (click)="clickNotify(msg)">  -->

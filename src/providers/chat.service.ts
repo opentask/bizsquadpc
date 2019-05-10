@@ -16,19 +16,21 @@ export interface IChatRoom {
   }
 export interface IChatRoomData {
     created: number,
-    gid: string,
+    group_id: string,
     type: string,
     lastMessage?: string,
     lastMessageTo?: string,
     lastMessageUid?: string,
     lastMessageTime?: number,
     members?: any,
+    manager?: any,
     notify?:boolean,
     member_count?:any,
     member_data?: IUser[],
     title?: string,
     read?: any,
     is_group: number,
+    status: number
 }
 
 export interface IRoomMessages {
@@ -93,40 +95,62 @@ export class ChatService {
         return chatRooms;
     }
 
-    createRoomByProfile(type,me,target){
+    createRoomByProfile(type: string,me : IUser,target: IUser){
         const now = new Date();
         const newRoom:IChatRoomData = {
             created:  now.getTime() / 1000 | 0,
-            gid: this.bizFire.onBizGroupSelected.getValue().gid,
+            group_id: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
             is_group: 0,
             members: {
-                [me] : true,
-                [target] : true
-            }
+                [me.uid] : {
+                    'name' : me.data.displayName,
+                    'photoURL' : me.data.photoURL
+                },
+                [target.uid] : {
+                    'name' : target.data.displayName,
+                    'photoURL' : target.data.photoURL
+                }
+            },
+            manager: {
+                [me.uid] : true,
+                [target.uid] : true
+            },
+            status: 1
         }
         this.createRoom(newRoom);
     }
     createRoomByFabs(type,members:IUser[]=[]) {
         const now = new Date();
         let is_group = 1;
+        const myValue = this.bizFire.currentUserValue;
         // fabs invite에서 초대 한 멤버가 한명일 경우 그룹채팅이 아니다.
         if(members.length === 1){
             is_group = 0;
         }
         const newRoom:IChatRoomData = {
             created:  now.getTime() / 1000 | 0,
-            gid: this.bizFire.onBizGroupSelected.getValue().gid,
+            group_id: this.bizFire.onBizGroupSelected.getValue().gid,
             type: type,
             is_group: is_group,
             members:{
-                [this.bizFire.currentUID]:true
-            }
+                [myValue.uid] : {
+                    'name' : myValue.displayName,
+                    'photoURL' : myValue.photoURL
+                }
+            },
+            manager:{},
+            status: 1
         }
         if(members.length > 0){
-            members.forEach(u => {
-                newRoom['members'][u.data.uid] = true;            
+            members.forEach(u => {       
+                newRoom['manager'][u.data.uid] = true;
+                newRoom['members'][u.data.uid] = {
+                    'name' : u.data.displayName,
+                    'photoURL' : u.data.photoURL
+                }           
             })
+
         }
         console.log(newRoom);
         this.createRoom(newRoom);
@@ -134,7 +158,7 @@ export class ChatService {
 
     createRoom(newRoom:IChatRoomData){
         if(newRoom != null){
-            this.bizFire.afStore.collection("chats").add(newRoom).then(room => {
+            this.bizFire.afStore.collection("chat").add(newRoom).then(room => {
                 room.get().then(snap =>{
                     this.var_chatRooms = {
                         cid : snap.id,
@@ -150,11 +174,11 @@ export class ChatService {
     getMessagePath(type,cid?,gid?){
         switch(type){
             case 'member-chat':
-              return 'chats/' + cid +'/chat';
+              return 'chat/' + cid +'/chat';
             case 'squad-chat':
               return 'bizgroups/'+ gid + '/squads/' + cid + '/chat';
             case 'member-chat-room':
-              return 'chats/' + cid;
+              return 'chat/' + cid;
             case 'squad-chat-room':
               return 'bizgroups/'+ gid + '/squads/' + cid;
         }  
@@ -264,7 +288,7 @@ export class ChatService {
 
     removeMember(uid,cid){
         return new Promise<void>( (resolve, reject) => {
-        this.bizFire.afStore.firestore.doc("chats/" + cid).update({
+        this.bizFire.afStore.firestore.doc("chat/" + cid).update({
             ['members.' + uid]: firebase.firestore.FieldValue.delete()
         }).then(()=>{
             this.electron.windowClose();

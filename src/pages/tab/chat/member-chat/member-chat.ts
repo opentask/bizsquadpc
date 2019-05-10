@@ -88,7 +88,7 @@ export class MemberChatPage {
 
     if(this.chatroom != null) {
       // // * get USERS DATA !
-      const c_members = this.chatroom.data.members;
+      const c_members = this.chatroom.data.manager;
       this.chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
       console.log(this.chatMembers);
       this.accountService.getAllUserInfos(this.chatMembers).pipe(filter(m => m != null),take(1))
@@ -102,11 +102,11 @@ export class MemberChatPage {
       })
 
       // 채팅방 정보 가져오기
-      this.bizFire.afStore.doc(`chats/${this.chatroom.cid}`).valueChanges().subscribe((roomData : IChatRoomData) => {
+      this.bizFire.afStore.doc(`chat/${this.chatroom.cid}`).valueChanges().subscribe((roomData : IChatRoomData) => {
         this.roomData = roomData;
         let chatMembers = [];
-        chatMembers = Object.keys(roomData.members).filter(uid => roomData.members[uid] === true && uid != this.chatroom.uid);
-        this.roomCount = Object.keys(roomData.members).length;
+        chatMembers = Object.keys(roomData.manager).filter(uid => roomData.manager[uid] === true && uid != this.chatroom.uid);
+        this.roomCount = Object.keys(roomData.manager).length;
 
         this.accountService.getAllUserInfos(chatMembers).pipe(filter(m => m != null),take(1))
         .subscribe(members => {
@@ -120,7 +120,7 @@ export class MemberChatPage {
 
 
       // 입력한 메세지 배열에 담기. 누군가 메세지를 입력했다면 라스트 리드 업데이트
-      this.bizFire.afStore.collection(`chats/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))
+      this.bizFire.afStore.collection(`chat/${this.chatroom.cid}/chat`, ref => ref.orderBy('created',"asc"))
       .stateChanges().subscribe(snap => {
         snap.forEach(d => {
           const msgData = {rid: d.payload.doc.id, data:d.payload.doc.data()} as IRoomMessages;
@@ -178,7 +178,7 @@ export class MemberChatPage {
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
       return;
     } else {
-      this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.gid,fileInfo);
+      this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.group_id,fileInfo);
     }
   }
   dragFile(file){
@@ -191,30 +191,31 @@ export class MemberChatPage {
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
       return;
     } else {
-      this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.gid,file);
+      this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.group_id,file);
     }
   }
   smile(){
     console.log(this.editorMsg);
   }
-  videoCall(){
-    const path = `users/${this.chatMembers[0]}`;
-    this.bizFire.afStore.doc(path).get().subscribe(snap => {
-      let selectUserData:IUserData;
-      if(snap.exists){
-        selectUserData = snap.data();
-        if(selectUserData.onlineStatus == 'online' && selectUserData.videoCall == '' || selectUserData.videoCall == null){
-          this.bizFire.afStore.doc(path).set({
-            videoCall : this.senderUser.displayName
-          },{merge: true}).then(() => {
-              this.electron.openVedioRoom();
-          })
-        } else {
-          this.alertCtrl.logoutSelectUser();
-        }
-      }
-    })
-  }
+  
+  // videoCall(){
+  //   const path = `users/${this.chatMembers[0]}`;
+  //   this.bizFire.afStore.doc(path).get().subscribe(snap => {
+  //     let selectUserData:IUserData;
+  //     if(snap.exists){
+  //       selectUserData = snap.data();
+  //       if(selectUserData.onlineStatus == 'online' && selectUserData.videoCall == '' || selectUserData.videoCall == null){
+  //         this.bizFire.afStore.doc(path).set({
+  //           videoCall : this.senderUser.displayName
+  //         },{merge: true}).then(() => {
+  //             this.electron.openVedioRoom();
+  //         })
+  //       } else {
+  //         this.alertCtrl.logoutSelectUser();
+  //       }
+  //     }
+  //   })
+  // }
 
   keydown(e : any){
     if (e.keyCode == 13  ) {

@@ -223,7 +223,7 @@ export class ProfilePage {
     console.log("chatRooms",chatRooms);
     let selectedRoom: IChatRoom;
     for(let room of chatRooms) {
-      const member_list = room.data.members;
+      const member_list = room.data.manager;
       const member_count = Object.keys(member_list).length;
       if(member_list){
         if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(this.targetValue.uid) && room.data.is_group != 1){
@@ -233,7 +233,7 @@ export class ProfilePage {
       }
     }
     if(selectedRoom == null){
-      this.chatService.createRoomByProfile("member",this.myValue.uid,this.targetValue.uid);
+      this.chatService.createRoomByProfile("member",this.myValue,this.targetValue);
     } else {
       this.chatService.onSelectChatRoom.next(selectedRoom);
       this.electron.openChatRoom(selectedRoom);

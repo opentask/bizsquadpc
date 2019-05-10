@@ -18,7 +18,7 @@
             <img class="photoURL" src="{{member.data.photoURL}}">
           </ion-avatar>
           <ion-avatar class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
-              <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+              <span class="displayName">{{ member.data.displayName | slice:0:1 }}</span>
           </ion-avatar>
         </ng-container>
         <!-- 자신 제외 2명 일 경우 -->
@@ -27,7 +27,7 @@
             <img class="photoURL" src="{{member.data.photoURL}}">
           </ion-avatar>
           <ion-avatar class="notPhoto member_3" item-start *ngIf="member && member.data.photoURL == null">
-              <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+              <span class="displayName">{{ member.data.displayName | slice:0:1 }}</span>
           </ion-avatar>
        </ng-container>
         <!-- 3명 이상 -->
@@ -36,7 +36,7 @@
             <img class="photoURL" src="{{member.data.photoURL}}">
           </ion-avatar>
           <ion-avatar class="notPhoto member_4" item-start *ngIf="member && member.data.photoURL == null">
-              <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
+              <span class="displayName">{{ member.data.displayName | slice:0:1 }}</span>
           </ion-avatar>
         </ng-container>
       </ng-container>
@@ -69,7 +69,7 @@
             [class.left]="msg.data.senderId != chatroom.uid"
             [class.right]="msg.data.senderId === chatroom.uid">
           <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != chatroom.uid && msg.data.message != ''">
-            <span class="senderName">{{ msg.data.senderName | slice:0:2 }}</span>
+            <span class="senderName">{{ msg.data.senderName | slice:0:1 }}</span>
           </ion-avatar>
           <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != chatroom.uid">
             <img class="user-img" src="{{msg.data.photoURL}}">
@@ -146,10 +146,10 @@
       <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
       <button ion-button clear icon-only small color="dark" (click)="smile()">
         <ion-icon name="happy"></ion-icon>
-      </button>
-      <button *ngIf="roomCount === 2" ion-button clear icon-only small color="dark" (click)="videoCall()" style="position: absolute; right:5px">
-        <ion-icon name="videocam"></ion-icon>
       </button> 
+      <!-- <button *ngIf="roomCount === 2" ion-button clear icon-only small color="dark" style="position: absolute; right:5px">
+        <ion-icon name="videocam"></ion-icon>
+      </button>  -->
     </div>
     <div class="input-wrap">
       <textarea id="drag-file"

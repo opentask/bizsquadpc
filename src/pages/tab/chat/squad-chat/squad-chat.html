@@ -37,7 +37,7 @@
              [class.left]="msg.data.senderId != this.bizFire.currentUID"
              [class.right]="msg.data.senderId === this.bizFire.currentUID">
           <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
-            <span class="senderName">{{ msg.data.senderName | slice:0:2 }}</span>
+            <span class="senderName">{{ msg.data.senderName | slice:0:1 }}</span>
           </ion-avatar>
           <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
             <img class="user-img" src="{{msg.data.photoURL}}">

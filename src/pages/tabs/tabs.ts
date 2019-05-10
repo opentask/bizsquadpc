@@ -12,6 +12,7 @@ import { NotificationService } from '../../providers/notification.service';
 import { ChatService,IChatRoom } from '../../providers/chat.service';
 import { SquadService, ISquad } from '../../providers/squad.service';
 
+
 @IonicPage({  
   name: 'page-tabs',
   segment: 'tabs',
@@ -74,7 +75,7 @@ export class TabsPage {
     public chatService: ChatService,
     private squadService: SquadService,
     public accountService : AccountService,
-    public alertCtrl: AlertProvider
+    public alertCtrl: AlertProvider,
     ) {
       // test notification count   
       this._unsubscribeAll = new Subject<any>();
@@ -88,16 +89,16 @@ export class TabsPage {
             this.currentUser = user;
             this.displayName = this.bizFire.getDiplayNameInitial();
             this.fullName = user.displayName || user.email;
-            if(user.videoCall){
-                Notification.requestPermission().then(() => {
-                    let myNotification = new Notification('Video Call',{
-                    'body': `video call came from ${this.currentUser.videoCall}`,
-                    });
-                });
-                this.alertCtrl.VideoCall().then( () => {
-                    this.bizFire.videoCallSuccess();
-                })
-            }
+            // if(user.videoCall){
+            //     Notification.requestPermission().then(() => {
+            //         let myNotification = new Notification('Video Call',{
+            //         'body': `video call came from ${this.currentUser.videoCall}`,
+            //         });
+            //     });
+            //     this.alertCtrl.VideoCall().then( () => {
+            //         this.bizFire.videoCallSuccess();
+            //     })
+            // }
     });
     this.bizFire.onBizGroups
         .pipe(filter(g=>g!=null),
@@ -133,7 +134,7 @@ export class TabsPage {
         this.notification = this.messages.filter(m => m.data.statusInfo.done !== true).length;
     });
 
-    this.bizFire.afStore.collection("chats", ref => ref.where("gid","==",this.currentGroup.gid))
+    this.bizFire.afStore.collection("chat", ref => ref.where("group_id","==",this.currentGroup.gid))
     .snapshotChanges()
     .pipe(takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut),
         map(rooms => rooms.filter(r=>{
@@ -148,6 +149,7 @@ export class TabsPage {
         )
     ).pipe(takeUntil(this._unsubscribeAll))
     .subscribe((chatRooms) => {
+        console.log(chatRooms);
         this.chatService.onChatRoomListChanged.next(chatRooms);
 
         this.memberNewMessage = chatRooms.filter(c => this.chatService.checkIfHasNewMessageNotify(c)).length;

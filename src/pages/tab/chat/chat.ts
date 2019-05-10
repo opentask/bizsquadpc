@@ -69,7 +69,7 @@ export class ChatPage {
         this.allMembers = members;
         if(this.chatRooms != null){
           this.chatRooms.forEach(room => {
-            room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
+            room.data.member_data = this.allMembers.filter(d => room.data.manager[d.uid] == true);
             room.data.title = '';
             room.data.member_data.forEach(m => {
                 room.data.title += m.data.displayName + ',';
@@ -86,13 +86,13 @@ export class ChatPage {
     .subscribe((rooms) => {
       rooms.forEach(room =>{
         const newData = room.data;
-        newData["member_count"] = Object.keys(room.data.members).length;
+        newData["member_count"] = Object.keys(room.data.manager).length;
         if(room.data.lastMessageTime == null) {
           newData["lastMessageTime"] = 1;
         }
         if(this.allMembers != null) {
           room.data.title = '';
-          room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
+          room.data.member_data = this.allMembers.filter(d => room.data.manager[d.uid] == true);
           room.data.member_data.forEach(m => {
             room.data.title += m.data.displayName + ',';
           })

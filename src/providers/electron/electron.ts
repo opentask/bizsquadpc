@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as electron from 'electron';
 import { BizFireService } from '../biz-fire/biz-fire';
-
 @Injectable()
 export class Electron {
 
@@ -12,8 +11,8 @@ export class Electron {
   ses = electron.remote.session;
   
   constructor(public bizFire : BizFireService,) {
+
     this.ipc = electron.ipcRenderer;
-    
   }
 
   // 디폴트 상태창 숨기고 X버튼에 프로그램 종료이벤트 추가.
@@ -72,8 +71,6 @@ export class Electron {
 
   openChatRoom(ChatRoom){
     electron.ipcRenderer.send('createChatRoom',ChatRoom);
-    // 그리고 현재 디렉터리의 html을 로드합니다.
-    // win.loadURL(url);
   }
   openVedioRoom(){
     electron.ipcRenderer.send('openVideoCam');
