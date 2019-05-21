@@ -6,3 +6,16 @@
 3.모바일앱에서 스쿼드 채팅에 이미지 전송시 표시 되도록 사양 변경.
 <2019/04/05 NOTE> v.2.3.9
 1. 1:1 채팅 시 화상채팅 기능.
+
+    "@angular/animations": "7.2.0",
+    "@ionic-native/splash-screen": "~4.19.0",
+    "@ionic-native/status-bar": "~4.19.0",
+    "@ionic/storage": "2.2.0",
+
+"devDependencies": {
+    "@ionic/app-scripts": "3.2.1",
+    "electron": "^4.0.1",
+    "electron-builder": "^20.38.4",
+    "foreman": "^3.0.1",
+    "typescript": "~3.2.2"
+  },

@@ -25,25 +25,6 @@ logger.info('App starting...');
 let win;
 let chatRoom;
 let selectChatRoom;
-let videoRoom;
-
-ipcMain.on('openVideoCam', (event) => {
-
-    videoRoom = new BrowserWindow({
-        width: 800,
-        height: 700,
-        frame: true,
-    });
-    videoRoom.loadURL(url.format({
-        pathname: path.join(__dirname,'../www/opentok/opentok.html'),
-        protocol: 'file:',
-        slashes: true,
-    }))
-    
-    // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // videoRoom.webContents.openDevTools();
-    
-});
 
 
 function createWindow() {
@@ -119,7 +100,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    chatRoom.webContents.openDevTools();
+    // chatRoom.webContents.openDevTools();
     
 });
  
