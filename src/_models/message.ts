@@ -27,12 +27,22 @@ export interface IUserData {
     videoCall?: string
 }
 
+export interface IAlarmConfig {
+    all?: boolean,
+    groupInvite: boolean,
+    squadInOut: boolean,
+    squadInvite: boolean,
+    schedule: boolean,
+    post: boolean,
+    comment: boolean,
+    bbs: boolean,
+    version?: string,
+    toFirestoreData?:()=>any;
+}
 
 export interface INotification{
     mid: string,
     data: INotificationData,
-    text?: string,
-    notificationTitle?: string,
 }
 
 export interface INotificationData {

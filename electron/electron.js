@@ -30,11 +30,11 @@ let selectChatRoom;
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
-        width: 400,
-        height: 650,
+        width: 350,
+        height: 600,
         frame: false,
-        minWidth:400,
-        minHeight:650,
+        minWidth:350,
+        minHeight:600,
         maxWidth:600,
         maxHeight:750,
         titleBarStyle: 'hidden-inset',
