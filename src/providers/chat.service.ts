@@ -139,7 +139,9 @@ export class ChatService {
                     'photoURL' : myValue.photoURL
                 }
             },
-            manager:{},
+            manager:{
+                [myValue.uid] : true
+            },
             status: 1
         }
         if(members.length > 0){

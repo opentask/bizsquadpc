@@ -51,6 +51,9 @@ export class GroupListPage {
                   newData['group_squads'] = 0; 
                   newData['group_members'] = Object.keys(group.data.members).length;
                   newData['team_color'] = group.data.team_color || this.team_color;
+                  if(group.data.photoURL != null){
+                    newData['team_color'] = null;
+                  }
                   
                   if(group.data.team_name == null || group.data.team_name.length === 0 ){
                     newData['team_icon'] = 'BG';
@@ -66,7 +69,7 @@ export class GroupListPage {
                     let general = 0;
                     let agile = 0;
                     snap.forEach(list => {
-                      if(list.data().status === 1){
+                      if(list.data().status === true){
                         if(list.data().type === 'public'){
                           general += 1;
                         } else {

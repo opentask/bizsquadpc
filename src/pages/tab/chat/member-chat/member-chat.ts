@@ -96,6 +96,7 @@ export class MemberChatPage {
         this.roomMembers = members.filter(m => m != null);
         this.chatTitle = '';
         this.roomCount = Object.keys(members).length + 1;
+        console.log("this.roomCount",this.roomCount)
         this.roomMembers.forEach(m => {
           this.chatTitle += m.data.displayName + ",";
         })
