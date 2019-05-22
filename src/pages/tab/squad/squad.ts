@@ -1,3 +1,4 @@
+import { GroupColorProvider } from './../../../providers/group-color';
 import { Electron } from './../../../providers/electron/electron';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
@@ -24,6 +25,7 @@ export class SquadPage {
   currentSquad: ISquad;
   currentBizGroup: IBizGroup;
   generalMembers: number;
+  groupMainColor: string;
 
   ipc: any;
 
@@ -52,7 +54,8 @@ export class SquadPage {
     public electron : Electron,
     private squadService: SquadService,
     public platform : Platform,
-    private tokenService : TokenProvider,) {
+    private tokenService : TokenProvider,
+    public groupColorProvider : GroupColorProvider) {
     this._unsubscribeAll = new Subject<any>();
     this.ipc = electron.ipc;
     
@@ -66,6 +69,9 @@ export class SquadPage {
     this.bizFire.onBizGroupSelected
     .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
     .subscribe(group => {
+        this.groupMainColor =this.groupColorProvider.makeGroupColor(group.data.team_color);
+
+
         this.generalMembers = Object.keys(group.data.members).length;
         if(group.data.partners != null){
             this.generalMembers = Object.keys(group.data.members).length - Object.keys(group.data.partners).length;

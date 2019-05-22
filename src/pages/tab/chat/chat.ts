@@ -1,3 +1,4 @@
+import { GroupColorProvider } from './../../../providers/group-color';
 import { Electron } from './../../../providers/electron/electron';
 import { AccountService } from './../../../providers/account/account';
 import { ChatService, IChatRoom } from './../../../providers/chat.service';
@@ -27,6 +28,7 @@ export class ChatPage {
   squadrooms = [];
   memberCount : number;
   members = [];
+  groupMainColor: string;
 
   allMembers: IUser[];
   memberNewMessage = 0;
@@ -42,6 +44,7 @@ export class ChatPage {
     public electron : Electron,
     private squadService: SquadService,
     public popoverCtrl :PopoverController,
+    public groupColorProvider: GroupColorProvider
     ) {
       this._unsubscribeAll = new Subject<any>();
 
@@ -55,6 +58,8 @@ export class ChatPage {
   }
 
   ngOnInit() {
+    this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
+    
     // 그룹 유저정보 가져오기.
     this.members = Object.keys(this.bizFire.onBizGroupSelected.getValue().data.members).filter(uid => uid != this.bizFire.currentUID);
     if(this.members != null && this.members.length > 0){

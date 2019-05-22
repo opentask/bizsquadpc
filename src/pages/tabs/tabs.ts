@@ -1,3 +1,4 @@
+import { GroupColorProvider } from './../../providers/group-color';
 import { AlertProvider } from './../../providers/alert/alert';
 import { AccountService } from './../../providers/account/account';
 import { Component } from '@angular/core';
@@ -34,7 +35,7 @@ export class TabsPage {
   squadChatRooms: ISquad[];
   group: IBizGroup;
 
-  backgroundColor: string; // menu right string background color.
+  groupMainColor: string;
 
   // right button display
   displayName;
@@ -52,6 +53,7 @@ export class TabsPage {
   badgeVisible = true;
   badgeCount = 0;
   chatCount = 0;
+
 
   isPartner = false;
 
@@ -75,6 +77,7 @@ export class TabsPage {
     private squadService: SquadService,
     public accountService : AccountService,
     public alertCtrl: AlertProvider,
+    public groupColorProvider : GroupColorProvider
     ) {
       // test notification count   
       this._unsubscribeAll = new Subject<any>();
@@ -114,12 +117,11 @@ export class TabsPage {
             //console.log('onBizGroupSelected', group.gid);
             // set selected group to
             this.currentGroup = group;
-            console.log(this.currentGroup);
             this.isPartner = this.bizFire.isPartner(group);
             // set select values.
             this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
             // set menu font color.
-            this.backgroundColor = this.currentGroup.data.team_color || '#5b9ced'; // default color is '#5b9ced';
+            this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
         });
 
     // get number of unfinished notices.

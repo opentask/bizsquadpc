@@ -119,11 +119,11 @@
       <div class="input-wrap">
         <textarea id="drag-file"
                   #chat_input
-                  placeholder=""
                   [(ngModel)]="editorMsg"
+                  (keydown)="keydown($event)"
                   (focusin)="onFocus()">
         </textarea>  
-        <button class="sendButton" ion-button item-right (click)="sendMsg()">
+        <button color="dark" class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)" [disabled]="!editorMsg">
           send
         </button>
       </div>

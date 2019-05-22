@@ -76,8 +76,6 @@ export class NotifyPage {
           m['path'] = this.noticeService.makeJumpPath(m.data);
         });
     });
-
-    console.log("한번 필터된 메세지",this.messages);
   }
 
   clickNotify(msg){

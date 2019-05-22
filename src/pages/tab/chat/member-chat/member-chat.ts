@@ -1,3 +1,4 @@
+import { GroupColorProvider } from './../../../../providers/group-color';
 import { IUserData } from './../../../../_models/message';
 import { AccountService } from './../../../../providers/account/account';
 import { Component, ViewChild } from '@angular/core';
@@ -45,6 +46,7 @@ export class MemberChatPage {
   ipc : any;
   roomData : IChatRoomData;
   chatMembers = [];
+  groupMainColor: string;
 
   // 화상채팅 보낸 이
   senderUser: IUserData;
@@ -65,7 +67,8 @@ export class MemberChatPage {
     public accountService : AccountService,
     public afAuth: AngularFireAuth,
     public popoverCtrl :PopoverController,
-    public alertCtrl: AlertProvider
+    public alertCtrl: AlertProvider,
+    public groupColorProvider: GroupColorProvider
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -87,6 +90,8 @@ export class MemberChatPage {
     this.chatroom = this.navParams.get('roomData');
 
     if(this.chatroom != null) {
+      // get group color;
+
       // // * get USERS DATA !
       const c_members = this.chatroom.data.manager;
       this.chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
@@ -232,7 +237,7 @@ export class MemberChatPage {
       } else {
           // shift + enter. Let textarea insert new line.
       }
-  }
+    }
   }
 
   sendMsg(value) {

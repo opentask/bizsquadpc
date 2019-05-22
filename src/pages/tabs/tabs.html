@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-navbar color="primary" style="min-height: 30px;padding-bottom: 10px;">
+  <ion-navbar [color]="groupMainColor" style="min-height: 30px;padding-bottom: 10px;">
     <ion-buttons left class="login-top-menu">
       <button ion-button icon-only clear small color="light" (tap)="presentPopover($event)">
         <ion-icon name="notifications" style="font-size: 23px;"></ion-icon> 
@@ -20,7 +20,7 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-<ion-tabs tabsPlacement="top" selectedIndex="0" color="primary" style="margin-top:45px;margin-bottom: 45px;">
+<ion-tabs tabsPlacement="top" selectedIndex="0" [color]="groupMainColor" style="margin-top:45px;margin-bottom: 45px;">
     <ion-tab [root]="tab1Root" tabIcon="customHome" tabTitle="Home"></ion-tab>
     <ion-tab [root]="tab2Root" tabIcon="customSquad" tabTitle="Squad"></ion-tab> 
     <ion-tab [root]="tab5Root" tabIcon="customMember" tabTitle="Member"></ion-tab>

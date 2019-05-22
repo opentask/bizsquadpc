@@ -39,7 +39,18 @@ $colors: (
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #666,
-  orange:     #FEA926
+  // orange:     #FEA926,
+  // 그룹별 지정 컬러
+  skyblue: #5b9ced,
+  grey: grey,
+  orange: #f44336,
+  pink: #ff4081,
+  navy: #3f51b5,
+  blue: blue,
+  green: green,
+  lightskyblue: lightskyblue,
+  brown: brown,
+  darkolivegreen: darkolivegreen
 );
 
 ::-webkit-scrollbar { display: none; }

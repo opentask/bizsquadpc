@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TabsPage } from './tabs';
 import { AccountService } from '../../providers/account/account';
+import { GroupColorProvider } from '../../providers/group-color';
 
 @NgModule({
   declarations: [
@@ -11,7 +12,8 @@ import { AccountService } from '../../providers/account/account';
     IonicPageModule.forChild(TabsPage),
   ],
   providers: [
-    AccountService
+    AccountService,
+    GroupColorProvider
   ]
 })
 export class TabsPageModule {}

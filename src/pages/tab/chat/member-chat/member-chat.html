@@ -158,7 +158,7 @@
                 (keydown)="keydown($event)"
                 (focusin)="onFocus()">
       </textarea>
-      <button class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)">
+      <button color="dark" class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)" [disabled]="!editorMsg">
         send
       </button>
     </div>

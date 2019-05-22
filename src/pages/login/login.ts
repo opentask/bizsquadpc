@@ -9,6 +9,7 @@ import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
 import { TokenProvider } from '../../providers/token/token';
 import { IChatRoomData, IChatRoom } from '../../providers/chat.service';
+import { defineBase } from '@angular/core/src/render3';
 
 @IonicPage({  
   name: 'page-login',
@@ -83,6 +84,7 @@ export class LoginPage implements OnInit {
 
     // 아이디 쿠키정보가 있을 시 가져옴.
     this.getCookieID();
+
 
     // on/offline check
     window.addEventListener('online',this.electron.updateOnlineStatus);

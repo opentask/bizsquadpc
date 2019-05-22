@@ -17,6 +17,7 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpModule } from '@angular/http';
 import { TokenProvider } from '../providers/token/token';
+import { GroupColorProvider } from '../providers/group-color';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { TokenProvider } from '../providers/token/token';
     BizFireService,
     AlertProvider,
     TokenProvider,
+    GroupColorProvider,
   ]
 })
 export class AppModule {}

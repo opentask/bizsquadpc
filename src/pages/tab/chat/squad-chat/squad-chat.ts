@@ -108,11 +108,11 @@ export class SquadChatPage {
         }
       })
       // angular keydown.enter는 이벤트가 두번실행 되므로 이벤트 리스너로 대체 해결.
-      drag_file.addEventListener('keydown',(e) => {
-        if(e.key === 'Escape' || e.keyCode === 13){
-          this.sendMsg();
-        }
-      })
+      // drag_file.addEventListener('keydown',(e) => {
+      //   if(e.key === 'Escape' || e.keyCode === 13){
+      //     this.sendMsg();
+      //   }
+      // })
     }
 
     // 입력한 메세지 배열에 담기
@@ -135,24 +135,53 @@ export class SquadChatPage {
     })
   }
 
+  keydown(e : any){
+    if (e.keyCode == 13  ) {
+      if(e.shiftKey === false){
+          // prevent default behavior
+          e.preventDefault();
+          // call submit
+          let value = e.target.value;
+          value = value.trim();
+          if(value.length > 0){
+              this.sendMsg(value);
+          }
+      } else {
+          // shift + enter. Let textarea insert new line.
+      }
+    }
+  }
   
 
-  sendMsg(){
-    // 앞, 뒤 공백제거 => resultString
-    if(this.editorMsg !=null){
-      const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
-      this.editorMsg = '';
+  sendMsg(value) {
+    this.editorMsg = '';
+
+    if(value.length > 0){
+
       const now = new Date();
       const lastmessage = new Date(this.squad.data.lastMessageTime * 1000);
 
-      if(resultString != '' && now.getDay() <= lastmessage.getDay()){
-          this.chatService.sendMessage("squad-chat",resultString,this.selectSquad.sid,this.selectSquad.data.gid);
-      } else if(resultString != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null){
-        console.log("여기실행");
-        this.chatService.writeTodayAndSendMsg("squad-chat",resultString,this.selectSquad.sid,this.selectSquad.data.gid);
+      if(value != '' && now.getDay() <= lastmessage.getDay()){
+        this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
+      } else if(value != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null) {
+        this.chatService.writeTodayAndSendMsg("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
       }
     }
-    this.editorMsg = '';
+    // 앞, 뒤 공백제거 => resultString
+    // if(this.editorMsg !=null){
+    //   const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
+    //   this.editorMsg = '';
+    //   const now = new Date();
+    //   const lastmessage = new Date(this.squad.data.lastMessageTime * 1000);
+
+    //   if(resultString != '' && now.getDay() <= lastmessage.getDay()){
+    //       this.chatService.sendMessage("squad-chat",resultString,this.selectSquad.sid,this.selectSquad.data.gid);
+    //   } else if(resultString != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null){
+    //     console.log("여기실행");
+    //     this.chatService.writeTodayAndSendMsg("squad-chat",resultString,this.selectSquad.sid,this.selectSquad.data.gid);
+    //   }
+    // }
+    // this.editorMsg = '';
   }
 
   file(file){

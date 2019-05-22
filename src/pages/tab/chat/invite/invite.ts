@@ -1,3 +1,4 @@
+import { GroupColorProvider } from './../../../../providers/group-color';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService, IChatRoom } from './../../../../providers/chat.service';
 import { AccountService } from './../../../../providers/account/account';
@@ -8,7 +9,6 @@ import { filter, takeUntil, map } from 'rxjs/operators';
 import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IUser } from '../../../../_models/message';
 import { Subject } from 'rxjs';
-
 @IonicPage({  
   name: 'page-invite',
   segment: 'invite',
@@ -27,7 +27,9 @@ export class InvitePage {
   allCollectedUsers: IUser[];
   mydata: IUser;
   isChecked : IUser[] = [];
-  selectedNum  = 0;
+  selectedNum :number = 0;
+  groupMainColor: string;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -35,7 +37,8 @@ export class InvitePage {
     public viewCtrl: ViewController,
     public chatService: ChatService,
     public electron : Electron,
-    public accountService: AccountService) {
+    public accountService: AccountService,
+    public groupColorProvider: GroupColorProvider) {
       this._unsubscribeAll = new Subject<any>();
   }
 
@@ -48,6 +51,7 @@ export class InvitePage {
         //console.log('onBizGroupSelected', group.gid);
         // set selected group to
         this.currentGroup = group;
+        this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
         this.gid = this.currentGroup.gid;
     });
 
