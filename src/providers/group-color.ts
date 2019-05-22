@@ -16,8 +16,10 @@ export class GroupColorProvider {
           return 'pink';
       case '#3f51b5':
           return 'navy';
-      default : 
+      case null:
           return 'skyblue';
+      default:
+          return string;
     }
   }
 
