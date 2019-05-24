@@ -106,8 +106,8 @@ export class MenuPage {
         }
         this.badgeVisible = this.badgeCount > 0;
         this.messages.forEach((m: INotification) => {
-          m['text'] = this.noticeService.makeDisplayString(m.data);
-          m['path'] = this.noticeService.makeJumpPath(m.data);
+          // m['text'] = this.noticeService.makeDisplayString(m.data);
+          // m['path'] = this.noticeService.makeJumpPath(m.data);
         });
         this.makeEachGroup();
     });
@@ -119,15 +119,15 @@ export class MenuPage {
 
   private makeEachGroup(){
     this.eachGroups = {};
-    if(this.groups != null && this.messages != null){
-      console.log(this.messages);
-      this.messages.forEach(m => {
-        if(this.eachGroups[m.data.gid] == null){
-          this.eachGroups[m.data.gid] = [];
-        }
-        this.eachGroups[m.data.gid].push(m);
-      })
-    };
+    // if(this.groups != null && this.messages != null){
+    //   console.log(this.messages);
+    //   this.messages.forEach(m => {
+    //     if(this.eachGroups[m.data.gid] == null){
+    //       this.eachGroups[m.data.gid] = [];
+    //     }
+    //     this.eachGroups[m.data.gid].push(m);
+    //   })
+    // };
   }
 
   toggleList() {
@@ -146,12 +146,11 @@ export class MenuPage {
     this.noticeService.onNotifications
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((msgs:INotification[]) => {
-        // get unfinished notification count.
-        this.messages = msgs.filter(m => m.data.gid === group.gid);
-        this.groupBadgeCount = this.messages.filter(m => m.data.statusInfo.done !== true).length;
-        if(this.groupBadgeCount > 0){
-          this.noNotify = false;
-        }
+        // this.messages = msgs.filter(m => m.data.gid === group.gid);
+        // this.groupBadgeCount = this.messages.filter(m => m.data.statusInfo.done !== true).length;
+        // if(this.groupBadgeCount > 0){
+        //   this.noNotify = false;
+        // }
     });
   }
 

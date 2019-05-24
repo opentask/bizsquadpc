@@ -1,8 +1,7 @@
 <ion-content no-padding class="content-color">
     <ion-scroll class="scrollable" scrollY="true">
         <section id="cd-timeline" class="cd-container">
-            <!-- 아래 div에 ngFor 입력 -->
-            <div *ngFor="let msg of messages">
+            <!-- <div *ngFor="let msg of messages">
                 <div class="cd-timeline-block">
                     <div class="cd-timeline-picture text-center white" *ngIf="msg.data.sender.photoURL != null">
                         <img src="{{ msg.data.sender.photoURL }}">
@@ -11,17 +10,15 @@
                         <span class="displayName">{{ msg.data.sender.displayName | slice:0:1 }}</span>
                     </ion-avatar>
                     <div class="cd-timeline-content padding white" (click)="ipc.send('loadGH',msg.path);"> 
-                    <!-- <div class="cd-timeline-content padding white" (click)="clickNotify(msg)">  -->
                         <p class="cd-author marginTop5 marginBottom5">{{msg.data.created * 1000 | date: 'MM-dd HH:mm'}}</p>
                         <p class="timelineText marginBottom5 marginTop5">
                             <span class="notifyType" *ngIf="msg.data.type === 'invitation'">[{{ msg.data.invitation.what }}]</span>
                             <span class="notifyType" *ngIf="msg.data.type === 'notify'">[{{ msg.data.notify.type }}]</span>
-                        <!-- make msg notify service -->
                             {{msg.text}}
                         </p>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </section>
     </ion-scroll>
         <div class="noNotify" *ngIf="noNotify">

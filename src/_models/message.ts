@@ -45,36 +45,44 @@ export interface INotification{
     data: INotificationData,
 }
 
-export interface INotificationData {
-    type: string, //'invitation' | 'notify' | 'reply',
+export type NotificationType = 'invitation' | 'notify' | 'reply';
+export type NotifyType = 'post'|'comment'| 'join'| 'exit'| 'delete';
+export type InvitationType = 'group'|'squad';
+export interface INotificationData extends IAlarmConfig {
+    type: NotificationType,//'invitation' | 'notify' | 'reply',
     from?: string, // uid
     to?: string,
-    sender?: IUserData, //userData
-    sid?: string,
-    gid?: string,
     invitation?: {
-        type: string, // 'group', 'squad'
-        gid?: string,
-        sid?: string,
-        who: string,
-        what: string,
-        where: string,
-        info?: any
+      type: InvitationType, // 'group', 'squad',
+      
+      gid: string,
+      sid?: string,
+      
+      info?: {
+        auth?: string // 'member', 'manager', 'partner'
+      }
     },
+    
     notify?: {
-        type?: string, // 'group', 'squad'
-        who: string,
-        what: string,
-        where: string
-        info?: any
+      type: NotifyType,
+      
+      info?: {
+        title?: string,
+        comment?: string,
+        cid?: string,
+          eid?: string,
+        join?: any
+      },
+      sid?: string,
+      gid: string,
+      mid?: string,
+      
     },
-    reply?: {
+    
+    created?: any,
+    statusInfo?: {done: boolean}
 
-    },
-    created?: number,
-    status?: number,
-    statusInfo?: any
-}
+  }
 
 
 export interface IFolderItem {

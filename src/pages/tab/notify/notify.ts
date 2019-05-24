@@ -64,17 +64,17 @@ export class NotifyPage {
     this.noticeService.onNotifications
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((msgs:INotification[]) => {
-        // get unfinished notification count.
-        this.messages = msgs.filter(m => m.data.gid === this.currentGroup.gid);
+        // // get unfinished notification count.
+        // this.messages = msgs.filter(m => m.data.gid === this.currentGroup.gid);
 
-        this.groupBadgeCount = this.messages.filter(m => m.data.statusInfo.done !== true).length;
-        if(this.groupBadgeCount > 0){
-          this.noNotify = false;
-        }
-        this.messages.forEach((m: INotification) => {
-          m['text'] = this.noticeService.makeDisplayString(m.data);
-          m['path'] = this.noticeService.makeJumpPath(m.data);
-        });
+        // this.groupBadgeCount = this.messages.filter(m => m.data.statusInfo.done !== true).length;
+        // if(this.groupBadgeCount > 0){
+        //   this.noNotify = false;
+        // }
+        // this.messages.forEach((m: INotification) => {
+        //   m['text'] = this.noticeService.makeDisplayString(m.data);
+        //   m['path'] = this.noticeService.makeJumpPath(m.data);
+        // });
     });
   }
 

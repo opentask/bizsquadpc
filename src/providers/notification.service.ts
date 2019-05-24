@@ -104,96 +104,96 @@ export class NotificationService {
             .subscribe(([msgs,alarm]) => {
                 // save multi lang. Every time language changed, Re load firestore.
                 // msg filter
-                if(alarm != null){
+                // if(alarm != null){
 
-                    let alarmsToDelete = [];
-                    let leftAlarms = [];
-                    if(alarm.all === false){
-                        alarmsToDelete = msgs;
-                    } else {
-                        msgs.forEach(m => {
-                            let added = false;
-                            if(alarm.groupInvite === true){
-                                // invite
-                                if(m.data.type === 'invitation' && m.data.invitation != null && m.data.invitation.type ==='group' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                                // but remove user from group must be
-                                // caught here
-                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='group' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                            }
+                //     let alarmsToDelete = [];
+                //     let leftAlarms = [];
+                //     if(alarm.all === false){
+                //         alarmsToDelete = msgs;
+                //     } else {
+                //         msgs.forEach(m => {
+                //             let added = false;
+                //             if(alarm.groupInvite === true){
+                //                 // invite
+                //                 if(m.data.type === 'invitation' && m.data.invitation != null && m.data.invitation.type ==='group' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //                 // but remove user from group must be
+                //                 // caught here
+                //                 if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='group' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //             }
 
-                            if(alarm.squadInvite === true){
-                                // add biz
-                                if(m.data.type === 'invitation' && m.data.invitation != null && m.data.invitation.type ==='squad' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                            }
-                            if(alarm.squadInOut === true){
-                                // add biz
-                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='squad' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                            }
-                            if(alarm.post === true){
-                                // add biz
-                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='post' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                            }
-                            if(alarm.comment === true){
-                                // add biz
-                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='comment' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                            }
-                            if(alarm.schedule === true){
-                                // add biz
-                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='schedule' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                            }
-                            if(alarm.bbs === true){
-                                // add biz
-                                if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='bbs' ){
-                                    // ok
-                                    leftAlarms.push(m);
-                                    added = true;
-                                }
-                            }
-                            if(added === false){
-                                alarmsToDelete.push(m);
-                            }
-                        });
-                    }
-                    this.onNotifications.next(leftAlarms);
+                //             if(alarm.squadInvite === true){
+                //                 // add biz
+                //                 if(m.data.type === 'invitation' && m.data.invitation != null && m.data.invitation.type ==='squad' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //             }
+                //             if(alarm.squadInOut === true){
+                //                 // add biz
+                //                 if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='squad' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //             }
+                //             if(alarm.post === true){
+                //                 // add biz
+                //                 if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='post' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //             }
+                //             if(alarm.comment === true){
+                //                 // add biz
+                //                 if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='comment' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //             }
+                //             if(alarm.schedule === true){
+                //                 // add biz
+                //                 if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='schedule' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //             }
+                //             if(alarm.bbs === true){
+                //                 // add biz
+                //                 if(m.data.type === 'notify' && m.data.notify != null && m.data.notify.type ==='bbs' ){
+                //                     // ok
+                //                     leftAlarms.push(m);
+                //                     added = true;
+                //                 }
+                //             }
+                //             if(added === false) {
+                //                 alarmsToDelete.push(m);
+                //             }
+                //         });
+                //     }
+                //     this.onNotifications.next(leftAlarms);
 
-                    // delete all alarms
-                    if(alarmsToDelete.length > 0){
-                        alarmsToDelete.forEach(msg => {
-                           //this.deleteNotification(msg);
-                           //console.log('delete', msg.data.type);
-                        });
-                    }
-                    // do nothing.
-                    // wait for alarm coming.
-                }
+                //     // delete all alarms
+                //     if(alarmsToDelete.length > 0){
+                //         alarmsToDelete.forEach(msg => {
+                //            //this.deleteNotification(msg);
+                //            //console.log('delete', msg.data.type);
+                //         });
+                //     }
+                //     // do nothing.
+                //     // wait for alarm coming.
+                // }
             });
     }
     private getAlarmPath(): string{
@@ -206,90 +206,90 @@ export class NotificationService {
     }
 
 
-    makeDisplayString(data: INotificationData): string {
-        let ret = '';
-        if(data == null) return ret;
+    // makeDisplayString(data: INotificationData): string {
+    //     let ret = '';
+    //     if(data == null) return ret;
     
-        if(data.type === 'invitation' && data.invitation) {
+    //     if(data.type === 'invitation' && data.invitation) {
     
-           if(data.invitation.type === 'group'){
-                ret = `${data.invitation.who} ${data.invitation.what} to ${data.invitation.where} by ${data.sender.displayName||data.sender.email}`;
-           }
-            if(data.invitation.type === 'squad'){
-                ret = `${data.invitation.who} ${data.invitation.what} to ${data.invitation.where} of ${data.invitation.info} by ${data.sender.displayName||data.sender.email}`;
-            }
-        }
-        if(data.type === 'notify' && data.notify != null){
+    //        if(data.invitation.type === 'group'){
+    //             ret = `${data.invitation.who} ${data.invitation.what} to ${data.invitation.where} by ${data.sender.displayName||data.sender.email}`;
+    //        }
+    //         if(data.invitation.type === 'squad'){
+    //             ret = `${data.invitation.who} ${data.invitation.what} to ${data.invitation.where} of ${data.invitation.info} by ${data.sender.displayName||data.sender.email}`;
+    //         }
+    //     }
+    //     if(data.type === 'notify' && data.notify != null){
 
-            let type;
-            if(data.notify.type === 'squad' || data.notify.type === 'group'){
-                type = data.notify.type === 'squad' ? 'Squad' : 'BizGroup';
-                if(data.notify.what === 'exit'){
-                    type = 'from ' + type;
-                }
-                ret = `${data.notify.who} ${data.notify.what} ${type} ${data.notify.where}`;
-                if(data.notify.type === 'squad'){
-                    ret += ` of ${data.notify.info.team_name}`;
-                }
-            }
-            else if(data.notify.type === 'post'){
-                //
-                ret = `${data.notify.who} ${data.notify.what} ${data.notify.info.title} at Squad ${data.notify.where}`;
-                // add 'of <GROUP NAME>'
-                if(data.notify.info.groupName != null){
-                    //ret += ` of ${data.notify.info.groupName}`;
-                }
-            }
+    //         let type;
+    //         if(data.notify.type === 'squad' || data.notify.type === 'group'){
+    //             type = data.notify.type === 'squad' ? 'Squad' : 'BizGroup';
+    //             if(data.notify.what === 'exit'){
+    //                 type = 'from ' + type;
+    //             }
+    //             ret = `${data.notify.who} ${data.notify.what} ${type} ${data.notify.where}`;
+    //             if(data.notify.type === 'squad'){
+    //                 ret += ` of ${data.notify.info.team_name}`;
+    //             }
+    //         }
+    //         else if(data.notify.type === 'post'){
+    //             //
+    //             ret = `${data.notify.who} ${data.notify.what} ${data.notify.info.title} at Squad ${data.notify.where}`;
+    //             // add 'of <GROUP NAME>'
+    //             if(data.notify.info.groupName != null){
+    //                 //ret += ` of ${data.notify.info.groupName}`;
+    //             }
+    //         }
 
-            else if(data.notify.type === 'comment'){
-                ret = `${data.notify.who} ${data.notify.what} a comment at ${data.notify.info.title} of Squad ${data.notify.where}`;
-            }
+    //         else if(data.notify.type === 'comment'){
+    //             ret = `${data.notify.who} ${data.notify.what} a comment at ${data.notify.info.title} of Squad ${data.notify.where}`;
+    //         }
 
-            else if(data.notify.type === 'bbs'){
-                ret = `${data.notify.who} ${data.notify.what} ${data.notify.where} at BizGroup ${data.notify.info.team_name}`;
-            }
-        }
+    //         else if(data.notify.type === 'bbs'){
+    //             ret = `${data.notify.who} ${data.notify.what} ${data.notify.where} at BizGroup ${data.notify.info.team_name}`;
+    //         }
+    //     }
 
-        return ret;
-    }
+    //     return ret;
+    // }
 
-    makeJumpPath(data: INotificationData): string {
+    // makeJumpPath(data: INotificationData): string {
 
-        this.customToken = this.tokenService.customToken;
+    //     this.customToken = this.tokenService.customToken;
 
-        let ret = '';
-        if(data == null) return ret;
-        if(data.type === 'invitation' && data.invitation) {
-            if(data.invitation.type === 'group'){
-                 ret = 'https://product.bizsquad.net/teamlist/teamlist?token='+this.customToken;
-            }
-             if(data.invitation.type === 'squad'){
-                 ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
-             }
-         }
-         if(data.type === 'notify' && data.notify != null){
-            if(data.notify.type === 'squad' || data.notify.type === 'group'){
-                if(data.notify.type === 'squad'){
-                    ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
-                }
-                if(data.notify.type === 'group'|| data.notify.what === 'joined'){
-                    ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
-                }
-                if(data.notify.type === 'squad' && data.notify.what === 'exit'){
-                    ret = 'https://product.bizsquad.net/main/squad/view?gid='+ data.gid+'&token='+this.customToken;
-                }
-                if(data.notify.type === 'group' && data.notify.what === 'exit'){
-                    ret = 'https://product.bizsquad.net/teamlist/teamlist?token='+this.customToken;
-                }
-            } else if(data.notify.type === 'post' || data.notify.type === 'comment'){
-                ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
-            } else if(data.notify.type === 'bbs'){
-                ret = 'https://product.bizsquad.net/main/bbs?gid='+data.gid+'&token='+this.customToken;
-            }
-         }
-        return ret;
+    //     let ret = '';
+    //     if(data == null) return ret;
+    //     if(data.type === 'invitation' && data.invitation) {
+    //         if(data.invitation.type === 'group'){
+    //              ret = 'https://product.bizsquad.net/teamlist/teamlist?token='+this.customToken;
+    //         }
+    //          if(data.invitation.type === 'squad'){
+    //              ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
+    //          }
+    //      }
+    //      if(data.type === 'notify' && data.notify != null){
+    //         if(data.notify.type === 'squad' || data.notify.type === 'group'){
+    //             if(data.notify.type === 'squad'){
+    //                 ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
+    //             }
+    //             if(data.notify.type === 'group'|| data.notify.what === 'joined'){
+    //                 ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&token='+this.customToken;
+    //             }
+    //             if(data.notify.type === 'squad' && data.notify.what === 'exit'){
+    //                 ret = 'https://product.bizsquad.net/main/squad/view?gid='+ data.gid+'&token='+this.customToken;
+    //             }
+    //             if(data.notify.type === 'group' && data.notify.what === 'exit'){
+    //                 ret = 'https://product.bizsquad.net/teamlist/teamlist?token='+this.customToken;
+    //             }
+    //         } else if(data.notify.type === 'post' || data.notify.type === 'comment'){
+    //             ret = 'https://product.bizsquad.net/main/squad/view?gid='+data.gid+'&sid='+data.sid+'&token='+this.customToken;
+    //         } else if(data.notify.type === 'bbs'){
+    //             ret = 'https://product.bizsquad.net/main/bbs?gid='+data.gid+'&token='+this.customToken;
+    //         }
+    //      }
+    //     return ret;
         
-    }
+    // }
 
 
 

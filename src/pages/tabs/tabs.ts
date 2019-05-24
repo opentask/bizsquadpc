@@ -129,10 +129,10 @@ export class TabsPage {
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((msgs:INotification[]) => {
         // get unfinished notification count.
-        this.badgeCount = msgs.filter(m => m.data.statusInfo.done !== true).length;
-        this.badgeVisible = this.badgeCount > 0;
-        this.messages = msgs.filter(m => m.data.gid === this.currentGroup.gid);
-        this.notification = this.messages.filter(m => m.data.statusInfo.done !== true).length;
+        // this.badgeCount = msgs.filter(m => m.data.statusInfo.done !== true).length;
+        // this.badgeVisible = this.badgeCount > 0;
+        // this.messages = msgs.filter(m => m.data.gid === this.currentGroup.gid);
+        // this.notification = this.messages.filter(m => m.data.statusInfo.done !== true).length;
     });
 
     this.bizFire.afStore.collection("chat", ref => ref.where("group_id","==",this.currentGroup.gid))

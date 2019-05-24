@@ -24,7 +24,7 @@
         <ion-icon [name]="isListShown ? 'ios-arrow-down' : 'ios-arrow-up'"></ion-icon>
     </button>
     <!-- 아래 div에 ngFor 입력 -->
-    <div *ngFor="let msg of messages">
+    <!-- <div *ngFor="let msg of messages">
       <div class="cd-timeline-block">
         <div class="cd-timeline-picture text-center white" *ngIf="msg.data.sender.photoURL != null">
             <img src="{{ msg.data.sender.photoURL }}"> 
@@ -37,12 +37,11 @@
             <p class="timelineText marginBottom5 marginTop5">
               <span class="notifyType" *ngIf="msg.data.type === 'invitation'">[{{ msg.data.invitation.what }}]</span>
               <span class="notifyType" *ngIf="msg.data.type === 'notify'">[{{ msg.data.notify.type }}]</span>
-            <!-- make msg notify service -->
                 {{msg.text}}
             </p>
         </div>
       </div>
-    </div>
+    </div> -->
   </section>
 </ion-content>
 <div class="noNotify" *ngIf="noNotify">
