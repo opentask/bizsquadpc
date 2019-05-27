@@ -10,6 +10,7 @@ import { STRINGS } from '../../../biz-common/commons';
 import { Http } from '@angular/http';
 import { TokenProvider } from '../../../providers/token/token';
 import { NotificationService } from '../../../providers/notification.service';
+import { DataCache } from '../../../classes/cache-data';
 
 interface IBbsItem {
   bbsId: string,
@@ -58,6 +59,9 @@ export class HomePage implements OnInit {
   notification : INotification[];
   badgeVisible : boolean = false;
 
+  messages: INotification[];
+
+
   ipc: any;
 
   isPartner = false;
@@ -69,6 +73,8 @@ export class HomePage implements OnInit {
   private _unsubscribeAll;
 
   private nameMargins: Subscription[] = []; // margin name arrays.
+
+  private dataCache = new DataCache();
 
   constructor(
     public navCtrl: NavController, 
@@ -121,12 +127,36 @@ export class HomePage implements OnInit {
       this.manager = this.group.data.manager != null && this.group.data.manager[this.bizFire.currentUID] === true;
     }
     this.noticeService.onNotifications
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((msgs:INotification[]) => {
-        let badgeCount = msgs.filter(m => m.data.statusInfo.done !== true).length;
-        this.badgeVisible = badgeCount > 0;
+    .pipe(filter(n => n !=null),takeUntil(this._unsubscribeAll))
+    .subscribe((msgs: INotification[]) => {
+      this.messages = msgs.filter(m => {
+        let ret;
+        if(m.data.type === 'invitation') {
+          if(m.data.invitation.type === 'group'){
+            return true;
+          } else {
+            ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
+          }
+        }
+        if(m.data.type === 'notify'){
+          ret = m.data.notify.gid == this.bizFire.onBizGroupSelected.getValue().gid;
+        }
+        return ret;
       })
+      
+      console.log('그룹초대 + 그룹관련 알림', this.messages);
+      if(this.messages.length > 0) {
+        this.badgeVisible = true;
+      } else if(this.messages.length == 0) {
+        this.badgeVisible = false;
+      }
+    });
+
+    this.bizFire.onUserSignOut.subscribe(()=>{
+      this.dataCache.clear();
+    });
 }
+
   // profile menu toggle
   showMenu() {
     if(this.menuShow){

@@ -3,7 +3,7 @@
     <ion-buttons left class="login-top-menu">
       <button ion-button icon-only clear small color="light" (tap)="presentPopover($event)">
         <ion-icon name="notifications" style="font-size: 23px;"></ion-icon> 
-        <ion-badge *ngIf="badgeVisible" id="badge">&nbsp;</ion-badge>
+        <ion-badge *ngIf="badgeCount" id="badge">&nbsp;</ion-badge>
       </button>
       <button class="groupName" ion-button icon-end clear small color="light" (click)="goGroupList()">
         <span style="font-size: 15px;">{{currentGroup.data.team_name | slice:0:18}}</span>

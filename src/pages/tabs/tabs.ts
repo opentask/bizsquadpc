@@ -12,6 +12,7 @@ import { IUserData, INotification } from '../../_models/message';
 import { NotificationService } from '../../providers/notification.service';
 import { ChatService,IChatRoom } from '../../providers/chat.service';
 import { SquadService, ISquad } from '../../providers/squad.service';
+import { DataCache } from '../../classes/cache-data';
 
 @IonicPage({  
   name: 'page-tabs',
@@ -50,9 +51,9 @@ export class TabsPage {
   notification = 0;
   messages: INotification[];
   chatRooms = [];
-  badgeVisible = true;
-  badgeCount = 0;
-  chatCount = 0;
+  badgeCount: number = 0;
+
+  readonly dataCache = new DataCache();
 
 
   isPartner = false;
@@ -122,18 +123,16 @@ export class TabsPage {
             this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
             // set menu font color.
             this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
+            console.log(this.currentGroup.data.team_color);
         });
 
     // get number of unfinished notices.
     this.noticeService.onNotifications
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((msgs:INotification[]) => {
-        // get unfinished notification count.
-        // this.badgeCount = msgs.filter(m => m.data.statusInfo.done !== true).length;
-        // this.badgeVisible = this.badgeCount > 0;
-        // this.messages = msgs.filter(m => m.data.gid === this.currentGroup.gid);
-        // this.notification = this.messages.filter(m => m.data.statusInfo.done !== true).length;
-    });
+    .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
+    .subscribe((msgs: INotification[]) => {
+        console.log("tabs notifi",msgs);
+        this.badgeCount = msgs.length;
+    })
 
     this.bizFire.afStore.collection("chat", ref => ref.where("group_id","==",this.currentGroup.gid))
     .snapshotChanges()
@@ -222,7 +221,7 @@ export class TabsPage {
     this._unsubscribeAll.complete();
     this.squadNewMessage = 0;
     this.memberNewMessage = 0;
-
+    this.dataCache.clear();
   }
 
 }

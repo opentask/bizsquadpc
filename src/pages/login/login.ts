@@ -10,6 +10,7 @@ import * as electron from 'electron';
 import { TokenProvider } from '../../providers/token/token';
 import { IChatRoomData, IChatRoom } from '../../providers/chat.service';
 import { defineBase } from '@angular/core/src/render3';
+import { NotificationService } from '../../providers/notification.service';
 
 @IonicPage({  
   name: 'page-login',
@@ -52,6 +53,7 @@ export class LoginPage implements OnInit {
     private bizFire: BizFireService,
     private loading: LoadingProvider,
     public formBuilder: FormBuilder,
+    private noticeService: NotificationService,
     private tokenService : TokenProvider,
     ) {
       this.hideForm = true;
@@ -98,10 +100,8 @@ export class LoginPage implements OnInit {
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((state: IUserState) => {
         if(state.user && state.autoSignIn){
-            console.log('user already logged in, Force SignOut?',state.user.email);
-
-            // YES
-            //this.bizFire.signOut();
+          console.log('user already logged in, Force SignOut?',state.user.email);
+          this.bizFire.signOut();
         }
     });
 

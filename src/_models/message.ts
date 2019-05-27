@@ -19,6 +19,7 @@ export interface IUserData {
     user_visible_firstname?: string,
     user_visible_lastname?: string,
     providerId?: any[];
+    alarm?: IAlarmConfig;
     // + pc version 
     user_icon?: string,
     isChecked?: boolean,
@@ -90,4 +91,15 @@ export interface IFolderItem {
     name: string;
     squads: ISquad[];
     index: number;
+}
+
+export interface INoticeItem {
+    mid: string,
+    notification: INotificationData,
+    data: {
+        header: string[],
+        content: string[],
+        link:string[],
+        user?: IUser
+    }
 }

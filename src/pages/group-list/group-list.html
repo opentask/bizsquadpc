@@ -23,7 +23,7 @@
         <ion-avatar *ngIf="!group.data.photoURL" item-start [style.background-color]="group.data.team_color">
           {{ group.data.team_icon }}
         </ion-avatar> 
-        <ion-avatar *ngIf="group.data.photoURL" item-start [style.background-color]="group.data.team_color">
+        <ion-avatar *ngIf="group.data.photoURL" item-start>
           <img style="border-radius: 15%;" src="{{ group.data.photoURL }}">
         </ion-avatar>
         <h2 class="groupName">{{ group.data.team_name }}</h2>

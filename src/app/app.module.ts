@@ -30,7 +30,7 @@ import { GroupColorProvider } from '../providers/group-color';
     AngularFirestoreModule,
     AngularFireStorageModule,
     AngularFireAuthModule,
-    HttpModule
+    HttpModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
