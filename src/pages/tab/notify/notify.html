@@ -12,9 +12,9 @@
                         </ion-avatar>
                         <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(msg)">
                             <p class="cd-author marginTop5 marginBottom5">
-                                <span class="from">{{msg.data.header[0]}}</span>  
+                                <span class="from">{{msg.data.header[0]}}</span>
                                 <span class="created">{{msg.notification.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>
-                            </p>
+                            </p> 
                             <p class="timelineText marginBottom5 marginTop5">
                                 <span class="notifyType">[{{msg.notification.type}}]</span>
                                 {{msg.data.header[1]}}

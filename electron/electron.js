@@ -100,7 +100,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }))
     
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // chatRoom.webContents.openDevTools();
+    chatRoom.webContents.openDevTools();
     
 });
  

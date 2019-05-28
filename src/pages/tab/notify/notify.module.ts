@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { NotifyPage } from './notify';
-import { TimestampToDatePipe } from '../../../biz-common/timestamp-to-date.pipe';
+import { PipesModule } from '../../../pipes/pipes.module';
+
 @NgModule({
   declarations: [
     NotifyPage,
-    TimestampToDatePipe,
   ],
   imports: [
     IonicPageModule.forChild(NotifyPage),
+    PipesModule
   ],
 })
 export class NotifyPageModule {}
