@@ -22,7 +22,7 @@ export class MenuPage {
   eachGroups = {};
 
   // badge
-  badgeVisible = true;
+  badgeVisible = false;
   badgeCount = 0;
   groupBadgeCount = 0;
 
@@ -94,6 +94,11 @@ export class MenuPage {
         this.messages = msgs.map((m: INotification) => this.noticeService.makeMessage(m));
         if(this.messages.length > 0){
           this.badgeCount = this.messages.length;
+          if(this.badgeCount > 0){
+            this.badgeVisible = true;
+          } else {
+            this.badgeVisible = false;
+          }
           this.noNotify = false;
         } else {
           this.noNotify = true;
@@ -180,6 +185,7 @@ export class MenuPage {
   jumpWeb(msg){
     console.log(msg);
   }
+
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
