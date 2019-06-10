@@ -2,16 +2,19 @@ import { App } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { IUserData } from './../../_models/message';
 import { User } from 'firebase';
-import { Observable, BehaviorSubject, Subject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { InitProcess } from './init-process';
 import firebase from 'firebase';
 import { LangService } from '../../biz-common/lang-service';
-import { STRINGS } from '../../biz-common/commons';
+import { STRINGS, Commons } from '../../biz-common/commons';
 import { AngularFireStorage } from '@angular/fire/storage';
-
+import { HttpHeaders } from '@angular/common/http';
+import { FireDataKey } from '../../classes/fire-data-key';
+import { FireData } from '../../classes/fire-data';
+import { IFireMessage } from '../../classes/fire-model';
 export interface IUserState {
   status:'init'|'signIn'|'signOut',
   user: User,
@@ -20,28 +23,31 @@ export interface IUserState {
  
 export interface IBizGroup {
     gid: string,
-    data: {
-            manager: any,
-            members: any,
-            partners?: any,
-            status?: number,
-            team_color?: string,
-            team_description?: string,
-            team_name?: string,
-            team_id?: string,
-            manageInfo?: {
-                password: string
-            },
-            created?: number,
-            photoURL?: string,
-            team_icon?: string,
-            group_members?: number,
-            general_squad_count?: number,
-            agile_squad_count?: number,
-            notifyLength?: Number,
-            badgeVisible?: boolean,
-        }
+    data: IBizGroupData
 }
+
+export interface IBizGroupData {
+    manager: any,
+    members: any,
+    partners?: any,
+    status?: number,
+    team_color?: string,
+    team_description?: string,
+    team_name?: string,
+    team_id?: string,
+    manageInfo?: {
+        password: string
+    },
+    created?: number,
+    photoURL?: string,
+    team_icon?: string,
+    group_members?: number,
+    general_squad_count?: number,
+    agile_squad_count?: number,
+    notifyLength?: Number,
+    badgeVisible?: boolean,
+  }
+
 export interface Igroup {
     created?: number,
     manageInfo?: {
@@ -81,6 +87,10 @@ export class BizFireService {
   // * Push only user logged out.
   onUserSignOut: Subject<boolean>;
 
+  get takeUntilUserSignOut(){
+    return takeUntil(this.onUserSignOut);
+  }
+
   // ** current fireStore User
   get currentUID(): string | undefined {
       let ret;
@@ -91,7 +101,9 @@ export class BizFireService {
       }
       return ret;
   }
+
   // * Firestore data + auth.currentUser data.*
+  private currentUserSubscription: Subscription;
   private _currentUser = new BehaviorSubject<IUserData>(null);
 
   get currentUser(): Observable<IUserData>{
@@ -129,6 +141,8 @@ export class BizFireService {
       return this._onLang.asObservable().pipe(filter(g => g!=null));
   }
 
+  readonly fireData = new FireData();
+
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -142,45 +156,57 @@ export class BizFireService {
         this._lang.setLanguage('en'); // load default language.
         this._onLang.next(this._lang);
 
-        this.initProcess = new InitProcess(this.afStore);
-
         // one and only
         this._authState = new BehaviorSubject<any>(this.userState);
 
 
         // *
-        this.afAuth.authState.subscribe((user: User | null) => {
+        this.afAuth.authState.subscribe(async (user: firebase.User | null) => {
 
-          console.log('authState', user);
+            // unsubscribe old one for UserData
+            if(this.currentUserSubscription != null){
+                this.currentUserSubscription.unsubscribe();
+                this.currentUserSubscription = null;
+            }
 
-          if(user){
-              if(this.bizGroupSub){
-                  this.bizGroupSub();
-                  this.bizGroupSub = null;
-              }
-              this.startBizGroupMonitor(user);
-              // ------------------------------------------------------------------
-              // * update user info.
-              // ------------------------------------------------------------------
-              this.initProcess.start(user).then( ()=> {
-                  // start trigger after update login date.
-                  this.afStore.doc(`users/${user.uid}`).valueChanges()
-                      .pipe(takeUntil(this.onUserSignOut))
-                      .subscribe((currentUser: any) => {
-                          // multicast current user.
-                          this._currentUser.next(currentUser as IUserData);
-                      });
-                  // update state
-                  this.userState.user = user;
-                  this.userState.status = 'signIn';
-                  this._authState.next(this.userState);
-              });
-          } else {
-              // * start load bizGroups
-              if(this.bizGroupSub){
-                  this.bizGroupSub();
-                  this.bizGroupSub = null;
-              }
+            if(user){
+
+                if(this.bizGroupSub){
+                    this.bizGroupSub();
+                    this.bizGroupSub = null;
+                }
+                this.startBizGroupMonitor(user);
+                
+                // ------------------------------------------------------------------
+                // * update user info.
+                // ------------------------------------------------------------------
+
+                const initProcess = new InitProcess(this.afStore);
+                await initProcess.start(user);
+
+                // start trigger after update login date.
+                this.currentUserSubscription = this.afStore.doc(Commons.userPath(user.uid))
+                .snapshotChanges()
+                .pipe(takeUntil(this.onUserSignOut))
+                .subscribe((snapshot: any) => {
+                                
+                    const userData = snapshot.payload.data();
+                    //console.log('currentUser data', userData, 'loaded');
+                    
+                    // multicast current user.
+                    this._currentUser.next(userData as IUserData);
+                });
+                
+            } else {
+                // clear current users' data
+                if(this._currentUser.getValue() != null){
+                    this._currentUser.next(null);
+                }
+                // * start load bizGroups
+                if(this.bizGroupSub){
+                    this.bizGroupSub();
+                    this.bizGroupSub = null;
+                }
             }
         });
     }
@@ -238,12 +264,13 @@ export class BizFireService {
     // * start load bizGroups
     let ref: firebase.firestore.CollectionReference | firebase.firestore.Query;
     ref = this.afStore.firestore.collection(STRINGS.STRING_BIZGROUPS);
+    
     let superUser = false;
     if(user && user.type != null) {
         superUser = user.type['super'] === true;
     }
-    if(superUser){
-        // if already monitored, get new monitor.
+    if(superUser) {
+
         if(this.bizGroupSub){
             this.bizGroupSub();
             this.bizGroupSub = null;
@@ -257,41 +284,24 @@ export class BizFireService {
         }
     } else {
 
-        // * this is a normal user.
-        // if not monitored, get new one.
-        if(this.bizGroupSub == null){
-            // filter user.uid's group.
+        if(this.bizGroupSub == null) {
+
             ref = ref.where(new firebase.firestore.FieldPath('members', user.uid), '==', true);
 
             this.bizGroupSub = ref.onSnapshot(groupsSnap => {
                 const groups = groupsSnap.docs.filter(d => {
-                    // filter status 0 group
+
                     return d.get('status') !== 0;
 
                 }).map(doc => {
                     return {data:doc.data(), gid:doc.id} as IBizGroup;
                 });
-
-                // add default value if not exists.
-                groups.forEach(g => {
-                //    if(g.data.team_color == null) {
-                //        g.data.team_color = '#5B9CED'; // set to opentask color.
-                //    }
-                //    if(g.data.team_icon == null) {
-                //        if(g.data.team_name != null && g.data.team_name.length > 1){
-                //            g.data.team_icon = g.data.team_name.substr(0, 2);
-                //        }
-                //    }
-                });
                 this.onBizGroups.next(groups);
             }, error1 => console.error(error1));
-        } else {
-            // * no nothing.
         }
     }
   }
-
-    isPartner(group?: IBizGroup): boolean{
+    isPartner(group?: IBizGroup): boolean {
         if(group == null){
             group = this.onBizGroupSelected.value;
         }
@@ -303,7 +313,6 @@ export class BizFireService {
     }
     signOut(navigateToLoginWhenDone = true): Promise<boolean>{
         console.log('BizFireService.signOut()');
-
         if(this.userState.status === 'signIn'){
             // yes.
             if(this.bizGroupSub){
@@ -321,6 +330,10 @@ export class BizFireService {
             this.onBizGroups.next(null);
         }
         return this.afAuth.auth.signOut().then(()=> {
+            // clear cache.
+            const mine = new FireDataKey('groups', this.currentUID);
+            this.fireData.unregister(mine);
+
             if(navigateToLoginWhenDone){
                 return this._app.getRootNav().setRoot('page-login');
             } else {
@@ -365,6 +378,13 @@ export class BizFireService {
     })
   }
 
+  async idTokenHeader(): Promise<HttpHeaders> {
+    const idToken = await this.afAuth.auth.currentUser.getIdToken(true);
+    console.log(idToken);
+    return new HttpHeaders({
+      'authorization': idToken
+    });
+  }
   
   
 }

@@ -131,6 +131,7 @@ export class TabsPage {
     .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
     .subscribe((msgs: INotification[]) => {
         console.log("tabs notifi",msgs);
+        console.log(msgs.length);
         this.badgeCount = msgs.length;
     })
 

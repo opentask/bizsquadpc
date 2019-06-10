@@ -60,13 +60,15 @@ export class FireData implements IFireData {
     register(key: IFireDataKey, observer: Observable<any>, option: IFireDataOption = {}) {
       
         //clear old one.
-        if(this.find(key) != null){
+        if(this.find(key) != null) {
           console.error('이미 등록된 키가 불림~~!!!!', key);
           return;
         }
         
         const newData = {key: key, sub: null, messages: []};
         
+        console.log("newData",newData);
+
         let {createFnc, filterFnc, sorter} = option ;
         
         if(createFnc == null){
@@ -132,6 +134,7 @@ export class FireData implements IFireData {
           }
           
           this._onMessageChanged.next({key: key, data: savedData.messages.map(m => m.data)} as IFireMessage);
+          console.log("this._onMessageChanged",this._onMessageChanged);
           
         }, error1 => {
           console.error(key, error1);

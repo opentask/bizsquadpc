@@ -18,6 +18,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpModule } from '@angular/http';
 import { TokenProvider } from '../providers/token/token';
 import { GroupColorProvider } from '../providers/group-color';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { GroupColorProvider } from '../providers/group-color';
     AngularFireStorageModule,
     AngularFireAuthModule,
     HttpModule,
+    HttpClientModule
 
   ],
   bootstrap: [IonicApp],

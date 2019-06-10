@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as electron from 'electron';
 import { BizFireService } from '../biz-fire/biz-fire';
+
 @Injectable()
 export class Electron {
 
@@ -11,7 +12,7 @@ export class Electron {
   ses = electron.remote.session;
   
   constructor(public bizFire : BizFireService,) {
-
+    
     this.ipc = electron.ipcRenderer;
   }
 

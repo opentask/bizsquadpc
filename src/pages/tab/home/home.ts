@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Electron } from './../../../providers/electron/electron';
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams,App } from 'ionic-angular';
@@ -7,10 +8,10 @@ import { IUserData, IUser, INotification } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { IBizGroup,BizFireService } from '../../../providers/biz-fire/biz-fire';
 import { STRINGS } from '../../../biz-common/commons';
-import { Http } from '@angular/http';
 import { TokenProvider } from '../../../providers/token/token';
 import { NotificationService } from '../../../providers/notification.service';
 import { DataCache } from '../../../classes/cache-data';
+import { environment } from '../../../environments/environments';
 
 interface IBbsItem {
   bbsId: string,
@@ -83,7 +84,7 @@ export class HomePage implements OnInit {
     public bizFire : BizFireService,
     public afAuth: AngularFireAuth,
     private noticeService: NotificationService,
-    public http: Http,
+    public http: HttpClient,
     private tokenService : TokenProvider,
     public _app : App) {
       
@@ -96,6 +97,7 @@ export class HomePage implements OnInit {
   ngOnInit(): void {
     // 토큰 저장
     this.customToken = this.tokenService.customToken;
+
     this.group = this.bizFire.onBizGroupSelected.getValue();
 
     // * current User for RIGHT MENU
@@ -143,8 +145,6 @@ export class HomePage implements OnInit {
         }
         return ret;
       })
-      
-      console.log('그룹초대 + 그룹관련 알림', this.messages);
       if(this.messages.length > 0) {
         this.badgeVisible = true;
       } else if(this.messages.length == 0) {
@@ -208,4 +208,17 @@ export class HomePage implements OnInit {
     this.navCtrl.setRoot('page-notify');
   }
 
+
+  async sendMessageTest() {
+
+    const path = `${environment.bizServerUri}/sendMessage`;
+    const header = await this.bizFire.idTokenHeader();
+
+    console.log('header',header);
+    const body = 'body data'
+
+    this.http.post(path, body, {headers: header}).subscribe((res: any) => {  
+      console.log(res.to)
+    })
+  }
 }

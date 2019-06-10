@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject, combineLatest, zip } from 'rxjs';
+import { BehaviorSubject, Subject, combineLatest, zip, Subscription } from 'rxjs';
 import { INotification, IAlarmConfig, INoticeItem, INotificationData } from '../_models/message';
 import { BizFireService } from './biz-fire/biz-fire';
 import { IFireDataKey, IFireMessage } from '../classes/fire-model';
@@ -28,8 +28,9 @@ export class NotificationService {
     // for notice component.
     onNotifications = new BehaviorSubject<INotification[]>(null);
     
+    private oldAlarmSub: Subscription;
     // alarm send by SettingComponent
-    onAlarmChanged = new Subject<IAlarmConfig>();
+    onAlarmChanged = new BehaviorSubject<IAlarmConfig>(null);
     
     // data 가 FireData에서오면 푸쉬
     private _notification = new Subject<INotification[]>();
@@ -45,54 +46,53 @@ export class NotificationService {
     constructor(private bizFire: BizFireService) {
 
         // wait for notify data changed.
-        this.fireData.onMessageChanged.subscribe((message: IFireMessage) => {
-            if(this.notifyKey && this.notifyKey.isEqualKey(message.key)){
-                
-                // notify message changed.
-                //console.log(message.data);
-                
+        this.fireData.onMessageChanged
+        .subscribe((message: IFireMessage) => {
+            if(this.notifyKey && this.notifyKey.isEqualKey(message.key)) {
+                console.log("처음에 값이 들어옵니까?",message.data);
                 this._notification.next(message.data);
             }
         });
 
         // delete all notifications
         this.bizFire.onUserSignOut.subscribe(()=>{
-      
+
             //this.onUnfinishedNotices.next([]);
             this.onNotifications.next(null);
-            
             // clear cache.
             this.fireData.clear();
             this.notifyKey = null;
         
         });
 
-
         // allTime alarm monitor.
         this.bizFire.currentUser.subscribe(user => {
+
+            console.log("this.notifyKey",this.notifyKey);
         
             // start register at first time. ONLY first time.
             if(this.notifyKey == null){
                 this.notifyKey = new FireDataKey('notify', this.bizFire.currentUID);
             }
-        
+            console.log("this.notifyKey",this.notifyKey);
+
             // start new alarm ONLY first time.
-            if(this.fireData.has(this.notifyKey) === false) {
-                const observer = this.bizFire.afStore.collection(Commons.notificationPath(this.bizFire.currentUID),
-                    ref => {
+            // if(this.fireData.has(this.notifyKey) === false) {
+            const observer = this.bizFire.afStore.collection(Commons.notificationPath(this.bizFire.currentUID),
+                ref => {
                     let query: firebase.firestore.CollectionReference | firebase.firestore.Query = ref;
                     query = query.orderBy('created', 'asc');
                     return query;
-                    })
-                    .stateChanges().pipe(takeUntil(this.bizFire.onUserSignOut));
+                })
+                .stateChanges().pipe(takeUntil(this.bizFire.onUserSignOut));
+        
+            const builder = (doc)=>{
+                return {mid:doc.id, data: doc.data()} as INotification;
+            };
             
-                const builder = (doc)=>{
-                    return {mid:doc.id, data: doc.data()} as INotification;
-                };
-                this.fireData.register(this.notifyKey, observer, {createFnc: builder});
-            }
-            
-            
+            this.fireData.register(this.notifyKey, observer, {createFnc: builder});
+
+            // }
             // find alarm from /user/<>.alarm
             let alarm: IAlarmConfig = user.alarm;
             
@@ -103,17 +103,21 @@ export class NotificationService {
                 
                 // and update firebase
                 this.updateAlarmStatus(alarm);
+                console.log("1번",this.onAlarmChanged);
             
             } else {
                 // alarm info changed.
                 this.onAlarmChanged.next(alarm);
+                console.log("2번",this.onAlarmChanged);
             }
-            
         });
 
         combineLatest(this._notification, this.onAlarmChanged)
         //.pipe(filter(([n, l, a]) => a!=null))
           .subscribe(([msgs, alarm]) => {
+
+            console.log("alert combine latest",this._notification);
+            console.log("this.onAlarmChanged",this.onAlarmChanged);
             
             let alarmsToDelete = [];
             let leftAlarms = [];
@@ -157,6 +161,7 @@ export class NotificationService {
               });
             }
             this.onNotifications.next(leftAlarms);
+            console.log("leftAlarms",leftAlarms);
         });
     }
 

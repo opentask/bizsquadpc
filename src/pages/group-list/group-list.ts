@@ -7,6 +7,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { LoadingProvider } from '../../providers';
 import { TokenProvider } from '../../providers/token/token';
 import { DataCache } from '../../classes/cache-data';
+import { FireData } from '../../classes/fire-data';
 
 @IonicPage({  
   name: 'page-group-list',
@@ -28,19 +29,21 @@ export class GroupListPage {
 
   private dataCache = new DataCache();
 
+  private fireData = new FireData();
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public electron : Electron,
     private bizFire: BizFireService,
-    private loading: LoadingProvider,
-    private tokenService : TokenProvider,
+    private loading: LoadingProvider
     ) {
 
       this._unsubscribeAll = new Subject<any>();
   }
 
   ngOnInit() {
+    
     this.loading.show();
     // get user's bizgroup.
     this.bizFire.onBizGroups
@@ -82,18 +85,22 @@ export class GroupListPage {
                   });
                 }
             });
-            this.groups = bizGroups;
+            this.groups = bizGroups.sort((a,b) => {
+              if(a.data.created && b.data.created) {
+                return a.data.created > b.data.created ? -1 : 1;
+              } else {
+                return 0;
+              }
+            })
             console.log(this.groups);
             this.loading.hide();
         });
-
-    //파이어베이스에서 토큰 키를 tokenService의 customToken변수에 저장.
-    this.tokenService.getToken();
   }
 
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
+    this.fireData.clear();
   }
 
   gotoTeam(group){

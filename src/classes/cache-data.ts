@@ -76,7 +76,7 @@ export  class DataCache {
     }
   }
   
-  register(key: IFireDataKey, observer: Observable<any>, option: IFireDataOption = {}){
+  register(key: IFireDataKey, observer: Observable<any>, option: IFireDataOption = {}) {
     //clear old one.
     if(this.find(key) != null){
       console.error('이미 등록된 키가 불림~~!!!!', key);

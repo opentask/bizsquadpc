@@ -45,7 +45,6 @@ export class NotifyPage {
   }
 
   ngOnInit(): void {
-
     this.noticeService.onNotifications
     .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
     .subscribe((msgs: INotification[]) => {
@@ -53,7 +52,7 @@ export class NotifyPage {
       groupMsg = msgs.filter(m => {
         let ret;
         if(m.data.type === 'invitation') {
-          if(m.data.invitation.type === 'group'){
+          if(m.data.invitation.type === 'group') {
               return true;
             } else {
               ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 

@@ -1,16 +1,14 @@
 import { Electron } from './../../providers/electron/electron';
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { LoadingProvider,BizFireService } from './../../providers';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
-import { TokenProvider } from '../../providers/token/token';
-import { IChatRoomData, IChatRoom } from '../../providers/chat.service';
-import { defineBase } from '@angular/core/src/render3';
-import { NotificationService } from '../../providers/notification.service';
+import { IChatRoom } from '../../providers/chat.service';
+
 
 @IonicPage({  
   name: 'page-login',
@@ -52,9 +50,7 @@ export class LoginPage implements OnInit {
     public electron: Electron,
     private bizFire: BizFireService,
     private loading: LoadingProvider,
-    public formBuilder: FormBuilder,
-    private noticeService: NotificationService,
-    private tokenService : TokenProvider,
+    public formBuilder: FormBuilder
     ) {
       this.hideForm = true;
       this.loginForm = formBuilder.group({
@@ -99,7 +95,7 @@ export class LoginPage implements OnInit {
     this.bizFire.authState
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((state: IUserState) => {
-        if(state.user && state.autoSignIn){
+        if(state.user && state.autoSignIn) {
           console.log('user already logged in, Force SignOut?',state.user.email);
           this.bizFire.signOut();
         }
@@ -125,7 +121,8 @@ export class LoginPage implements OnInit {
       this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
     } else {
       // 로그인 정보 인증
-        this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user => {
+        this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user  => {
+          console.log(user);
           this.loading.hide();
           this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
           // 로그인 시 기존과 다르게 이제 비즈그룹을 선택 후 메인페이지로 이동.
