@@ -52,7 +52,7 @@
                 </button>
             </li>
             <li>
-                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/bbs?gid='+group.gid+'&token='+customToken);">
+                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+group.gid+'/bbs?token='+customToken);">
                     <img src="imgs/notice.svg">
                     <span class="title">Notice</span>
                 </button>
@@ -65,7 +65,7 @@
             </li>
             <!-- 현재 없는 기능이므로 기능 추가시 주석 해제 후 추가 -->
             <li>
-                <button disabled id="plusTaskbox">
+                <button id="plusTaskbox" (click)="testSendFcm()">
                     <img style="margin-top: 0 !important" src="imgs/plus.svg">
                 </button>
             </li>

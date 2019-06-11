@@ -33,7 +33,7 @@
           <ion-avatar class="cd-timeline-picture text-center notPhoto" item-start *ngIf="msg.data.user.data.photoURL == null">
               <span class="displayName">{{ msg.data.user.data.displayName | slice:0:1 }}</span>
           </ion-avatar>
-          <div class="cd-timeline-content padding white" (click)="''">
+          <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(msg)">
               <p class="cd-author marginTop5 marginBottom5">                                
                 <span class="from">{{msg.data.header[0]}}</span>
                 <span class="created">{{msg.notification.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>

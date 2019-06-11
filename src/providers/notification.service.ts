@@ -8,6 +8,8 @@ import { FireDataKey } from '../classes/fire-data-key';
 import { takeUntil } from 'rxjs/operators';
 import { Commons } from '../biz-common/commons';
 import { DataCache } from '../classes/cache-data';
+import { TokenProvider } from './token/token';
+import { Electron } from './electron/electron';
 
 export interface IAlarm {
     all: boolean,
@@ -24,6 +26,8 @@ export interface IAlarm {
     providedIn: 'root'
 })
 export class NotificationService {
+
+    webUrl = "https://product.bizsquad.net/";
 
     // for notice component.
     onNotifications = new BehaviorSubject<INotification[]>(null);
@@ -43,7 +47,14 @@ export class NotificationService {
 
     public dataCache = new DataCache();
 
-    constructor(private bizFire: BizFireService) {
+    public ipc: any;
+
+    constructor(
+        private bizFire: BizFireService,
+        private tokenService : TokenProvider,
+        public electron: Electron,
+        ) {
+            this.ipc = this.electron.ipc;
 
         // wait for notify data changed.
         this.fireData.onMessageChanged
@@ -191,6 +202,8 @@ export class NotificationService {
     * Create INoticeItem : for html display.
     * */
     public makeMessage(m: INotification): INoticeItem {
+
+        const userToken = this.tokenService.customToken;
             
         const data: INotificationData = m.data;
         
@@ -222,7 +235,7 @@ export class NotificationService {
                             // set content
                             message.data.header = [`${u['displayName'] || u['email']}`, `posted ${notify.info.title}`];
                             message.data.content = [`${notify.info.title}`];
-                            message.data.link = [`${g['team_name']} > ${s['name']}`, `/main/${notify.gid}/${notify.sid}`];
+                            message.data.link = [`${g['team_name']} > ${s['name']}`, `${this.webUrl}/main/${notify.gid}/${notify.sid}?token=${userToken}`];
                         });
                 }
                 // is a bbs post ?
@@ -236,7 +249,7 @@ export class NotificationService {
                             message.data.header = [`${u['displayName'] || u['email']}`, `registered a new notice ${notify.info.title}`];
                             message.data.content = [`New Notice:` , `${notify.info.title}`];
                             // second array is a routerLink !
-                            message.data.link = [`${g['team_name']}`, `/main/${notify.gid}/bbs`];
+                            message.data.link = [`${g['team_name']}`, `${this.webUrl}/main/${notify.gid}/bbs?token=${userToken}`];
                         });
                 }
                 // is this a schedule post ?
@@ -257,7 +270,7 @@ export class NotificationService {
                                 ];
                             
                             message.data.link = [`${g['team_name']} > ${s['name']}`,
-                                `/main/${notify.gid}/${notify.sid}`]; // second array is a routerLink !
+                                `${this.webUrl}/main/${notify.gid}/${notify.sid}?token=${userToken}`]; // second array is a routerLink !
                         });
                 }
             }
@@ -274,7 +287,7 @@ export class NotificationService {
                         message.data.header = [`${u['displayName'] || u['email']}`, `commented at ${notify.info.title}`];
                         message.data.content = [`${notify.info.title}`,
                             `<blockquote class="blockquote"><footer class="blockquote-footer font-12">${notify.info.comment}</blockquote>`];
-                        message.data.link = [`${g['team_name']} > ${s['name']}`, `/main/${notify.gid}/${notify.sid}`];
+                        message.data.link = [`${g['team_name']} > ${s['name']}`, `${this.webUrl}/main/${notify.gid}/${notify.sid}?token=${userToken}`];
                     });
                 
             }
@@ -295,7 +308,7 @@ export class NotificationService {
                             // user joined a squad
                             message.data.header = [`${u['displayName'] || u['email']}`, `joined ${s['name']}`];
                             message.data.content = [`${u['displayName'] || u['email']} joined <span class="font-weight-bold">${s['name']}</span>`];
-                            message.data.link = [`${g['team_name']} > ${s['name']}`];
+                            message.data.link = [`${g['team_name']} > ${s['name']}`,`${this.webUrl}/main/${notify.gid}/${notify.sid}?token=${userToken}`];
                             
                         });
                     
@@ -309,7 +322,7 @@ export class NotificationService {
                             // user joined a group.
                             message.data.header = [`${u['displayName'] || u['email']}`, `joined ${g['team_name']}`];
                             message.data.content = [`${u['displayName'] || u['email']} joined BizGroup <span class="font-weight-bold">${g['team_name']}</span>`];
-                            message.data.link = [`${g['team_name']}`, `/main/${notify.gid}`];
+                            message.data.link = [`${g['team_name']}`, `${this.webUrl}/main/${notify.gid}?token=${userToken}`];
                             
                         });
                     
@@ -375,9 +388,8 @@ export class NotificationService {
             
             // found rounterLink
             const link = msg.data.link[1];
-            console.log(link);
 
-            // this.ipc.send('loadGH',link);
+            this.ipc.send('loadGH',link);
         }
     }
   

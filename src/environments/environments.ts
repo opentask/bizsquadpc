@@ -21,6 +21,6 @@ export const environment = {
         spinner: 'circles',
         showBackdrop: false,
     },
-    bizServerUri: 'http://localhost:9010'
-    // bizServerUri: 'https://manager.bizsquad.net:9010'
+    // bizServerUri: 'http://localhost:9010'
+    bizServerUri: 'https://manager.bizsquad.net:9010'
 };

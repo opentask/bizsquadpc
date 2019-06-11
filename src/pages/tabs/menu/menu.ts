@@ -182,8 +182,8 @@ export class MenuPage {
     this.messages = this.noticeService.onNotifications.getValue().map((m: INotification) => this.noticeService.makeMessage(m));
   }
 
-  jumpWeb(msg){
-    console.log(msg);
+  onClickNotifyContents(msg){
+    this.noticeService.onClickNotifyContents(msg);
   }
 
   ngOnDestroy(): void {

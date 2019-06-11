@@ -90,8 +90,6 @@ export class HomePage implements OnInit {
       
       this._unsubscribeAll = new Subject<any>();
       this.ipc = electron.ipc;
-
-      this.customToken = this.tokenService.customToken;
   }
 
   ngOnInit(): void {
@@ -209,16 +207,7 @@ export class HomePage implements OnInit {
   }
 
 
-  async sendMessageTest() {
-
-    const path = `${environment.bizServerUri}/sendMessage`;
-    const header = await this.bizFire.idTokenHeader();
-
-    console.log('header',header);
-    const body = 'body data'
-
-    this.http.post(path, body, {headers: header}).subscribe((res: any) => {  
-      console.log(res.to)
-    })
+  testSendFcm() {
+    this.tokenService.testSendFcm();
   }
 }

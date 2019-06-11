@@ -36,7 +36,8 @@ export class GroupListPage {
     public navParams: NavParams,
     public electron : Electron,
     private bizFire: BizFireService,
-    private loading: LoadingProvider
+    private loading: LoadingProvider,
+    private tokenService : TokenProvider,
     ) {
 
       this._unsubscribeAll = new Subject<any>();
@@ -104,6 +105,7 @@ export class GroupListPage {
   }
 
   gotoTeam(group){
+    this.tokenService.getToken(this.bizFire.currentUID);
     this.bizFire.onBizGroupSelected.next(group);
     this.navCtrl.setRoot('page-tabs',{queryParams: {gid: group.gid}});
   }
