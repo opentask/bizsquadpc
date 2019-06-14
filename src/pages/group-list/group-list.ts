@@ -58,7 +58,7 @@ export class GroupListPage {
                   newData['group_members'] = Object.keys(group.data.members).length;
                   newData['team_color'] = group.data.team_color || this.team_color;
                   
-                  if(group.data.team_name == null || group.data.team_name.length === 0 ){
+                  if(group.data.team_name == null || group.data.team_name.length === 0 ) {
                     newData['team_icon'] = 'BG';
                   } else {
                       let count = 2;

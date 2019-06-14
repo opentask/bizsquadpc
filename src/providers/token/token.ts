@@ -36,6 +36,8 @@ export class TokenProvider {
     async testSendFcm() {
         const path = `${environment.bizServerUri}/sendFCM`;
         const header = await this.bizFire.idTokenHeader();
+        
+        // 임시. users=text + notification=text
         const users = ['E1PK4kTXgiYVu9F9ksEa52esqSH3','nwmxyLdPtdMeaXMAKmKJ27HF0ZB3','MO6sfMXSNbM1uAomtMzprSN6fe63'];
         const payload = {
             notification: {
@@ -51,7 +53,6 @@ export class TokenProvider {
         }
         this.http.post(path,body,{headers: header}).subscribe((res: any) => {
             // 완료후 확인.
-
         })
 
     }

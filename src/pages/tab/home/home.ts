@@ -205,9 +205,4 @@ export class HomePage implements OnInit {
   showNotify(){
     this.navCtrl.setRoot('page-notify');
   }
-
-
-  testSendFcm() {
-    this.tokenService.testSendFcm();
-  }
 }

@@ -291,7 +291,7 @@ export class BizFireService {
             this.bizGroupSub = ref.onSnapshot(groupsSnap => {
                 const groups = groupsSnap.docs.filter(d => {
 
-                    return d.get('status') !== 0;
+                    return d.get('status') !== false;
 
                 }).map(doc => {
                     return {data:doc.data(), gid:doc.id} as IBizGroup;
