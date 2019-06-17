@@ -1,5 +1,6 @@
 'use strict';
 const electron = require('electron');
+const windowStateKeeper = require('electron-window-state');
 const { ipcMain,dialog } = require('electron');
 const { shell } = require('electron');
 const url = require('url');
@@ -28,10 +29,20 @@ let selectChatRoom;
 
 
 function createWindow() {
+
+    // windowStateKeeper
+    let mainWindowState = windowStateKeeper({
+        defaultWidth: 350,
+        defaultHeight: 600
+    });
+
+
     // Create the browser window.
     win = new BrowserWindow({
-        width: 350,
-        height: 600,
+        'x': mainWindowState.x,
+        'y': mainWindowState.y,
+        'width': mainWindowState.width,
+        'height': mainWindowState.height,
         frame: false,
         minWidth:350,
         minHeight:600,
@@ -45,6 +56,8 @@ function createWindow() {
         protocol: 'file:',
         slashes: true
     }))
+    mainWindowState.manage(win);
+
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     // win.webContents.openDevTools();
 
@@ -67,11 +80,12 @@ app.on('ready', function(){
 });
 // 모든 창이 닫히면 애플리케이션 종료.
 app.on('window-all-closed', () => {
+    app.quit();
     // macOS의 대부분의 애플리케이션은 유저가 Cmd + Q 커맨드로 확실하게
     // 종료하기 전까지 메뉴바에 남아 계속 실행됩니다.
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    // if (process.platform !== 'darwin') {
+    //     app.quit();
+    // }
 });
 
 ipcMain.on('loadGH', (event, arg) => {
