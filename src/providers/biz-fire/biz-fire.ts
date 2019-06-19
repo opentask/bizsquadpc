@@ -20,6 +20,12 @@ export interface IUserState {
   user: User,
   autoSignIn: boolean
 }
+
+export interface userLinks {
+    img : string,
+    title : string,
+    url : string,
+}
  
 export interface IBizGroup {
     gid: string,

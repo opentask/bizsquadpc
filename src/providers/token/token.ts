@@ -54,6 +54,20 @@ export class TokenProvider {
         this.http.post(path,body,{headers: header}).subscribe((res: any) => {
             // 완료후 확인.
         })
-
     }
+
+    async addCustomLink(uid,title,url) {
+        const path = `${environment.bizServerUri}/customLink`;
+        const header = await this.bizFire.idTokenHeader();
+        const body = { 
+            uid: uid,
+            title: title,
+            url: url,
+        }
+        this.http.post(path,body,{headers: header}).subscribe((res: any) => {
+            console.log(res.result);
+            // 파이어스토어에서 링크 데이터 가져오기.
+        })
+    }
+
 }

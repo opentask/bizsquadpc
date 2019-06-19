@@ -1,0 +1,29 @@
+
+<ion-header>
+  <p no-margin class="title" [style.background-color]="groupMainColor">
+    Add Link
+  </p>
+</ion-header>
+<ion-content no-padding>
+  <form [formGroup]="addLinkForm">
+    <ion-list>
+        <ion-item formControlName="linkTitle" style="width:70%">
+          <ion-label stacked>Title <span style="color:#FF6767">(Limit the Length is 10)</span></ion-label>
+          <ion-input type="text"></ion-input>
+        </ion-item>
+      
+        <ion-item formControlName="linkUrl" style="width:90%" class="mg-left-16" no-padding>
+          <ion-label stacked>Url</ion-label>
+          <ion-input type="text"></ion-input>
+        </ion-item>
+    </ion-list>
+  </form>
+</ion-content>
+<ion-footer>
+  <div>
+    <button class="width80" ion-button round small [color]="groupMainColor" (click)="submitAddLink()">Add</button>
+  </div>
+  <div>
+    <button class="width80" ion-button round small color="light" (click)="closePopup()">cencel</button>
+  </div>
+</ion-footer>

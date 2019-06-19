@@ -101,6 +101,18 @@ page-home {
         padding-bottom: 5px;
         margin-bottom: 15px;
     }
+    .appSelectArea > div {
+        /* color: #5B9CED; */
+        font-size: 13px;
+        margin-left: 20px;
+        height: 27px;
+        display: inline-block;
+        /* vertical-align: middle; */
+        padding-top: 14px;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        width: 90%;
+    }
     
     #moreSection button.more_toggle {
         position: absolute;
@@ -265,5 +277,10 @@ page-home {
     .newturens{
         cursor: pointer;
         color: blue;
+    }
+
+    .addLinkButton{
+        cursor: pointer;
+        padding: 3px;
     }
 }

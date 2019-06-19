@@ -1,17 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Electron } from './../../../providers/electron/electron';
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams,App } from 'ionic-angular';
+import { IonicPage, NavController, NavParams,App, PopoverController } from 'ionic-angular';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Subject, Subscription } from 'rxjs';
 import { IUserData, IUser, INotification } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
-import { IBizGroup,BizFireService } from '../../../providers/biz-fire/biz-fire';
+import { IBizGroup,BizFireService, userLinks } from '../../../providers/biz-fire/biz-fire';
 import { STRINGS } from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
 import { NotificationService } from '../../../providers/notification.service';
 import { DataCache } from '../../../classes/cache-data';
-import { environment } from '../../../environments/environments';
 
 interface IBbsItem {
   bbsId: string,
@@ -41,6 +40,7 @@ export class HomePage implements OnInit {
   currentUser: IUserData;
   group: IBizGroup;
   allCollectedUsers: IUser[];
+  userCustomLinks: userLinks[];
 
   // display user info
   displayName;
@@ -86,10 +86,12 @@ export class HomePage implements OnInit {
     private noticeService: NotificationService,
     public http: HttpClient,
     private tokenService : TokenProvider,
+    public popoverCtrl :PopoverController,
     public _app : App) {
       
       this._unsubscribeAll = new Subject<any>();
       this.ipc = electron.ipc;
+      // this.tokenService.saveCustomLink(this.bizFire.currentUID,'네이버','www.naver.com');
   }
 
   ngOnInit(): void {
@@ -97,6 +99,12 @@ export class HomePage implements OnInit {
     this.customToken = this.tokenService.customToken;
 
     this.group = this.bizFire.onBizGroupSelected.getValue();
+
+    this.bizFire.afStore.collection(`users/${this.bizFire.currentUID}/customlinks`, ref => ref.orderBy('create','desc')).valueChanges()
+    .pipe(filter(l=>l!=null),takeUntil(this._unsubscribeAll)).subscribe((userLinks : userLinks[]) => {
+      this.userCustomLinks = userLinks;
+      console.log(this.userCustomLinks);
+    })
 
     // * current User for RIGHT MENU
     this.bizFire.currentUser
@@ -204,5 +212,15 @@ export class HomePage implements OnInit {
  
   showNotify(){
     this.navCtrl.setRoot('page-notify');
+  }
+  goLink(url){
+    this.ipc.send('loadGH',url);
+  }
+
+  presentPopover(ev): void {
+    if(this.userCustomLinks.length < 8) {
+      let popover = this.popoverCtrl.create('page-customlink',{}, {cssClass: 'page-customlink'});
+      popover.present({ev: ev});
+    }
   }
 }

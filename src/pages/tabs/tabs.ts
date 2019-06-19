@@ -7,7 +7,7 @@ import { Electron } from './../../providers/electron/electron';
 import { BizFireService } from '../../providers';
 import { Subject, of } from 'rxjs';
 import { filter, takeUntil, map, switchMap } from 'rxjs/operators';
-import { IBizGroup } from '../../providers/biz-fire/biz-fire';
+import { IBizGroup, userLinks } from '../../providers/biz-fire/biz-fire';
 import { IUserData, INotification } from '../../_models/message';
 import { NotificationService } from '../../providers/notification.service';
 import { ChatService,IChatRoom } from '../../providers/chat.service';
@@ -78,13 +78,14 @@ export class TabsPage {
     private squadService: SquadService,
     public accountService : AccountService,
     public alertCtrl: AlertProvider,
-    public groupColorProvider : GroupColorProvider
+    public groupColorProvider : GroupColorProvider,
     ) {
       // test notification count   
       this._unsubscribeAll = new Subject<any>();
   }
 
   ngOnInit() {
+
     // * current User for RIGHT MENU
     this.bizFire.currentUser
         .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))

@@ -96,56 +96,19 @@
         </ul>
     </div>
     <div class="appSelectArea selectApps">
-        <span>Apps</span>
+        <div>
+            <span>Apps</span>
+            <ion-icon class="addLinkButton" style="float:right" name="add" (click)="presentPopover()"></ion-icon>
+        </div>
         <ul>
-            <li>
-                <button id="plusTaskbox">
-                    <img style="margin-top: 0 !important" src="imgs/plus.svg">
-                </button>
-                <!-- <button (click)="ipc.send('loadGH','https://mail.google.com/mail/u/0/?tab=wm#inbox');">
-                    <img style="width: 40px;  height: 40px;" src="imgs/Gmail_Icon.svg"> 
-                    <span class="title">Gmail</span> 
-                </button> -->
-            </li>
-            <li>
-                <!-- <button (click)="ipc.send('loadGH','https://calendar.google.com/calendar/r?tab=mc&pli=1');">
-                    <img src="imgs/Google-calendar.svg">
-                    <span class="title">Calender</span>
-                </button> -->
-            </li>
-            <li>
-                <!-- <button (click)="ipc.send('loadGH','https://drive.google.com/drive/my-drive');">
-                    <img src="imgs/Google_Drive_Logo.svg">
-                    <span class="title">Drive</span>
-                </button> -->
-            </li>
-            <li>
-                <!-- <button (click)="ipc.send('loadGH','https://www.google.com/maps');">
-                    <img src="imgs/GoogleMaps_logo.svg">
-                    <span class="title">Maps</span>
-                </button> -->
-            </li>
-            <li>
-                <!-- <button (click)="ipc.send('loadGH','https://kr.linkedin.com/');">
-                    <img src="imgs/Linkedin_icon.svg">
-                    <span class="title">Linkedin</span>
-                </button> -->
-            </li>
-            <li>
-
-            </li>
-            <li>
-                <!-- <button (click)="ipc.send('loadGH','');">
-                    <img src="">
-                    <span class="title"></span>
-                </button> -->
-            </li>
-            <li>
-                <!-- <button (click)="ipc.send('loadGH','www.naver.com')">
-                    <img src="">
-                    <span class="title"></span>
-                </button> -->
-            </li>
+            <ng-container *ngFor="let link of userCustomLinks">
+                <li>
+                    <button (click)="goLink(link.url)">
+                        <img style="width: 40px;  height: 40px;" src="{{ link.img }}"> 
+                        <span class="title">{{ link.title }}</span> 
+                    </button>
+                </li>
+            </ng-container>
         </ul>
     </div>
 </ion-content>
