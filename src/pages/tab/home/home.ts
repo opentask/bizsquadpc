@@ -41,6 +41,7 @@ export class HomePage implements OnInit {
   group: IBizGroup;
   allCollectedUsers: IUser[];
   userCustomLinks: userLinks[];
+  getFavicons = 'https://www.google.com/s2/favicons?domain=';
 
   // display user info
   displayName;

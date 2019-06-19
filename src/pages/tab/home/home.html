@@ -104,7 +104,8 @@
             <ng-container *ngFor="let link of userCustomLinks">
                 <li>
                     <button (click)="goLink(link.url)">
-                        <img style="width: 40px;  height: 40px;" src="{{ link.img }}"> 
+                        <img *ngIf="link.img" style="width: 40px;  height: 40px;" src="{{ link.img }}">
+                        <img *ngIf="!link.img" style="width: 28px;  height: 28px;" src="{{ getFavicons + link.url }}"> 
                         <span class="title">{{ link.title }}</span> 
                     </button>
                 </li>

@@ -31,10 +31,9 @@ export class CustomlinkPage {
 
   // URL 유효성 검사 정규식
   reg = '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?';
-  
+
   private linkUrlValidator: ValidatorFn = Validators.compose([
     Validators.required,
-    Validators.pattern(this.reg)
   ]);
 
   constructor(
