@@ -103,10 +103,12 @@
         <ul>
             <ng-container *ngFor="let link of userCustomLinks">
                 <li>
-                    <button (click)="goLink(link.url)">
-                        <img *ngIf="link.img" style="width: 40px;  height: 40px;" src="{{ link.img }}">
-                        <img *ngIf="!link.img" style="width: 28px;  height: 28px;" src="{{ getFavicons + link.url }}"> 
-                        <span class="title">{{ link.title }}</span> 
+                    <button (mouseenter)="link.data.hidden=false" (mouseleave)="link.data.hidden=true" style="cursor: default;">
+                        <ion-icon name="remove-circle" class="link-remove" 
+                        (click)="removeLink($event,link)" [hidden]="link.data.hidden"></ion-icon>
+                        <img (click)="goLink($event,link)" *ngIf="link.data.img" style="width: 40px;  height: 40px;" src="{{ link.data.img }}" style="cursor: pointer;">
+                        <img (click)="goLink($event,link)" *ngIf="!link.data.img" style="width: 28px;  height: 28px;" src="{{ getFavicons + link.data.url }}" style="cursor: pointer;"> 
+                        <span (click)="goLink($event,link)" class="title" style="cursor: pointer;">{{ link.data.title }}</span> 
                     </button>
                 </li>
             </ng-container>

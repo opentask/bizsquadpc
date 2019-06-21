@@ -40,7 +40,8 @@ export class HomePage implements OnInit {
   currentUser: IUserData;
   group: IBizGroup;
   allCollectedUsers: IUser[];
-  userCustomLinks: userLinks[];
+  userCustomLinks: Array<userLinks> = [];
+
   getFavicons = 'https://www.google.com/s2/favicons?domain=';
 
   // display user info
@@ -63,7 +64,6 @@ export class HomePage implements OnInit {
 
   messages: INotification[];
 
-
   ipc: any;
 
   isPartner = false;
@@ -78,6 +78,7 @@ export class HomePage implements OnInit {
 
   private dataCache = new DataCache();
 
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -89,47 +90,55 @@ export class HomePage implements OnInit {
     private tokenService : TokenProvider,
     public popoverCtrl :PopoverController,
     public _app : App) {
-      
+
       this._unsubscribeAll = new Subject<any>();
       this.ipc = electron.ipc;
       // this.tokenService.saveCustomLink(this.bizFire.currentUID,'네이버','www.naver.com');
   }
 
   ngOnInit(): void {
+
+    // * current User for RIGHT MENU
+    this.bizFire.currentUser
+    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
+    .subscribe(user => {
+        this.currentUser = user;
+        this.myStatus = user.onlineStatus;
+        switch(user.onlineStatus){
+          case 'online':
+            this.myStatus = '#32db64';
+            break;
+          case 'wait':
+            this.myStatus = '#FEA926';
+            break;
+          case 'busy':
+            this.myStatus = '#f53d3d';
+            break;
+          case 'offline':
+            this.myStatus = '#C7C7C7';
+            break;
+        }
+        this.displayName = this.bizFire.getDiplayNameInitial();
+        this.fullName = user.displayName;
+    });
+
     // 토큰 저장
     this.customToken = this.tokenService.customToken;
 
     this.group = this.bizFire.onBizGroupSelected.getValue();
 
-    this.bizFire.afStore.collection(`users/${this.bizFire.currentUID}/customlinks`, ref => ref.orderBy('create','desc')).valueChanges()
-    .pipe(filter(l=>l!=null),takeUntil(this._unsubscribeAll)).subscribe((userLinks : userLinks[]) => {
-      this.userCustomLinks = userLinks;
+
+    this.bizFire.userCustomLinks.pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
+    .subscribe(Links => {
+      Links.forEach(Link => {
+        if(Link){
+          const newData = Link.data;
+          newData['hidden'] = true;
+        }
+      })
+      this.userCustomLinks = Links;
       console.log(this.userCustomLinks);
     })
-
-    // * current User for RIGHT MENU
-    this.bizFire.currentUser
-      .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
-      .subscribe(user => {
-          this.currentUser = user;
-          this.myStatus = user.onlineStatus;
-          switch(user.onlineStatus){
-            case 'online':
-              this.myStatus = '#32db64';
-              break;
-            case 'wait':
-              this.myStatus = '#FEA926';
-              break;
-            case 'busy':
-              this.myStatus = '#f53d3d';
-              break;
-            case 'offline':
-              this.myStatus = '#C7C7C7';
-              break;
-          }
-          this.displayName = this.bizFire.getDiplayNameInitial();
-          this.fullName = user.displayName;
-    });
 
     if(this.group){
       this.isPartner = this.bizFire.isPartner(this.group);
@@ -141,7 +150,7 @@ export class HomePage implements OnInit {
       this.messages = msgs.filter(m => {
         let ret;
         if(m.data.type === 'invitation') {
-          if(m.data.invitation.type === 'group'){
+          if(m.data.invitation.type === 'group') {
             return true;
           } else {
             ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
@@ -214,8 +223,8 @@ export class HomePage implements OnInit {
   showNotify(){
     this.navCtrl.setRoot('page-notify');
   }
-  goLink(url){
-    this.ipc.send('loadGH',url);
+  goLink(ev,link){
+    this.ipc.send('loadGH',link.data.url);
   }
 
   presentPopover(ev): void {
@@ -223,5 +232,10 @@ export class HomePage implements OnInit {
       let popover = this.popoverCtrl.create('page-customlink',{}, {cssClass: 'page-customlink'});
       popover.present({ev: ev});
     }
+  }
+
+  removeLink(ev,link) {
+    this.bizFire.deleteLink(link);
+    console.log(link);
   }
 }

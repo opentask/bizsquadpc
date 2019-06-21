@@ -288,7 +288,7 @@ export class ChatService {
     }
 
 
-    removeMember(uid,cid){
+    removeMember(uid,cid) {
         return new Promise<void>( (resolve, reject) => {
         this.bizFire.afStore.firestore.doc("chat/" + cid).update({
             ['members.' + uid]: firebase.firestore.FieldValue.delete()

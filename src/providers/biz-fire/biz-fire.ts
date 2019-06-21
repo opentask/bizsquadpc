@@ -22,9 +22,12 @@ export interface IUserState {
 }
 
 export interface userLinks {
-    img : string,
-    title : string,
-    url : string,
+    mid: string,
+    data: {
+        img : string,
+        title : string,
+        url : string,
+    }
 }
  
 export interface IBizGroup {
@@ -119,6 +122,8 @@ export class BizFireService {
   get currentUserValue(): IUserData {
       return this._currentUser.getValue();
   }
+
+  userCustomLinks = new BehaviorSubject<userLinks[]>(null);
 
 
   // * Biz Groups
@@ -224,6 +229,14 @@ export class BizFireService {
 
         this.afAuth.auth.signInWithEmailAndPassword(email, password).then(user => {
             resolve(user);
+
+            this.afStore.firestore.collection(`users/${user.user.uid}/customlinks`).onSnapshot(linksSnap => {
+                const links = linksSnap.docs.map(doc => {
+                    return {mid:doc.id,data:doc.data()} as userLinks;
+                });
+                this.userCustomLinks.next(links);
+            }, error1 => console.error(error1));
+
         }).catch(err => {
             // reset to original. needed?
             this.userState.autoSignIn = true;
@@ -334,6 +347,9 @@ export class BizFireService {
 
             // clear bizgroups
             this.onBizGroups.next(null);
+
+            // clear bookmark
+            this.userCustomLinks.next(null);
         }
         return this.afAuth.auth.signOut().then(()=> {
             // clear cache.
@@ -390,6 +406,10 @@ export class BizFireService {
     return new HttpHeaders({
       'authorization': idToken
     });
+  }
+
+  deleteLink(link){
+      return this.afStore.collection(`users/${this.currentUID}/customlinks`).doc(link.mid).delete();
   }
   
   
