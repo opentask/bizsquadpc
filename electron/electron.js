@@ -60,7 +60,7 @@ function createWindow() {
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -96,30 +96,31 @@ ipcMain.on('loadGH', (event, arg) => {
 
 ipcMain.on('createChatRoom', (event, chatRoom) => {
 
-    selectChatRoom = chatRoom;
-
     if(testRooms[chatRoom.cid]) {
+
         testRooms[chatRoom.cid].focus();
-        return 0;
+
+    } else {
+        selectChatRoom = chatRoom;
+
+        testRooms[chatRoom.cid] = new BrowserWindow({
+            width: 360,
+            height: 600,
+            frame: false,
+            minWidth:360,
+            minHeight:600,
+            maxWidth:570,
+            maxHeight:700,
+            opacity: 1,
+            titleBarStyle: 'hidden-inset'
+        });
+    
+        testRooms[chatRoom.cid].loadURL(url.format({
+            pathname: path.join(__dirname,'../www/index.html'),
+            protocol: 'file:',
+            slashes: true,
+        }))
     }
-
-    testRooms[chatRoom.cid] = new BrowserWindow({
-        width: 360,
-        height: 600,
-        frame: false,
-        minWidth:360,
-        minHeight:600,
-        maxWidth:570,
-        maxHeight:700,
-        opacity: 1,
-        titleBarStyle: 'hidden-inset'
-    });
-
-    testRooms[chatRoom.cid].loadURL(url.format({
-        pathname: path.join(__dirname,'../www/index.html'),
-        protocol: 'file:',
-        slashes: true,
-    }))
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     // testRooms[chatRoom.cid].webContents.openDevTools();
@@ -203,7 +204,6 @@ setInterval(function() {
 
 function sendStatusToWindow(message) {
     logger.info(message);
-    console.log(message);
 }
 
 function ss() {
