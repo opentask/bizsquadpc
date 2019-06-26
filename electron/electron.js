@@ -5,6 +5,7 @@ const { ipcMain,dialog } = require('electron');
 const { shell } = require('electron');
 const url = require('url');
 const path = require('path');
+
 // const {dialog} = require('electron');
 // Module to control application life.
 const { app,Notification,Menu } = electron;
@@ -24,9 +25,9 @@ autoUpdater.logger["transports"].file.level = "info";
 logger.info('App starting...');
 
 let win;
-let chatRoom;
+let chatRooms;
 let selectChatRoom;
-
+let testRooms = {};
 
 function createWindow() {
 
@@ -67,6 +68,7 @@ function createWindow() {
         // 윈도우 객체를 배열에 저장하는 경우가 있는데 이 경우
         // 해당하는 모든 윈도우 객체의 참조를 삭제해 주어야 합니다.
             win = null;
+            testRooms = null;
     });
 }
 
@@ -96,7 +98,24 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
 
     selectChatRoom = chatRoom;
 
-    chatRoom = new BrowserWindow({
+    if(testRooms[chatRoom.cid]) {
+        testRooms[chatRoom.cid].focus();
+        return 0;
+    }
+
+    // chatRooms = new BrowserWindow({
+    //     width: 360,
+    //     height: 600,
+    //     frame: false,
+    //     minWidth:360,
+    //     minHeight:600,
+    //     maxWidth:570,
+    //     maxHeight:700,
+    //     opacity: 1,
+    //     titleBarStyle: 'hidden-inset',
+    //     title: chatRoom.cid,
+    // });
+    testRooms[chatRoom.cid] = new BrowserWindow({
         width: 360,
         height: 600,
         frame: false,
@@ -106,16 +125,23 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         maxHeight:700,
         opacity: 1,
         titleBarStyle: 'hidden-inset',
+        title: chatRoom.cid,
     });
-    chatRoom.loadURL(url.format({
+
+    testRooms[chatRoom.cid].loadURL(url.format({
         pathname: path.join(__dirname,'../www/index.html'),
         protocol: 'file:',
         slashes: true,
     }))
-    
+
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     // chatRoom.webContents.openDevTools();
-    
+
+    // 창이 닫히면 호출됩니다.
+    testRooms[chatRoom.cid].on('closed', () => {
+        testRooms[chatRoom.cid] = null;
+    });
+
 });
  
 ipcMain.on('resetValue',(e) =>{
@@ -191,4 +217,8 @@ setInterval(function() {
 function sendStatusToWindow(message) {
     logger.info(message);
     console.log(message);
+}
+
+function ss() {
+    app.client.windo
 }
