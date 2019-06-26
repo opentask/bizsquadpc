@@ -115,12 +115,18 @@ export class InviteRoomPage {
 
   invite(){
     let members = {};
+    let manager = {};
+    
     this.isChecked.forEach(d => {
-      members[d.data.uid] = true;
+      console.log()
+      manager[d.data.uid] = true;
+      members[d.data.uid] = {
+        name : d.data.displayName,
+        photoURL : d.data.photoURL
+      };
     })
-    console.log(members);
-
     this.bizFire.afStore.doc(`chat/${this.roomData.cid}`).set({
+      manager : manager,
       members : members
     },{merge : true}).then(() =>{
       this.viewCtrl.dismiss();

@@ -103,18 +103,6 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         return 0;
     }
 
-    // chatRooms = new BrowserWindow({
-    //     width: 360,
-    //     height: 600,
-    //     frame: false,
-    //     minWidth:360,
-    //     minHeight:600,
-    //     maxWidth:570,
-    //     maxHeight:700,
-    //     opacity: 1,
-    //     titleBarStyle: 'hidden-inset',
-    //     title: chatRoom.cid,
-    // });
     testRooms[chatRoom.cid] = new BrowserWindow({
         width: 360,
         height: 600,
@@ -124,8 +112,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         maxWidth:570,
         maxHeight:700,
         opacity: 1,
-        titleBarStyle: 'hidden-inset',
-        title: chatRoom.cid,
+        titleBarStyle: 'hidden-inset'
     });
 
     testRooms[chatRoom.cid].loadURL(url.format({
@@ -135,7 +122,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }))
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // chatRoom.webContents.openDevTools();
+    // testRooms[chatRoom.cid].webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     testRooms[chatRoom.cid].on('closed', () => {
