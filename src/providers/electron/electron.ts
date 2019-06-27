@@ -35,15 +35,14 @@ export class Electron {
       }
   }
 
-  // macOS에서만 적용
   setAppBadge(count){
+    // macOS에서만 적용
     electron.remote.app.setBadgeCount(count);
+
+    // windows를 위한 프레임 깜빡임 이펙트
+    electron.ipcRenderer.send('windowsFlashFrame',count);
   }
-  // windowsOS Badge 대체
-  TrayLight(){
-    let tray = null;
-    electron.remote.Tray
-  }
+
 
   updateOnlineStatus(){
     let k = window.navigator.onLine ? 'online' : 'offline'

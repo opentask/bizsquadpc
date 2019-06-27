@@ -52,6 +52,7 @@ function createWindow() {
         maxHeight:750,
         titleBarStyle: 'hidden-inset',
     });
+    
 
     win.loadURL(url.format({
         pathname: path.join(__dirname, '../www/index.html'),
@@ -71,9 +72,9 @@ function createWindow() {
             win = null;
             testRooms = null;
     });
+
+    win.once('focus', () => win.flashFrame(false));
 }
-
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -90,6 +91,14 @@ app.on('window-all-closed', () => {
     //     app.quit();
     // }
 });
+
+ipcMain.on('windowsFlashFrame',(event, count) => {
+    if(count > 0) {
+        win.flashFrame(true);
+    } else{
+        win.flashFrame(false);
+    }
+})
 
 ipcMain.on('loadGH', (event, arg) => {
     shell.openExternal(arg);
