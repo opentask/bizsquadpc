@@ -82,7 +82,7 @@ export class MemberPage {
     .pipe(filter(g=>g!=null)
     ,takeUntil(this._unsubscribeAll))
     .subscribe(groups => {
-        if(this.gid && groups.length > 0){
+        if(this.gid && groups.length > 0) {
             this.currentGroup = groups.find(g => g.gid === this.gid);
             if(this.currentGroup){
                 this.managerUid = Object.keys(this.currentGroup.data.manager);
@@ -149,7 +149,7 @@ export class MemberPage {
                                 newData['user_icon'] = user.data.displayName.substr(0,count);
                                 newData['user_onlineColor'] = '#C7C7C7';
                               }
-                              switch(user.data.onlineStatus){
+                              switch(user.data.onlineStatus) {
                                 case 'online':
                                   newData['user_onlineColor'] = '#32db64';
                                   break;

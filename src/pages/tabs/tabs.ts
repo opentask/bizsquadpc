@@ -25,6 +25,7 @@ import { DataCache } from '../../classes/cache-data';
 })
 export class TabsPage {
 
+
   private _unsubscribeAll;
 
   currentGroup: IBizGroup;
@@ -223,7 +224,6 @@ export class TabsPage {
     this._unsubscribeAll.complete();
     this.squadNewMessage = 0;
     this.memberNewMessage = 0;
-    this.dataCache.clear();
   }
 
 }

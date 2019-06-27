@@ -95,7 +95,7 @@ app.on('window-all-closed', () => {
 ipcMain.on('windowsFlashFrame',(event, count) => {
     if(count > 0) {
         win.flashFrame(true);
-    } else{
+    } else {
         win.flashFrame(false);
     }
 })
@@ -143,7 +143,13 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             maxWidth:600,
             maxHeight:750,
             titleBarStyle: 'hidden-inset',
-            opacity: 1
+            opacity: 1,
+            webPreferences:
+            {
+                minimumFontSize: 18,
+                defaultFontSize: 24,
+                defaultMonospaceFontSize: 20
+            }
         });
     
         testRooms[chatRoomId].loadURL(url.format({
