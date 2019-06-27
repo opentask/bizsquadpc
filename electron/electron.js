@@ -33,6 +33,7 @@ function createWindow() {
 
     // windowStateKeeper
     let mainWindowState = windowStateKeeper({
+        file: 'main.json',
         defaultWidth: 350,
         defaultHeight: 600
     });
@@ -60,7 +61,7 @@ function createWindow() {
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -96,38 +97,61 @@ ipcMain.on('loadGH', (event, arg) => {
 
 ipcMain.on('createChatRoom', (event, chatRoom) => {
 
-    if(testRooms[chatRoom.cid]) {
+    let chatRoomId;
 
-        testRooms[chatRoom.cid].focus();
+    if(chatRoom.cid == null){
+        // 스쿼드 채팅 일때 스쿼드의 doc id
+        chatRoomId = chatRoom.sid;
+    } else {
+        // 개인 채팅 일떄 채팅방의 doc id
+        chatRoomId = chatRoom.cid;
+    }
+
+    if(testRooms[chatRoomId]) {
+
+        testRooms[chatRoomId].focus();
 
     } else {
         selectChatRoom = chatRoom;
 
-        testRooms[chatRoom.cid] = new BrowserWindow({
-            width: 360,
-            height: 600,
-            frame: false,
-            minWidth:360,
-            minHeight:600,
-            maxWidth:570,
-            maxHeight:700,
-            opacity: 1,
-            titleBarStyle: 'hidden-inset'
+        // console.log(selectChatRoom);
+
+        // windowStateKeeper
+        let chatWindowState = windowStateKeeper({
+            file: `${chatRoomId}.json`,
+            defaultWidth: 350,
+            defaultHeight: 600
         });
     
-        testRooms[chatRoom.cid].loadURL(url.format({
+        testRooms[chatRoomId] = new BrowserWindow({
+            'x': chatWindowState.x,
+            'y': chatWindowState.y,
+            'width': chatWindowState.width,
+            'height': chatWindowState.height,
+            frame: false,
+            minWidth:350,
+            minHeight:600,
+            maxWidth:600,
+            maxHeight:750,
+            titleBarStyle: 'hidden-inset',
+            opacity: 1
+        });
+    
+        testRooms[chatRoomId].loadURL(url.format({
             pathname: path.join(__dirname,'../www/index.html'),
             protocol: 'file:',
             slashes: true,
         }))
+
+        chatWindowState.manage(testRooms[chatRoomId]);
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // testRooms[chatRoom.cid].webContents.openDevTools();
+    // testRooms[chatRoomId].webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
-    testRooms[chatRoom.cid].on('closed', () => {
-        testRooms[chatRoom.cid] = null;
+    testRooms[chatRoomId].on('closed', () => {
+        testRooms[chatRoomId] = null;
     });
 
 });

@@ -151,8 +151,12 @@ page-home {
         border-bottom: 1px solid #E4EAEC;
         border-left: 1px solid #E4EAEC;
         border-top: 1px solid #E4EAEC;
+        border-right:1px solid #E4EAEC;
         margin-top: -1px;
         margin-left: -1px;
+    }
+    .appSelectArea li:nth-child(4n) {
+        border-right: none;
     }
     
     .appSelectArea button {

@@ -136,7 +136,13 @@ export class HomePage implements OnInit {
           newData['hidden'] = true;
         }
       })
-      this.userCustomLinks = Links;
+      this.userCustomLinks = Links.sort((a,b) => {
+        if(a.data.create && b.data.create) {
+          return a.data.create > b.data.create ? -1 : 1;
+        } else {
+          return 0;
+        }
+      });
       console.log(this.userCustomLinks);
     })
 

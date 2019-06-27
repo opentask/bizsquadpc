@@ -24,6 +24,7 @@ export interface IUserState {
 export interface userLinks {
     mid: string,
     data: {
+        create: string,
         img : string,
         title : string,
         url : string,

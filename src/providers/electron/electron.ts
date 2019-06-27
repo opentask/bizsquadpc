@@ -66,14 +66,14 @@ export class Electron {
     })
   }
 
-  notification(){
+  notification() {
     electron.ipcRenderer.send('notification');
   }
 
-  openChatRoom(ChatRoom){
+  openChatRoom(ChatRoom) {
     electron.ipcRenderer.send('createChatRoom',ChatRoom);
   }
-  openVedioRoom(){
+  openVedioRoom() {
     electron.ipcRenderer.send('openVideoCam');
     // 그리고 현재 디렉터리의 html을 로드합니다.
     // win.loadURL(url);
