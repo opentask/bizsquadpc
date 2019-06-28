@@ -5,6 +5,7 @@ const { ipcMain,dialog } = require('electron');
 const { shell } = require('electron');
 const url = require('url');
 const path = require('path');
+const contextMenu = require('electron-context-menu')
 
 // const {dialog} = require('electron');
 // Module to control application life.
@@ -28,6 +29,16 @@ let win;
 let chatRooms;
 let selectChatRoom;
 let testRooms = {};
+
+
+contextMenu({
+	prepend: (defaultActions, params, browserWindow) => [{
+		label: 'Rainbow',
+		// Only show it when right-clicking images
+		visible: params.mediaType === 'image'
+	}]
+});
+
 
 function createWindow() {
 
@@ -129,7 +140,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
         let chatWindowState = windowStateKeeper({
             file: `${chatRoomId}.json`,
             defaultWidth: 350,
-            defaultHeight: 600
+            defaultHeight: 600,
         });
     
         testRooms[chatRoomId] = new BrowserWindow({
@@ -144,12 +155,6 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             maxHeight:750,
             titleBarStyle: 'hidden-inset',
             opacity: 1,
-            webPreferences:
-            {
-                minimumFontSize: 18,
-                defaultFontSize: 24,
-                defaultMonospaceFontSize: 20
-            }
         });
     
         testRooms[chatRoomId].loadURL(url.format({
@@ -162,7 +167,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // testRooms[chatRoomId].webContents.openDevTools();
+    testRooms[chatRoomId].webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     testRooms[chatRoomId].on('closed', () => {
