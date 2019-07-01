@@ -13,6 +13,7 @@ import { filter, take, takeUntil } from 'rxjs/operators';
 import firebase from 'firebase';
 import { AlertProvider } from '../../../../providers/alert/alert';
 
+
 export interface Ichats {
   message: string,
 }
@@ -32,7 +33,7 @@ export interface IchatMember{
 })
 export class MemberChatPage {
 
-  @ViewChild(Content) contentArea: Content;
+  @ViewChild('scrollMe') contentArea: Content;
 
   private _unsubscribeAll;
   editorMsg = '';
@@ -140,7 +141,7 @@ export class MemberChatPage {
             }
           }
         })
-        this.onFocus();
+        // this.onFocus();
         this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid);
       })
 
@@ -258,8 +259,6 @@ export class MemberChatPage {
         this.chatService.writeTodayAndSendMsg("member-chat",value,this.chatroom.cid);
       }
     }
-
-    
   }
 
   // 
@@ -282,16 +281,18 @@ export class MemberChatPage {
         this.contentArea.scrollToBottom();
       }
   }
+
   onFocus() {
     this.contentArea.resize();
     this.scrollToBottom();
   }
-  scrollToBottomN(){
-    const element = document.getElementById('last');
-    element.scrollIntoView();
-  }
+
   ngAfterViewChecked(){
     this.onFocus();
+  }
+
+  ionViewDidEnter(){
+    this.contentArea.scrollToBottom();
   }
 
   windowClose() {

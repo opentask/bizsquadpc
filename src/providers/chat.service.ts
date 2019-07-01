@@ -219,9 +219,9 @@ export class ChatService {
                     lastMessageTime : now.getTime() / 1000 | 0,
                     read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
                 },{merge : true}).then(() => {
-                    if(room_type == "squad-chat" && file != null){
+                    if(room_type == "squad-chat" && file != null) {
                         filePath = `chatsquad/${gid}/${id}/chat/${message.id}/${file.name}`
-                    } else if(room_type == "member-chat" && file != null){
+                    } else if(room_type == "member-chat" && file != null) {
                         filePath = `chat/${gid}/${id}/chat/${message.id}/${file.name}`
                     }
                     if(file != null) {
