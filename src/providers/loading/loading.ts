@@ -11,7 +11,10 @@ export class LoadingProvider {
   public show(): void {
     if (!this.loading) {
       let options = environment.loading;
-      this.loading = this.loadingCtrl.create(options);
+      this.loading = this.loadingCtrl.create({
+        spinner: 'ios',
+        showBackdrop: true,
+      });
       this.loading.present();
     }
   }

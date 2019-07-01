@@ -33,7 +33,7 @@ let testRooms = {};
 
 contextMenu({
 	prepend: (defaultActions, params, browserWindow) => [{
-		label: 'Rainbow',
+		label: 'default',
 		// Only show it when right-clicking images
 		visible: params.mediaType === 'image'
 	}]
@@ -44,7 +44,7 @@ function createWindow() {
 
     // windowStateKeeper
     let mainWindowState = windowStateKeeper({
-        file: 'main.json',
+        file: 'mainWindow.json',
         defaultWidth: 350,
         defaultHeight: 600
     });
@@ -73,7 +73,7 @@ function createWindow() {
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -167,7 +167,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    testRooms[chatRoomId].webContents.openDevTools();
+    // testRooms[chatRoomId].webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     testRooms[chatRoomId].on('closed', () => {

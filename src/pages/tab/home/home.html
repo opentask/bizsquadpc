@@ -52,7 +52,7 @@
                 </button>
             </li>
             <li>
-                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+group.gid+'/bbs?token='+customToken);">
+                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://product.bizsquad.net/bbs/'+group.gid+'&token='+customToken);">
                     <img src="imgs/notice.svg">
                     <span class="title">Notice</span>
                 </button>

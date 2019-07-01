@@ -20,11 +20,10 @@ page-group-list {
         background-color: inherit;
     }
     ion-list:hover {
-        background-color: #f6f6f6;
+        // background-color: #f6f6f6;
+        -webkit-animation: animationColor 2s infinite; /* Chrome, Safari, Opera */
+        animation: animationColor 2s infinite;
         cursor: pointer;
-    }
-    ion-list:hover a { 
-        background-color: slategray !important; 
     }
 
     .groupName{
@@ -34,9 +33,9 @@ page-group-list {
     }
     .groupInfo{
         text-align: center;
-        background-color: rgba(91, 156, 237, 0.1);
+        background-color: rgba($color: #EFEFEF, $alpha: 0.5);
 
-        .InfoTitle{
+        .InfoTitle {
             padding-bottom: 5px;
         }
     }
@@ -67,4 +66,19 @@ page-group-list {
         opacity: 0.7;
         border-radius: 7px !important;
     }
+
+
+
+    /* Standard syntax */
+    @keyframes animationColor {
+        from {background-color: #f6f6f6;}
+        to {background-color: #D2E1F3;}
+    }
+
+    /* Chrome, Safari, Opera */
+    @-webkit-keyframes animationColor {
+        from {background-color: #f6f6f6;}
+        to {background-color: #D2E1F3;}
+    }
+    
 }

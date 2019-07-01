@@ -13,6 +13,7 @@ import { NotificationService } from '../../providers/notification.service';
 import { ChatService,IChatRoom } from '../../providers/chat.service';
 import { SquadService, ISquad } from '../../providers/squad.service';
 import { DataCache } from '../../classes/cache-data';
+import { TokenProvider } from '../../providers/token/token';
 
 @IonicPage({  
   name: 'page-tabs',

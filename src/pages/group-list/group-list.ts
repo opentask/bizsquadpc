@@ -4,9 +4,7 @@ import { Electron } from './../../providers/electron/electron';
 import { IBizGroup, BizFireService } from '../../providers/biz-fire/biz-fire';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { LoadingProvider } from '../../providers';
 import { TokenProvider } from '../../providers/token/token';
-import { DataCache } from '../../classes/cache-data';
 import { FireData } from '../../classes/fire-data';
 
 @IonicPage({  
@@ -27,8 +25,6 @@ export class GroupListPage {
   // * COLOR
   team_color = '#5b9ced'; // default opentask blue
 
-  private dataCache = new DataCache();
-
   private fireData = new FireData();
 
   constructor(
@@ -36,7 +32,6 @@ export class GroupListPage {
     public navParams: NavParams,
     public electron : Electron,
     private bizFire: BizFireService,
-    private loading: LoadingProvider,
     private tokenService : TokenProvider,
     ) {
 
@@ -44,8 +39,9 @@ export class GroupListPage {
   }
 
   ngOnInit() {
+
+    this.tokenService.getToken(this.bizFire.currentUID);
     
-    this.loading.show();
     // get user's bizgroup.
     this.bizFire.onBizGroups
         .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
@@ -94,7 +90,6 @@ export class GroupListPage {
               }
             })
             console.log(this.groups);
-            this.loading.hide();
         });
   }
 
@@ -105,7 +100,6 @@ export class GroupListPage {
   }
 
   gotoTeam(group){
-    this.tokenService.getToken(this.bizFire.currentUID);
     this.bizFire.onBizGroupSelected.next(group);
     this.navCtrl.setRoot('page-tabs',{queryParams: {gid: group.gid}});
   }

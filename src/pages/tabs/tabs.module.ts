@@ -13,7 +13,7 @@ import { GroupColorProvider } from '../../providers/group-color';
   ],
   providers: [
     AccountService,
-    GroupColorProvider
+    GroupColorProvider,
   ]
 })
 export class TabsPageModule {}

@@ -93,10 +93,11 @@ export class HomePage implements OnInit {
 
       this._unsubscribeAll = new Subject<any>();
       this.ipc = electron.ipc;
-      // this.tokenService.saveCustomLink(this.bizFire.currentUID,'네이버','www.naver.com');
   }
 
   ngOnInit(): void {
+
+    this.customToken = this.tokenService.customToken;
 
     // * current User for RIGHT MENU
     this.bizFire.currentUser
@@ -121,9 +122,6 @@ export class HomePage implements OnInit {
         this.displayName = this.bizFire.getDiplayNameInitial();
         this.fullName = user.displayName;
     });
-
-    // 토큰 저장
-    this.customToken = this.tokenService.customToken;
 
     this.group = this.bizFire.onBizGroupSelected.getValue();
 

@@ -26,9 +26,9 @@ export class TokenProvider {
         }
         if(uid != null) {
             this.http.post(path,body,{headers: header}).subscribe((res: any) => {
-                if(res.result === true){
+                if(res.result === true) {
                   this.customToken = res.customToken;
-                  console.log(this.customToken);
+                  console.log("커스텀 토큰 값",this.customToken);
                 }
             })
         }
