@@ -30,7 +30,7 @@
     </ion-item>
   </ion-header>
    
-   <ion-content>
+   <ion-content #scrollMe [scrollTop]="scrollMe.scrollHeight">
       <div class="message-wrap"> 
         <div *ngFor="let msg of messages"
              class="message"
@@ -120,8 +120,7 @@
         <textarea id="drag-file"
                   #chat_input
                   [(ngModel)]="editorMsg"
-                  (keydown)="keydown($event)"
-                  (focusin)="onFocus()">
+                  (keydown)="keydown($event)">
         </textarea>  
         <button color="dark" class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)" [disabled]="!editorMsg">
           send

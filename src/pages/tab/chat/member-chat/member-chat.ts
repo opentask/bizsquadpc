@@ -10,9 +10,8 @@ import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { IUser } from '../../../../_models/message';
 import { filter, take, takeUntil } from 'rxjs/operators';
-import firebase from 'firebase';
 import { AlertProvider } from '../../../../providers/alert/alert';
-
+import { IonContent } from '@ionic/angular';
 
 export interface Ichats {
   message: string,
@@ -33,7 +32,7 @@ export interface IchatMember{
 })
 export class MemberChatPage {
 
-  @ViewChild('scrollMe') contentArea: Content;
+  @ViewChild('scrollMe') contentArea: IonContent;
 
   private _unsubscribeAll;
   editorMsg = '';
@@ -108,6 +107,7 @@ export class MemberChatPage {
         })
       })
 
+
       // 채팅방 정보 가져오기
       this.bizFire.afStore.doc(`chat/${this.chatroom.cid}`).valueChanges().subscribe((roomData : IChatRoomData) => {
         this.roomData = roomData;
@@ -140,8 +140,9 @@ export class MemberChatPage {
               this.messages.push(msgData);
             }
           }
-        })
-        // this.onFocus();
+        });
+        this.scrollToBottom();
+
         this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.cid);
       })
 
@@ -253,12 +254,16 @@ export class MemberChatPage {
       const now = new Date();
       const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
 
-      if(value != '' && now.getDay() <= lastmessage.getDay()){
+      if(value != '' && now.getDay() <= lastmessage.getDay()) {
         this.chatService.sendMessage("member-chat",value,this.chatroom.cid);
       } else if(value != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
         this.chatService.writeTodayAndSendMsg("member-chat",value,this.chatroom.cid);
       }
+
+      this.chatService.testttt("member-chat",this.chatroom.cid);
     }
+
+
   }
 
   // 
@@ -278,22 +283,20 @@ export class MemberChatPage {
 
   scrollToBottom() {
       if (this.contentArea.scrollToBottom) {
-        this.contentArea.scrollToBottom();
+          setTimeout(() => {
+              this.contentArea.scrollToBottom(0);
+          });
       }
   }
 
-  onFocus() {
-    this.contentArea.resize();
-    this.scrollToBottom();
-  }
+  // onFocus() {
+  //   this.contentArea.resize();
+  //   this.scrollToBottom();
+  // }
 
-  ngAfterViewChecked(){
-    this.onFocus();
-  }
-
-  ionViewDidEnter(){
-    this.contentArea.scrollToBottom();
-  }
+  // ngAfterViewChecked() {
+  //   this.onFocus();
+  // }
 
   windowClose() {
     this.electron.windowClose();

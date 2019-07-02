@@ -11,7 +11,7 @@ import { IUser } from '../../../../_models/message';
 import { ChatService, IRoomMessages } from '../../../../providers/chat.service';
 import { IchatMember } from '../member-chat/member-chat';
 import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
-import firebase from 'firebase';
+import { IonContent } from '@ionic/angular';
 
 @IonicPage({  
   name: 'page-squad-chat',
@@ -24,7 +24,7 @@ import firebase from 'firebase';
 })
 export class SquadChatPage {
 
-  @ViewChild(Content) contentArea: Content;
+  @ViewChild('scrollMe') contentArea: IonContent;
 
   message : string;
   messages = [];
@@ -129,8 +129,8 @@ export class SquadChatPage {
             this.messages.push(msgData);
           }
         }
+        this.scrollToBottom();
       })
-      this.onFocus();
       this.chatService.updateLastRead("squad-chat-room",this.bizFire.currentUID,this.selectSquad.sid,this.selectSquad.data.gid)
     })
   }
@@ -212,14 +212,11 @@ export class SquadChatPage {
 
   scrollToBottom() {
     if (this.contentArea.scrollToBottom) {
-      this.contentArea.scrollToBottom();
+        setTimeout(() => {
+            this.contentArea.scrollToBottom(0);
+        });
     }
-  }
-
-  onFocus() {
-    this.contentArea.resize();
-    this.scrollToBottom();
-  }
+}
 
   downloadFile(path){
     console.log(path);
@@ -228,9 +225,7 @@ export class SquadChatPage {
   opacityChanges(v){
     this.electron.setOpacity(v);
   }
-  ngAfterViewChecked(){
-    this.onFocus();
-  }
+
   windowClose() {
     this.electron.windowClose();
   }

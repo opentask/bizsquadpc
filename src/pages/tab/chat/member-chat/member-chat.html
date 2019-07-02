@@ -62,7 +62,7 @@
   </ion-item>
 </ion-header>
 
- <ion-content id="messagesContent" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+ <ion-content #scrollMe [scrollTop]="scrollMe.scrollHeight">
       <div class="message-wrap">
         <div *ngFor="let msg of messages"
             class="message"
