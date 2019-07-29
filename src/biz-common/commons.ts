@@ -2,10 +2,21 @@ import { FormControl } from '@angular/forms';
 import { IUserData } from '../_models/message';
 
 export const STRINGS = {
-    STRING_BIZGROUPS: 'bizgroups',
-    MY_SQUAD_STRING: 'mysquad',
-    USERS: 'users',
-    WORKS: 'works'
+  STRING_BIZGROUPS: 'bizgroups',
+  MY_SQUAD_STRING: 'mysquad',
+  USERS: 'users',
+  WORKS: 'works',
+  COMPANY: 'company',
+
+  FIELD:{
+    MEMBER: 'members',
+    MANAGER: 'manager',
+    PARTNER: 'partners'
+  },
+
+  COLOR: {
+    BIZ_COLOR: '#5b9ced'
+  }
 };
 
 

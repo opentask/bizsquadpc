@@ -101,7 +101,7 @@ export class GroupListPage {
 
   gotoTeam(group){
     this.bizFire.onBizGroupSelected.next(group);
-    this.navCtrl.setRoot('page-tabs',{queryParams: {gid: group.gid}});
+    this.navCtrl.setRoot('page-tabs');
   }
 
   //                   //

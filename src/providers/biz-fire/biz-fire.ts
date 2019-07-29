@@ -1,4 +1,4 @@
-import { App } from 'ionic-angular';
+import {App} from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { IUserData } from './../../_models/message';
 import { User } from 'firebase';
@@ -14,7 +14,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { HttpHeaders } from '@angular/common/http';
 import { FireDataKey } from '../../classes/fire-data-key';
 import { FireData } from '../../classes/fire-data';
-import { IFireMessage } from '../../classes/fire-model';
+
 export interface IUserState {
   status:'init'|'signIn'|'signOut',
   user: User,
@@ -40,7 +40,7 @@ export interface IBizGroupData {
     manager: any,
     members: any,
     partners?: any,
-    status?: number,
+    status?: any,
     team_color?: string,
     team_description?: string,
     team_name?: string,
@@ -130,7 +130,7 @@ export class BizFireService {
   // * Biz Groups
   onBizGroupSelected = new BehaviorSubject<IBizGroup>(null);
   onBizGroups = new BehaviorSubject<IBizGroup[]>(null);
-  generalMembers = new BehaviorSubject<number>(null);;
+  generalMembers = new BehaviorSubject<number>(null);
 
   // !! web .ver metaData 생략 !!
 
@@ -367,6 +367,29 @@ export class BizFireService {
             }
         });
     }
+
+
+  async onSelectGroup(gid) : Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      this.afStore.collection(STRINGS.USERS).doc(this.currentUID).update({
+        lastWebGid: gid
+      });
+
+      this.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${gid}`)
+      .get().subscribe((doc) => {
+
+        const group = {data:doc.data(), gid:doc.id} as IBizGroup;
+
+        if(group.data.members[this.currentUID] === true && group.data.status === true) {
+          this.onBizGroupSelected.next(group);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      })
+
+    })
+  }
 
   
 

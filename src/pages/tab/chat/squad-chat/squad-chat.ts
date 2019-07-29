@@ -12,6 +12,7 @@ import { ChatService, IRoomMessages } from '../../../../providers/chat.service';
 import { IchatMember } from '../member-chat/member-chat';
 import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IonContent } from '@ionic/angular';
+import { IonInfiniteScroll } from '@ionic/angular';
 
 @IonicPage({  
   name: 'page-squad-chat',
@@ -25,6 +26,7 @@ import { IonContent } from '@ionic/angular';
 export class SquadChatPage {
 
   @ViewChild('scrollMe') contentArea: IonContent;
+  @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
   message : string;
   messages = [];
@@ -232,6 +234,19 @@ export class SquadChatPage {
 
   windowMimimize() {
     this.electron.windowMimimize();
+  }
+
+  loadData(event) {
+    setTimeout(() => {
+      console.log('Done');
+      event.target.complete();
+
+      // App logic to determine if all data is loaded
+      // and disable the infinite scroll
+      if (this.messages.length == 50) {
+        event.target.disabled = true;
+      }
+    }, 500);
   }
   
 }

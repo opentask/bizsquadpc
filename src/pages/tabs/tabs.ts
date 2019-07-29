@@ -89,44 +89,36 @@ export class TabsPage {
   ngOnInit() {
 
     // * current User for RIGHT MENU
-    this.bizFire.currentUser
-        .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
-        .subscribe(user => {
-            this.currentUser = user;
-            this.displayName = this.bizFire.getDiplayNameInitial();
-            this.fullName = user.displayName || user.email;
-            // if(user.videoCall){
-            //     Notification.requestPermission().then(() => {
-            //         let myNotification = new Notification('Video Call',{
-            //         'body': `video call came from ${this.currentUser.videoCall}`,
-            //         });
-            //     });
-            //     this.alertCtrl.VideoCall().then( () => {
-            //         this.bizFire.videoCallSuccess();
-            //     })
-            // }
-    });
-    this.bizFire.onBizGroups
-        .pipe(filter(g=>g!=null),
-            takeUntil(this._unsubscribeAll))
-        .subscribe((groups: IBizGroup[]) => {
-            // save
-            this.currentGroupList = groups;
-        });
+    // this.bizFire.currentUser
+    //     .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
+    //     .subscribe(user => {
+    //         this.currentUser = user;
+    //         this.displayName = this.bizFire.getDiplayNameInitial();
+    //         this.fullName = user.displayName || user.email;
+    // });
+
+    // this.bizFire.onBizGroups
+    //     .pipe(filter(g=>g!=null),
+    //     takeUntil(this._unsubscribeAll))
+    //     .subscribe((groups: IBizGroup[]) => {
+    //
+    //       this.currentGroupList = groups;
+    //     });
+
     this.bizFire.onBizGroupSelected
-        .pipe(
-            filter(g=>g!=null),
-            takeUntil(this._unsubscribeAll))
+        .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
         .subscribe((group) => {
             //console.log('onBizGroupSelected', group.gid);
+
             // set selected group to
             this.currentGroup = group;
-            this.isPartner = this.bizFire.isPartner(group);
+
+            // this.isPartner = this.bizFire.isPartner(group);
             // set select values.
-            this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
+            // this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
             // set menu font color.
             this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
-            console.log(this.currentGroup.data.team_color);
+
         });
 
     // get number of unfinished notices.
@@ -136,7 +128,7 @@ export class TabsPage {
         console.log("tabs notifi",msgs);
         console.log(msgs.length);
         this.badgeCount = msgs.length;
-    })
+    });
 
     this.bizFire.afStore.collection("chat", ref => ref.where("group_id","==",this.currentGroup.gid))
     .snapshotChanges()

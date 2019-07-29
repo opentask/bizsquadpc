@@ -30,8 +30,8 @@
     </ion-item>
   </ion-header>
    
-   <ion-content #scrollMe [scrollTop]="scrollMe.scrollHeight">
-      <div class="message-wrap"> 
+   <ion-content #scrollMe (onScrollUp)="onScrollUp()">
+      <div class="message-wrap">
         <div *ngFor="let msg of messages"
              class="message"
              [class.left]="msg.data.senderId != this.bizFire.currentUID"
@@ -42,9 +42,7 @@
           <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
             <img class="user-img" src="{{msg.data.photoURL}}">
           </ion-avatar>
-          <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
 
-          <!-- 날짜 표시 컨텐츠 -->
           <div class="notice_content" *ngIf="msg.data.notice === 1">
             <ion-grid>
               <ion-row>
@@ -60,12 +58,12 @@
               </ion-row>
             </ion-grid>
           </div>
-          <!-- 메세지 컨텐츠 -->
+
           <div class="msg-detail">
             <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
               <p>{{msg.data.senderName}}</p>
             </div>
-            <!-- 메세지 폼 -->
+
             <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
                 <span class="triangle" *ngIf="msg.data.senderId == this.bizFire.currentUID"></span>
                 <p class="line-breaker textdrag">{{msg.data.message}}</p>
@@ -73,7 +71,7 @@
                   <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                 </div>
               </div>
-              <!-- 파일 폼 -->
+
               <ng-container *ngIf="msg.data.files != null">
                 <div class="msg-content-file" *ngIf="msg.data.files.type == '' || msg.data.files.type.substring(0,3) == 'app' || msg.data.files.type.substring(0,4) == 'text'">
                   <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
@@ -86,7 +84,7 @@
                   </div>
                 </div>
               </ng-container>
-              <!-- 파일이 이미지일 경우 폼 -->
+
               <ng-container *ngIf="msg.data.files != null">
                 <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image' || msg.data.files.type.substring(0,5)=='jpg'">
                   <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">

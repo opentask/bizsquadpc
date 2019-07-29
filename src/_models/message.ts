@@ -6,26 +6,26 @@ export interface IUser {
 }
 
 export interface IUserData {
-    email?: string,
-    displayName?: string,
-    status?: number,
-    photoURL?: string,
-    phoneNumber?: any,
-    type?: any,
-    language?: string,
-    uid?: string,
-    lastLogin?: any
-    emailVerified?: boolean,
-    user_visible_firstname?: string,
-    user_visible_lastname?: string,
-    providerId?: any[];
-    alarm?: IAlarmConfig;
-    // + pc version 
-    user_icon?: string,
-    isChecked?: boolean,
-    onlineStatus?: string,
-    user_onlineColor?: string,
-    videoCall?: string
+  email?: string,
+  displayName?: string,
+  status?: number,
+  photoURL?: string,
+  phoneNumber?: any,
+  type?: any,
+  language?: string,
+  uid?: string,
+  lastLogin?: any
+  emailVerified?: boolean,
+  user_visible_firstname?: string,
+  user_visible_lastname?: string,
+  providerId?: any[];
+  alarm?: IAlarmConfig;
+  // + pc version
+  user_icon?: string,
+  isChecked?: boolean,
+  onlineStatus?: string,
+  user_onlineColor?: string,
+  lastWebGid?: string
 }
 
 export interface IAlarmConfig {

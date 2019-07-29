@@ -98,7 +98,7 @@
     <div class="appSelectArea selectApps">
         <div>
             <span>Apps</span>
-            <ion-icon class="addLinkButton" style="float:right" name="add" (click)="presentPopover()"></ion-icon>
+            <ion-icon *ngIf="8 > userCustomLinks.length" class="addLinkButton" style="float:right" name="add" (click)="presentPopover()"></ion-icon>
         </div>
         <ul>
             <ng-container *ngFor="let link of userCustomLinks">

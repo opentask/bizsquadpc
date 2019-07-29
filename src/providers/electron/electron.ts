@@ -47,7 +47,7 @@ export class Electron {
   updateOnlineStatus(){
     let k = window.navigator.onLine ? 'online' : 'offline'
     if(k == 'online'){
-      console.log('온라인 상태입니다.')
+      console.log('온라인 상태입니다.');
       this.bizFire.setUserOnlineStatus();
     } else {
       console.log('오프라인 상태입니다.');

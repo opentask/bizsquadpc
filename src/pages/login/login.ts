@@ -4,11 +4,11 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { LoadingProvider,BizFireService } from './../../providers';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil,take } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
 import { IChatRoom } from '../../providers/chat.service';
-
+import {IUserData} from "../../_models/message";
 
 @IonicPage({  
   name: 'page-login',
@@ -111,32 +111,87 @@ export class LoginPage implements OnInit {
     this._unsubscribeAll.complete();
   }
 
-  private onLogin(): void {
+  // onLogin() {
+  //   this.loading.show();
+  //   console.log(this.loginForm.valid);
+  //   if (!this.loginForm.valid) {
+  //
+  //     this.loading.hide();
+  //     this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
+  //   } else {
+  //     // 로그인 정보 인증
+  //       this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user  => {
+  //         console.log(user);
+  //         this.loading.hide();
+  //         this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
+  //
+  //         this.bizFire.getUserOnlineStatus().then(() =>{
+  //
+  //           this.electron.updateOnlineStatus();
+  //
+  //           this.navCtrl.setRoot('page-group-list').catch(error => console.error(error));
+  //         })
+  //
+  //       }).catch(err => {
+  //         // 로그인 인증 실패
+  //         this.loading.hide();
+  //         this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
+  //       });
+  //   }
+  // }
+
+  async onLogin() {
     this.loading.show();
-    console.log(this.loginForm.valid);
-    if (!this.loginForm.valid) {
-      // 폼 값이 없으면 로그인 에러창 출력
-      // alert("you entered an incorrect email address or password.");
-      this.loading.hide();
-      this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
-    } else {
-      // 로그인 정보 인증
-        this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user  => {
-          console.log(user);
-          this.loading.hide();
-          this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
-          // 로그인 시 기존과 다르게 이제 비즈그룹을 선택 후 메인페이지로 이동.
-          // this.navCtrl.setRoot('page-tabs').catch(error => console.error(error));
-          this.bizFire.getUserOnlineStatus().then(() =>{
-            this.electron.updateOnlineStatus();
-            this.navCtrl.setRoot('page-group-list').then().catch(error => console.error(error));
-          })
-        }).catch(err => {
-          // 로그인 인증 실패 
-          this.loading.hide();
-          this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
-        });
+
+    if(this.loginForm.valid) {
+
+      try {
+        const email = this.loginForm.value['email'];
+        const password = this.loginForm.value['password'];
+
+        if(this.bizFire.afAuth.auth.currentUser != null) {
+          await this.bizFire.signOut();
+        }
+
+        await this.bizFire.loginWithEmail(email,password);
+        await this.electron.updateOnlineStatus();
+
+        this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
+
+
+        const gid = await this.findLastBizGroup();
+        if(gid && await this.bizFire.onSelectGroup(gid)) {
+          // this.navCtrl.setRoot('page-group-list');
+          this.navCtrl.setRoot('page-tabs');
+
+        } else {
+          this.navCtrl.setRoot('page-group-list');
+        }
+
+        this.loading.hide();
+      } catch (e) {
+
+        console.log(e);
+        this.loading.hide();
+        this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
+      }
     }
+
+  }
+
+  async findLastBizGroup() {
+    return new Promise<string>( (resolve1, reject) => {
+      this.bizFire.currentUser
+        .pipe(take(1))
+        .subscribe((userData: IUserData)=>{
+
+          if(userData.lastWebGid){
+            resolve1(userData.lastWebGid);
+          } else {
+            resolve1(null);
+          }
+        });
+    });
   }
   // ------------------------------------------------------------------
   // * electron function.

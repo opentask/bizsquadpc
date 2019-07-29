@@ -95,7 +95,7 @@ export class ChatService {
         return chatRooms;
     }
 
-    createRoomByProfile(type: string,me : IUser,target: IUser){
+    createRoomByProfile(type: string,me : IUser,target: IUser) {
         const now = new Date();
         const newRoom:IChatRoomData = {
             created:  now.getTime() / 1000 | 0,
@@ -158,15 +158,19 @@ export class ChatService {
         this.createRoom(newRoom);
     }
 
-    createRoom(newRoom:IChatRoomData){
+    createRoom(newRoom:IChatRoomData) {
         if(newRoom != null){
             this.bizFire.afStore.collection("chat").add(newRoom).then(room => {
                 room.get().then(snap =>{
+
+                    this.makeRoomNoticeMessage('member-chat','The chat room has been created.',snap.id);
+
                     this.var_chatRooms = {
                         cid : snap.id,
                         data: snap.data(),
                         uid: this.bizFire.currentUID
                     } as IChatRoom;
+
                     this.onSelectChatRoom.next(this.var_chatRooms);
                     this.electron.openChatRoom(this.var_chatRooms);
                 })
@@ -255,54 +259,36 @@ export class ChatService {
 
             }).catch(error => console.error("메세지작성에러",error));
     }
-
-    testttt(room_type,id,gid?) {
-        this.bizFire.afStore.collection(this.getMessagePath(room_type,id,gid), ref => {
-            
-            let query: firebase.firestore.CollectionReference | firebase.firestore.Query = ref;
-
-            query = query.where(new firebase.firestore.FieldPath('notice'),'==', 1);
-            
-            return query;
-        }).stateChanges().subscribe(snap => {
-            console.log("firestore.FieldPath :",snap.length)
-            snap.forEach(d => {
-                console.log(d.payload.doc.data());
-            })
-        });
-    }
-
+    
     writeTodayAndSendMsg(room_type,txt_message,id,gid?,file?:File) {
 
-        this.bizFire.afStore.collection(this.getMessagePath(room_type,id,gid), ref => {
-            
-            let query: firebase.firestore.CollectionReference | firebase.firestore.Query = ref;
-
-            query = query.where(new firebase.firestore.FieldPath('notice'),'==', 1);
-            
-            return query;
-
-        }).stateChanges().subscribe(snap => {
+        const now = new Date();
+        const newMessage: IRoomMessagesData = {
+            message: '',
+            created: now.getTime() / 1000 - 1 | 0,
+            senderId: 'Dev',
+            senderName: 'Notice',
+            notice: 1,
+        }
         
-            if(snap.length > 0) {
-                this.sendMessage(room_type,txt_message,id,gid,file);
-            } else {
-                const now = new Date();
-                const newMessage: IRoomMessagesData = {
-                    message: '',
-                    created: now.getTime() / 1000 - 1 | 0,
-                    senderId: 'Dev',
-                    senderName: 'Notice',
-                    notice: 1,
-                }; 
+        this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(() => {
+            if(txt_message != '')
+            this.sendMessage(room_type,txt_message,id,gid,file);
+        })
+    }
+
+    makeRoomNoticeMessage(room_type,txt_message,id,gid?,file?:File) {
+        const now = new Date();
+        const newMessage: IRoomMessagesData = {
+            message: txt_message,
+            created: now.getTime() / 1000 - 1 | 0,
+            senderId: 'Dev',
+            senderName: 'Notice',
+            notice: 1,
+        }
+
+        this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage)
         
-                this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(() => {
-                    if(txt_message != '') {
-                        this.sendMessage(room_type,txt_message,id,gid,file);
-                    };
-                });
-            };
-        });
     }
 
     uploadFilesToChat(file,type,id,gid,message_id,fileName): Promise<any> {

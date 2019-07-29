@@ -62,22 +62,34 @@
   </ion-item>
 </ion-header>
 
- <ion-content #scrollMe [scrollTop]="scrollMe.scrollHeight">
+ <ion-content #scrollMe>
       <div class="message-wrap">
+        <ion-infinite-scroll position="top" (ionInfinite)="doInfinite($event)">
+          <ion-infinite-scroll-content loadingText="Loading more chats..."></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
         <div *ngFor="let msg of messages"
             class="message"
             [class.left]="msg.data.senderId != chatroom.uid"
             [class.right]="msg.data.senderId === chatroom.uid">
-          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != chatroom.uid && msg.data.message != ''">
-            <span class="senderName">{{ msg.data.senderName | slice:0:1 }}</span>
-          </ion-avatar>
-          <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != chatroom.uid">
-            <img class="user-img" src="{{msg.data.photoURL}}">
-          </ion-avatar>
-          <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
 
-          <!-- 날짜 표시 컨텐츠 -->
-          <div class="notice_content" *ngIf="msg.data.notice === 1">
+
+          <div class="notice_content" *ngIf="msg.data.notice === 1 && msg.data.message != ''">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-1>
+                    <hr>
+                </ion-col>
+                <ion-col col-10 class="time_notice">
+                    <div>{{ msg.data.message }}</div>
+                </ion-col>
+                <ion-col col-1>
+                    <hr>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+    
+          <div class="notice_content" *ngIf="msg.data.notice === 1 && msg.data.message == ''">
             <ion-grid>
               <ion-row>
                 <ion-col col-4>
@@ -92,12 +104,18 @@
               </ion-row>
             </ion-grid>
           </div>
-          <!-- 메세지 컨텐츠 -->
-          <div class="msg-detail">
+          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != chatroom.uid && msg.data.notice != 1">
+            <span class="senderName">{{ msg.data.senderName | slice:0:1 }}</span>
+          </ion-avatar>
+          <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != chatroom.uid">
+            <img class="user-img" src="{{msg.data.photoURL}}">
+          </ion-avatar>
+
+          <div class="msg-detail" *ngIf="msg.data.notice != 1">
             <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid && msg.data.message != ''">
               <p>{{msg.data.senderName}}</p>
             </div>
-            <!-- 메세지 폼 -->
+
             <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
               <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
               <p class="line-breaker textdrag">{{msg.data.message}}</p>
@@ -105,7 +123,7 @@
                 <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
               </div>
             </div>
-            <!-- 파일 폼 -->
+
             <ng-container *ngIf="msg.data.files != null">
               <div class="msg-content-file" *ngIf="msg.data.files.type == '' || msg.data.files.type.substring(0,3) == 'app' || msg.data.files.type.substring(0,4) == 'text'">
                 <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
@@ -118,7 +136,7 @@
                 </div>
               </div>
             </ng-container>
-            <!-- 파일이 이미지일 경우 폼 -->
+
             <ng-container *ngIf="msg.data.files != null">
               <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image'">
                 <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
@@ -131,7 +149,7 @@
                 </div>
               </div>
             </ng-container>
-            <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid && msg.data.notice != 1">
+            <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid">
               <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
             </div>
           </div>
@@ -144,7 +162,7 @@
         <ion-icon name="attach"></ion-icon>
       </button>
       <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
-      <button ion-button clear icon-only small color="dark" (click)="smile()">
+      <button ion-button clear icon-only small color="dark" (click)="getMoreMessages()">
         <ion-icon name="happy"></ion-icon>
       </button> 
       <!-- <button *ngIf="roomCount === 2" ion-button clear icon-only small color="dark" style="position: absolute; right:5px">

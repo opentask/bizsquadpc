@@ -12,6 +12,7 @@ import { IUser } from '../../../../_models/message';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { AlertProvider } from '../../../../providers/alert/alert';
 import { IonContent } from '@ionic/angular';
+import { InfiniteScroll } from 'ionic-angular';
 
 export interface Ichats {
   message: string,
@@ -33,11 +34,11 @@ export interface IchatMember{
 export class MemberChatPage {
 
   @ViewChild('scrollMe') contentArea: IonContent;
+  @ViewChild('scrollMe') content: Content;
 
   private _unsubscribeAll;
   editorMsg = '';
   opacity = 100;
-
   message : string;
   messages = [];
   readMessages : IRoomMessages[];
@@ -47,6 +48,10 @@ export class MemberChatPage {
   roomData : IChatRoomData;
   chatMembers = [];
   groupMainColor: string;
+
+  start : any;
+  end : any;
+  testMessages = [];
 
   // 화상채팅 보낸 이
   senderUser: IUserData;
@@ -82,8 +87,7 @@ export class MemberChatPage {
         }
       })
       this.ipc = electron.ipc;
-    }
-  
+    }  
 
   ngOnInit(): void {
     console.log(this.chatroom);
@@ -131,10 +135,10 @@ export class MemberChatPage {
       .stateChanges().subscribe(snap => {
         snap.forEach(d => {
           const msgData = {rid: d.payload.doc.id, data:d.payload.doc.data()} as IRoomMessages;
-          if(d.type == 'added' && msgData.data.message != '' || msgData.data.notice === 1){
-            this.messages.push(msgData);
+          if(d.type == 'added' && msgData.data.message != '' || msgData.data.notice === 1) {
+            // this.messages.push(msgData);
           }
-          if(d.type == 'modified'){
+          if(d.type == 'modified') {
             let ret = msgData.data.files != null && msgData.data.message != '';
             if(ret){
               this.messages.push(msgData);
@@ -175,6 +179,8 @@ export class MemberChatPage {
 
     }
     // this.chatService.createRoom(null);
+
+    this.getMessages();
   }
   file(file){
     let fileInfo;
@@ -259,8 +265,6 @@ export class MemberChatPage {
       } else if(value != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
         this.chatService.writeTodayAndSendMsg("member-chat",value,this.chatroom.cid);
       }
-
-      this.chatService.testttt("member-chat",this.chatroom.cid);
     }
 
 
@@ -271,7 +275,7 @@ export class MemberChatPage {
     this.electron.setOpacity(v);
   }
 
-  downloadFile(path){
+  downloadFile(path) {
     console.log(path);
     this.ipc.send('loadGH',path);
   }
@@ -309,4 +313,63 @@ export class MemberChatPage {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
+
+  // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
+  getMessages() {
+
+    this.bizFire.afStore.collection(`chat/${this.chatroom.cid}/chat`,ref => ref.orderBy('created','desc').limit(10))
+    .get().subscribe((snapshots) => {
+
+      this.start = snapshots.docs[snapshots.docs.length - 1];
+
+        this.bizFire.afStore.collection(`chat/${this.chatroom.cid}/chat`,ref => ref.orderBy('created')
+        .startAt(this.start))
+        .stateChanges().subscribe((messages) => {
+  
+          messages.forEach((message) => {
+            const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
+            this.messages.push(msgData);
+          })
+          
+          this.scrollToBottom();
+
+        })
+        console.log("test_messages",this.testMessages);
+    })
+
+  }
+
+  getMoreMessages() {
+    this.bizFire.afStore.collection(`chat/${this.chatroom.cid}/chat`,ref => ref.orderBy('created','desc')
+    .startAt(this.start).limit(10)).get()
+    .subscribe((snapshots) => {
+      this.end = this.start;
+      this.start = snapshots.docs[snapshots.docs.length - 1];
+
+      this.bizFire.afStore.collection(`chat/${this.chatroom.cid}/chat`,ref => ref.orderBy('created')
+      .startAt(this.start).endBefore(this.end))
+      .stateChanges().subscribe((messages) => {
+
+        messages.reverse().forEach((message) => {
+          const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
+          this.messages.unshift(msgData);
+        })
+      })
+
+      console.log("more_messages",this.messages);
+    })
+  }
+
+  doInfinite(infiniteScroll) {
+    console.log('Begin async operation');
+
+    setTimeout(() => {
+      this.getMoreMessages();
+
+      console.log('Async operation has ended');
+
+      infiniteScroll.complete();
+    }, 500);
+  }
+
 }
