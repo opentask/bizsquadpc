@@ -7,8 +7,17 @@ import { IBizGroup, BizFireService } from '../../../providers/biz-fire/biz-fire'
 import { ISquad, SquadService } from '../../../providers/squad.service';
 import { IFolderItem } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
-import { STRINGS } from '../../../biz-common/commons';
+import {Commons, STRINGS} from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
+
+export interface ISquadListData {
+  generalSquads?: ISquad[];
+  agileSquads?: ISquad[];
+  partnerSquads?: ISquad[];
+  bookmark?: ISquad[];
+}
+
+
 @IonicPage({  
   name: 'page-squad',
   segment: 'squad',
@@ -33,6 +42,8 @@ export class SquadPage {
   
   customToken: any;
 
+  userCustomData: any;
+
   defaultSegment : string = "generalSquad";
   isAndroid: boolean = false;
 
@@ -40,6 +51,7 @@ export class SquadPage {
   privateFolders: Array<IFolderItem> = [];
   publicSquads: ISquad[] = [];
   privateSquads: ISquad[] = [];
+  bookmark : ISquad[] = [];
  
   public_shownGroup = null;
   private_shownGroup = null;
@@ -129,7 +141,10 @@ export class SquadPage {
         .pipe(
             map(userData => ({gid: group.gid, uid: this.bizFire.currentUID, data: userData})),
             takeUntil(this.bizFire.onUserSignOut))
-        .subscribe(userData => this.userDataChanged.next(userData));
+        .subscribe(userData => {
+          this.userCustomData = userData;
+          this.userDataChanged.next(userData);
+        });
   }
 
   // * load left folders.
@@ -144,16 +159,19 @@ export class SquadPage {
     this.folders = []; // my folders
     this.privateSquads = [];
     this.publicSquads = [];
+    this.bookmark = [];
 
-    const {folders, privateFolders, privateSquads, publicSquads} = SquadService.makeSquadMenuWith(userData.data, originalSquadList);
+
+    const {folders,privateFolders,privateSquads,publicSquads,bookmark} = this.squadService.makeSquadMenuWith(userData.data, originalSquadList);
 
     // console.log(folders, privateSquads, publicSquads);
 
     this.folders = folders;
-    this.publicSquads = publicSquads;
-    
     this.privateFolders = privateFolders;
+
+    this.publicSquads = publicSquads;
     this.privateSquads = privateSquads;
+    this.bookmark = bookmark;
     
   }
 
@@ -183,8 +201,28 @@ export class SquadPage {
     console.log(squad);
     this.electron.openChatRoom(squad);
   }
-  onvideocam(ev){
+  onFavoritesSelect(ev,sid){
     ev.stopPropagation();
+    console.log("sidsid",sid);
+
+    const gid = this.bizFire.onBizGroupSelected.getValue().gid;
+    const path = Commons.userDataPath(gid, this.bizFire.currentUID);
+    console.log("this.userCustomData",this.userCustomData);
+    // get delete or add
+    if(this.userCustomData == null) {
+      this.userCustomData.data = {[sid]: {}};
+    }
+
+    if(this.userCustomData.data[sid] == null || !this.userCustomData.data[sid]['bookmark']){
+      this.userCustomData.data[sid] = { bookmark: true };
+    } else if (this.userCustomData.data[sid]['bookmark']){
+      this.userCustomData.data[sid] = { bookmark: false };
+    }
+
+    console.log("this.userCustomData.data",this.userCustomData.data);
+
+    this.bizFire.afStore.doc(path).set(this.userCustomData.data, {merge: true});
+
   }
 
   ngOnDestroy(): void {

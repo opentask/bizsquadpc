@@ -25,7 +25,8 @@ export interface IUserData {
   isChecked?: boolean,
   onlineStatus?: string,
   user_onlineColor?: string,
-  lastWebGid?: string
+  lastWebGid?: string,
+  lastPcGid?:string
 }
 
 export interface IAlarmConfig {

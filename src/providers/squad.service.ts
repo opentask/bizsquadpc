@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BizFireService } from './biz-fire/biz-fire';
-import { STRINGS } from '../biz-common/commons';
+import {Commons, STRINGS} from '../biz-common/commons';
 import { takeUntil, map } from 'rxjs/operators';
 
 export interface ISquad {
@@ -62,7 +62,7 @@ export class SquadService {
 
                         // but exclude false or 0 if status field exist.
                         const status = d.payload.doc.get('status');
-                        ret = status !== 0 && status !== false;
+                        ret = status === true;
                         return ret;
                     })
                     .filter(d =>{
@@ -90,12 +90,13 @@ export class SquadService {
                 )
             );
     }
-    static makeSquadMenuWith(userData: any, squadList: ISquad[]){
+    makeSquadMenuWith(userData: any, squadList: ISquad[]){
         console.log('makeSquadMenuWith', userData, squadList);
 
         const folders = [];
         const privateFolders = [];
         const addedSqaud = {};
+        const bookmark: ISquad[] = [];
 
         if(userData != null){
             const publicFolders = userData.folders;
@@ -171,11 +172,35 @@ export class SquadService {
             }
 
         }
-        const privateSquads = squadList.filter(s => s.data.type !== 'public' && addedSqaud[s.sid] !== true);
-        const publicSquads = squadList.filter(s => s.data.type === 'public' && addedSqaud[s.sid] !== true);
+        const privateSquads = squadList.filter(s => {
+          let ret = s.data.type !== 'public' && addedSqaud[s.sid] !== true;
+          if(ret && this.isFavoriteSquad(userData,s.sid)){
+            bookmark.push(s);
+            ret = false;
+          }
+          return ret;
+        });
+
+        const publicSquads = squadList.filter(s => {
+          let ret = s.data.type === 'public' && addedSqaud[s.sid] !== true;
+          if(ret && this.isFavoriteSquad(userData,s.sid)) {
+            bookmark.push(s);
+            ret = false;
+          }
+          return ret;
+        })
 
         // console.log(folders, privateSquads, publicSquads);
-        return { folders,privateFolders, privateSquads, publicSquads};
+        return { folders,privateFolders, privateSquads, publicSquads, bookmark };
+    }
+
+
+  isFavoriteSquad(userData: any,sid: string): boolean {
+      let ret = false;
+      if(userData && userData[sid]) {
+        ret = userData[sid]['bookmark'] === true;
+      }
+      return  ret;
     }
 
 }

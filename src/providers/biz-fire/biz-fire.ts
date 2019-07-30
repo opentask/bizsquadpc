@@ -372,7 +372,7 @@ export class BizFireService {
   async onSelectGroup(gid) : Promise<boolean> {
     return new Promise<boolean>(resolve => {
       this.afStore.collection(STRINGS.USERS).doc(this.currentUID).update({
-        lastWebGid: gid
+        lastPcGid: gid
       });
 
       this.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${gid}`)

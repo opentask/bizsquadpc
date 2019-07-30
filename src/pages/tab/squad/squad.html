@@ -19,25 +19,46 @@
                         <!-- 퍼블릭 스쿼드 -->
                             <!-- if_로그인 한 계정이 파트너가 아닐 경우에만.. -->
                         <ng-container *ngIf="!isPartner">
-                            <ion-item class="squadList-folder-item" no-lines *ngFor="let folder of folders; let i=index" text-wrap (click)="toggleGroup(i)" [ngClass]="{active: isGroupShown(i)}">
-                                <h3 class="folder-item">
-                                <ion-icon [style.color]="currentBizGroup.data.team_color" item-right [name]="isGroupShown(i) ? 'folder-open' : 'folder'"></ion-icon>
-                                    {{folder.name}}
-                                <span class="folder-squad-length" *ngIf="folder.squads.length > 0"> ({{folder.squads.length}})</span>
-                                </h3>
-                                <div *ngIf="isGroupShown(i)">
-                                    <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
-                                        <span class="folder-long-text">{{squad.data.name}}</span>
-                                        <span class="folder-member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>
-                                        <button class="squadList-button-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
-                                            <ion-icon name="ios-chatbubbles"></ion-icon>
-                                        </button>
-                                        <button class="squadList-video-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onvideocam($event)">
-                                            <ion-icon name="videocam"></ion-icon>
-                                        </button>
-                                    </ion-item>
-                                </div>
+
+                          <ion-item no-lines>
+                            <span class="list" [style.color]="groupMainColor">Bookmark</span>
+                          </ion-item>
+
+                          <ng-container *ngFor="let squad of bookmark">
+                            <ion-item *ngIf="squad.data.type === 'public'" no-lines class="squadList-item" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
+                              <span class="long-text">{{squad.data.name}}</span>
+                              <span class="member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>
+                              <button class="squadList-button" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
+                                <ion-icon name="ios-chatbubbles"></ion-icon>
+                              </button>
+                              <button class="squadList-video" [color]="groupMainColor" ion-button clear icon-only (click)="onFavoritesSelect($event,squad.sid)">
+                                <ion-icon name="star"></ion-icon>
+                              </button>
                             </ion-item>
+                          </ng-container>
+<!--                            <ion-item class="squadList-folder-item" no-lines *ngFor="let folder of folders; let i=index" text-wrap (click)="toggleGroup(i)" [ngClass]="{active: isGroupShown(i)}">-->
+<!--                                <h3 class="folder-item">-->
+<!--                                <ion-icon [style.color]="currentBizGroup.data.team_color" item-right [name]="isGroupShown(i) ? 'folder-open' : 'folder'"></ion-icon>-->
+<!--                                    {{folder.name}}-->
+<!--                                <span class="folder-squad-length" *ngIf="folder.squads.length > 0"> ({{folder.squads.length}})</span>-->
+<!--                                </h3>-->
+<!--                                <div *ngIf="isGroupShown(i)">-->
+<!--                                    <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">-->
+<!--                                        <span class="folder-long-text">{{squad.data.name}}</span>-->
+<!--                                        <span class="folder-member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>-->
+<!--                                      s  <button class="squadList-button-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">-->
+<!--                                            <ion-icon name="ios-chatbubbles"></ion-icon>-->
+<!--                                        </button>-->
+<!--                                        <button class="squadList-video-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onFavoritesSelect($event)">-->
+<!--                                            <ion-icon name="star-outline"></ion-icon>-->
+<!--                                        </button>-->
+<!--                                    </ion-item>-->
+<!--                                </div>-->
+<!--                            </ion-item>-->
+                            <ion-item no-lines>
+                              <span class="list" [style.color]="groupMainColor">Squads</span>
+                            </ion-item>
+
                             <ion-item no-lines class="squadList-item" *ngFor="let squad of publicSquads" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
                                 <span class="long-text">{{squad.data.name}}</span>
                                 <span class="member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>
@@ -45,41 +66,65 @@
                                     <ion-icon name="ios-chatbubbles"></ion-icon>
                                     <!-- <img class="chat_img"src="imgs/chat_deactive.svg" [style.fill]="currentBizGroup.data.team_color">  -->
                                 </button>
-                                <button class="squadList-video" [color]="groupMainColor" ion-button clear icon-only (click)="onvideocam($event)">
-                                    <ion-icon name="videocam"></ion-icon>
+                                <button class="squadList-video" [color]="groupMainColor" ion-button clear icon-only (click)="onFavoritesSelect($event,squad.sid)">
+                                    <ion-icon name="star-outline"></ion-icon>
                                 </button>
                             </ion-item>
+
                         </ng-container>
                     </ion-list>
+
                     <ion-list *ngSwitchCase="'privateSquad'" scrollY="true" style="margin-bottom:56px;">
                         <!-- 권한이 필요한 스쿼드 출력 -->
-                        <ion-item class="squadList-folder-item" no-lines *ngFor="let folder of privateFolders; let s=index" text-wrap (click)="togglePrivateGroup(s)" [ngClass]="{active: isPrivateGroupShown(s)}">
-                            <h3 class="folder-item">
-                            <ion-icon [style.color]="currentBizGroup.data.team_color" item-right [name]="isPrivateGroupShown(s) ? 'folder-open' : 'folder'"></ion-icon>
-                                {{folder.name}}
-                            <span class="folder-squad-length" *ngIf="folder.squads.length > 0"> ({{folder.squads.length}})</span>
-                            </h3>
-                            <div *ngIf="isPrivateGroupShown(s)">
-                                <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
-                                    <span class="folder-long-text">{{squad.data.name}}</span>
-                                    <span class="folder-member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>
-                                    <button class="squadList-button-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
-                                        <ion-icon name="ios-chatbubbles"></ion-icon>
-                                    </button>
-                                    <button class="squadList-video-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onvideocam($event)">
-                                        <ion-icon name="videocam"></ion-icon>
-                                    </button>
-                                </ion-item>
-                            </div>
+<!--                        <ion-item class="squadList-folder-item" no-lines *ngFor="let folder of privateFolders; let s=index" text-wrap (click)="togglePrivateGroup(s)" [ngClass]="{active: isPrivateGroupShown(s)}">-->
+<!--                            <h3 class="folder-item">-->
+<!--                            <ion-icon [style.color]="currentBizGroup.data.team_color" item-right [name]="isPrivateGroupShown(s) ? 'folder-open' : 'folder'"></ion-icon>-->
+<!--                                {{folder.name}}-->
+<!--                            <span class="folder-squad-length" *ngIf="folder.squads.length > 0"> ({{folder.squads.length}})</span>-->
+<!--                            </h3>-->
+<!--                            <div *ngIf="isPrivateGroupShown(s)">-->
+<!--                                <ion-item no-lines class="squadList-item" *ngFor="let squad of folder.squads" style="margin-left:15px;" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">-->
+<!--                                    <span class="folder-long-text">{{squad.data.name}}</span>-->
+<!--                                    <span class="folder-member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>-->
+<!--                                    <button class="squadList-button-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">-->
+<!--                                        <ion-icon name="ios-chatbubbles"></ion-icon>-->
+<!--                                    </button>-->
+<!--                                    <button class="squadList-video-folder" [color]="groupMainColor" ion-button clear icon-only (click)="onFavoritesSelect($event)">-->
+<!--                                        <ion-icon name="star-outline"></ion-icon>-->
+<!--                                    </button>-->
+<!--                                </ion-item>-->
+<!--                            </div>-->
+<!--                        </ion-item>-->
+                        <ion-item no-lines>
+                          <span class="list" [style.color]="groupMainColor">Bookmark</span>
                         </ion-item>
+
+                        <ng-container *ngFor="let squad of bookmark">
+                          <ion-item *ngIf="squad.data.type === 'private'" no-lines class="squadList-item" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
+                            <span class="long-text">{{squad.data.name}}</span>
+                            <span class="member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>
+                            <button class="squadList-button" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
+                              <ion-icon name="ios-chatbubbles"></ion-icon>
+                              <!-- <img class="chat_img"src="imgs/chat_deactive.svg" [style.fill]="currentBizGroup.data.team_color">  -->
+                            </button>
+                            <button class="squadList-video" [color]="groupMainColor" ion-button clear icon-only (click)="onFavoritesSelect($event,squad.sid)">
+                              <ion-icon name="star"></ion-icon>
+                            </button>
+                          </ion-item>
+                        </ng-container>
+
+                        <ion-item no-lines>
+                          <span class="list" [style.color]="groupMainColor">Squads</span>
+                        </ion-item>
+
                         <ion-item no-lines class="squadList-item" *ngFor="let squad of privateSquads" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
                             <span class="long-text">{{squad.data.name}}</span>
                             <span class="member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>
                             <button class="squadList-button" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
                                 <ion-icon name="ios-chatbubbles"></ion-icon>
                             </button> 
-                            <button class="squadList-video" [color]="groupMainColor" ion-button icon-only clear (click)="onvideocam($event)">
-                                <ion-icon name="videocam"></ion-icon>
+                            <button class="squadList-video" [color]="groupMainColor" ion-button icon-only clear (click)="onFavoritesSelect($event,squad.sid)">
+                                <ion-icon name="star-outline"></ion-icon>
                             </button>
                         </ion-item>
                     </ion-list>

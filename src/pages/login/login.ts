@@ -185,8 +185,8 @@ export class LoginPage implements OnInit {
         .pipe(take(1))
         .subscribe((userData: IUserData)=>{
 
-          if(userData.lastWebGid){
-            resolve1(userData.lastWebGid);
+          if(userData.lastPcGid){
+            resolve1(userData.lastPcGid);
           } else {
             resolve1(null);
           }

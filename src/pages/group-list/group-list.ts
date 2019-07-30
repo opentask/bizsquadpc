@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { TokenProvider } from '../../providers/token/token';
 import { FireData } from '../../classes/fire-data';
+import {STRINGS} from "../../biz-common/commons";
 
 @IonicPage({  
   name: 'page-group-list',
@@ -50,7 +51,7 @@ export class GroupListPage {
                 if(group){
                   const newData = group.data;
                   newData['gid'] = group.gid;
-                  newData['group_squads'] = 0; 
+                  newData['group_squads'] = 0;
                   newData['group_members'] = Object.keys(group.data.members).length;
                   newData['team_color'] = group.data.team_color || this.team_color;
                   
@@ -71,7 +72,7 @@ export class GroupListPage {
                       if(list.data().status === true){
                         if(list.data().type === 'public'){
                           general += 1;
-                        } else {
+                        } else if(list.data().type === 'private'){
                           agile += 1;
                         }
                       }
@@ -100,8 +101,18 @@ export class GroupListPage {
   }
 
   gotoTeam(group){
-    this.bizFire.onBizGroupSelected.next(group);
-    this.navCtrl.setRoot('page-tabs');
+    this.onSelectGroup(group);
+  }
+
+  onSelectGroup(group: IBizGroup) {
+    // save web last login group
+    (async ()=>{
+      await this.bizFire.afStore.collection(STRINGS.USERS).doc(this.bizFire.currentUID).update({
+        lastPcGid: group.gid
+      });
+      this.bizFire.onBizGroupSelected.next(group);
+      this.navCtrl.setRoot('page-tabs');
+    })();
   }
 
   //                   //
