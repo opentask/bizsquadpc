@@ -6,6 +6,7 @@ import { BizFireService } from '../../../providers';
 import { filter, takeUntil } from 'rxjs/operators';
 import { IBizGroup } from '../../../providers/biz-fire/biz-fire';
 import { AccountService } from '../../../providers/account/account';
+import { GroupColorProvider } from '../../../providers/group-color';
 
 @IonicPage({  
   name: 'page-member',
@@ -55,11 +56,14 @@ export class MemberPage {
   Partner : boolean = false;
   partnerCount:any;
 
+  groupMainColor : string;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public bizFire : BizFireService,
     private accountService: AccountService,
+    private groupColorProvider: GroupColorProvider,
     public popoverCtrl :PopoverController,) {
 
     this._unsubscribeAll = new Subject<any>();
@@ -75,6 +79,7 @@ export class MemberPage {
         // set selected group to
         this.currentGroup = group;
         this.gid = this.currentGroup.gid;
+        this.groupMainColor =this.groupColorProvider.makeGroupColor(group.data.team_color);
     });
 
     // get selected group info.

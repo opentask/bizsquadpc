@@ -8,6 +8,7 @@ import { resolve } from 'path';
 import { rejects } from 'assert';
 import { LoadingProvider } from './loading/loading';
 import * as firebase from 'firebase';
+import {Commons, STRINGS} from '../biz-common/commons';
 
 export interface IChatRoom {
     uid?: string,
@@ -15,22 +16,22 @@ export interface IChatRoom {
     data: IChatRoomData,
   }
 export interface IChatRoomData {
-    created: number,
-    group_id: string,
-    type: string,
+    created: any,
+    group_id?: string,
+    type?: string,
     lastMessage?: string,
     lastMessageTo?: string,
     lastMessageUid?: string,
     lastMessageTime?: number,
+    lastRead?: any,
     members?: any,
     manager?: any,
     notify?:boolean,
     member_count?:any,
     member_data?: IUser[],
     title?: string,
-    read?: any,
-    is_group: number,
-    status: number
+    is_group?: number,
+    status: boolean
 }
 
 export interface IRoomMessages {
@@ -40,13 +41,13 @@ export interface IRoomMessages {
 }
 
 export interface IRoomMessagesData {
-    created: number,
+    created: any,
     files?: IFiles,
     message: string,
+    senderId?: string,
+    notice?: boolean,
+    senderName?: string,
     photoURL?: string,
-    senderId: string,
-    senderName: string,
-    notice?: number,
 }
 export interface IFiles {
     name:string,
@@ -95,96 +96,72 @@ export class ChatService {
         return chatRooms;
     }
 
-    createRoomByProfile(type: string,me : IUser,target: IUser) {
+    createRoomByProfile(target: IUser) {
         const now = new Date();
         const newRoom:IChatRoomData = {
-            created:  now.getTime() / 1000 | 0,
+            created:  now,
             group_id: this.bizFire.onBizGroupSelected.getValue().gid,
-            type: type,
-            is_group: 0,
             members: {
-                [me.uid] : {
-                    'name' : me.data.displayName,
-                    'photoURL' : me.data.photoURL
-                },
-                [target.uid] : {
-                    'name' : target.data.displayName,
-                    'photoURL' : target.data.photoURL
-                }
-            },
-            manager: {
-                [me.uid] : true,
+                [this.bizFire.currentUserValue.uid] : true,
                 [target.uid] : true
             },
-            status: 1
+            status: true,
+            type: 'member'
         }
+
         this.createRoom(newRoom);
     }
-    createRoomByFabs(type,members:IUser[]=[]) {
+    createRoomByFabs(users:IUser[]) {
+
         const now = new Date();
-        let is_group = 1;
         const myValue = this.bizFire.currentUserValue;
         // fabs invite에서 초대 한 멤버가 한명일 경우 그룹채팅이 아니다.
-        if(members.length === 1){
-            is_group = 0;
-        }
+
         const newRoom:IChatRoomData = {
-            created:  now.getTime() / 1000 | 0,
+            created:  now,
             group_id: this.bizFire.onBizGroupSelected.getValue().gid,
-            type: type,
-            is_group: is_group,
-            members:{
-                [myValue.uid] : {
-                    'name' : myValue.displayName,
-                    'photoURL' : myValue.photoURL
-                }
-            },
-            manager:{
+            members : {
                 [myValue.uid] : true
             },
-            status: 1
+            status: true,
+            type: 'member'
         }
-        if(members.length > 0){
-            members.forEach(u => {       
-                newRoom['manager'][u.data.uid] = true;
-                newRoom['members'][u.data.uid] = {
-                    'name' : u.data.displayName,
-                    'photoURL' : u.data.photoURL
-                }           
-            })
+        if(users.length > 0){
+            users.forEach(u => { newRoom.members[u.uid] = true; });
+        }
 
-        }
-        console.log(newRoom);
+        console.log("newRoomnewRoom",newRoom);
         this.createRoom(newRoom);
     }
 
     createRoom(newRoom:IChatRoomData) {
         if(newRoom != null){
-            this.bizFire.afStore.collection("chat").add(newRoom).then(room => {
+            this.bizFire.afStore.collection(Commons.chatPath(newRoom.group_id)).add(newRoom).then(room => {
                 room.get().then(snap =>{
 
-                    this.makeRoomNoticeMessage('member-chat','The chat room has been created.',snap.id);
+                  this.var_chatRooms = {
+                    cid : snap.id,
+                    data: snap.data(),
+                    uid: this.bizFire.currentUID
+                  } as IChatRoom;
 
-                    this.var_chatRooms = {
-                        cid : snap.id,
-                        data: snap.data(),
-                        uid: this.bizFire.currentUID
-                    } as IChatRoom;
-
-                    this.onSelectChatRoom.next(this.var_chatRooms);
-                    this.electron.openChatRoom(this.var_chatRooms);
+                  this.makeRoomNoticeMessage('member-chat','The chat room has been created.',newRoom.group_id,snap.id)
+                    .then(() => {
+                      this.onSelectChatRoom.next(this.var_chatRooms);
+                      this.electron.openChatRoom(this.var_chatRooms);
+                    });
                 })
             });
         }
     }
-    getMessagePath(type,cid?,gid?){
+    getMessagePath(type,gid,cid,sid?){
         switch(type){
             case 'member-chat':
-              return 'chat/' + cid +'/chat';
+              return Commons.chatMsgPath(gid,cid);
             case 'squad-chat':
               return 'bizgroups/'+ gid + '/squads/' + cid + '/chat';
             case 'member-chat-room':
-              return 'chat/' + cid;
+              return Commons.chatDocPath(gid,cid);
             case 'squad-chat-room':
               return 'bizgroups/'+ gid + '/squads/' + cid;
         }  
@@ -198,8 +175,7 @@ export class ChatService {
         }
       }
 
-    sendMessage(room_type,txt_message,id,gid?,file?:File) {
-            const now = new Date();
+    sendMessage(room_type,txt_message,gid,cid,file?:File) {
 
             let checkFileText = txt_message;
             let filePath;
@@ -209,52 +185,48 @@ export class ChatService {
             }
             const newMessage: IRoomMessagesData = {
                 message: checkFileText,
-                created: now.getTime() / 1000 | 0,
-                senderId: this.bizFire.currentUID,
-                senderName: this.bizFire.currentUserValue.displayName,
-                photoURL: this.bizFire.currentUserValue.photoURL,
+                created: new Date(),
+                senderId: this.bizFire.currentUID
             }
-            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(message =>{
+            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,cid)).add(newMessage).then(message =>{
                 const uid = this.bizFire.currentUID;
-                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',id,gid)).set({
+                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',gid,cid)).set({
                     lastMessage : txt_message,
-                    lastMessageTo : this.bizFire.currentUserValue.displayName,
-                    lastMessageUid : uid,
-                    lastMessageTime : now.getTime() / 1000 | 0,
-                    read : { [uid] : {lastRead: now.getTime() / 1000 | 0} }
+                    lastMessageTime : new Date().getTime() / 1000 | 0,
+                    lastRead : {
+                      [uid] : new Date().getTime() / 1000 | 0
+                    }
                 },{merge : true}).then(() => {
 
+                    // if(room_type == "squad-chat" && file != null) {
+                    //     filePath = `chatsquad/${gid}/${cid}/chat/${message.id}/${file.name}`
+                    // } else if(room_type == "member-chat" && file != null) {
+                    //     filePath = `chat/${gid}/${cid}/chat/${message.id}/${file.name}`
+                    // }
+                    // if(file != null) {
+                    //     this.uploadFilesToChat(file,room_type,cid,gid,message.id,file.name).then(url =>{
+                    //         message.set({
+                    //             message: file.name,
+                    //             files: {
+                    //                 name: file.name,
+                    //                 type:file.type,
+                    //                 storagePath: filePath,
+                    //                 size:file.size,
+                    //                 url: url
+                    //             }
+                    //         },{merge : true}).then(() => {
+                    //             this.loading.hide();
+                    //             resolve(url);
+                    //         }).catch(err => {
+                    //             this.loading.hide();
+                    //             rejects(err);
+                    //         })
+                    //     })
+                    // } else {
+                    //     resolve('');
+                    //     this.loading.hide();
+                    // }
 
-
-
-                    if(room_type == "squad-chat" && file != null) {
-                        filePath = `chatsquad/${gid}/${id}/chat/${message.id}/${file.name}`
-                    } else if(room_type == "member-chat" && file != null) {
-                        filePath = `chat/${gid}/${id}/chat/${message.id}/${file.name}`
-                    }
-                    if(file != null) {
-                        this.uploadFilesToChat(file,room_type,id,gid,message.id,file.name).then(url =>{
-                            message.set({
-                                message: file.name,
-                                files: {
-                                    name: file.name,
-                                    type:file.type,
-                                    storagePath: filePath,
-                                    size:file.size,
-                                    url: url
-                                }
-                            },{merge : true}).then(() => {
-                                this.loading.hide();
-                                resolve(url);
-                            }).catch(err => {
-                                this.loading.hide();
-                                rejects(err);
-                            })
-                        })
-                    } else {
-                        resolve('');
-                        this.loading.hide();
-                    }
                 }).catch(error => console.log("라스트 메세지 작성에러",error))
 
             }).catch(error => console.error("메세지작성에러",error));
@@ -268,7 +240,7 @@ export class ChatService {
             created: now.getTime() / 1000 - 1 | 0,
             senderId: 'Dev',
             senderName: 'Notice',
-            notice: 1,
+            notice: true,
         }
         
         this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(() => {
@@ -277,17 +249,15 @@ export class ChatService {
         })
     }
 
-    makeRoomNoticeMessage(room_type,txt_message,id,gid?,file?:File) {
-        const now = new Date();
+    makeRoomNoticeMessage(room_type,txt_message,gid,cid) {
+
         const newMessage: IRoomMessagesData = {
             message: txt_message,
-            created: now.getTime() / 1000 - 1 | 0,
-            senderId: 'Dev',
-            senderName: 'Notice',
-            notice: 1,
-        }
+            created: new Date(),
+            notice : true
+        };
 
-        this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage)
+        return this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,cid)).add(newMessage)
         
     }
 
@@ -312,9 +282,9 @@ export class ChatService {
     }
 
 
-    removeMember(uid,cid) {
+    removeMember(uid,gid,cid) {
         return new Promise<void>( (resolve, reject) => {
-        this.bizFire.afStore.firestore.doc("chat/" + cid).update({
+        this.bizFire.afStore.firestore.doc(Commons.chatDocPath(gid,cid)).update({
             ['members.' + uid]: firebase.firestore.FieldValue.delete()
         }).then(()=>{
             this.electron.windowClose();
@@ -329,7 +299,9 @@ export class ChatService {
         return new Promise<void>( (resolve, reject) => {
           const now = new Date();
           this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,cid,gid)).set({
-              read : { [uid] : {lastRead: now.getTime() / 1000 | 0}}
+            lastRead : {
+              [uid] : now.getTime() / 1000 | 0
+            }
           },{merge : true}).then((s)=>{
             resolve(s);
           }).catch(error=>{
@@ -340,8 +312,8 @@ export class ChatService {
 
     checkIfHasNewMessage(d) {
         if(d.data.lastMessageTime != null && d.data.lastMessageTime > 1){
-            if(d.data.read !=null && d.data.read[this.bizFire.currentUID] != null){
-                let ret = d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
+            if(d.data.lastRead !=null && d.data.lastRead[this.bizFire.currentUID] != null){
+                let ret = d.data.lastRead[this.bizFire.currentUID] < d.data.lastMessageTime;
                 return ret;
             } else {
                 return true;
@@ -352,8 +324,8 @@ export class ChatService {
     }
     checkIfHasNewMessageNotify(d) {
         if(d.data.lastMessageTime != null && d.data.lastMessageTime > 1){
-            if(d.data.read !=null && d.data.read[this.bizFire.currentUID] != null){
-                let ret = d.data.read[this.bizFire.currentUID].lastRead < d.data.lastMessageTime;
+            if(d.data.lastRead !=null && d.data.lastRead[this.bizFire.currentUID] != null){
+                let ret = d.data.lastRead[this.bizFire.currentUID] < d.data.lastMessageTime;
                 if(ret){
                     // this.onNotification(d.data.lastMessage);
                 }
@@ -365,8 +337,6 @@ export class ChatService {
             return false;
         }
     }
-
-    check
 
     onNotification(msg){
         Notification.requestPermission().then(() => {

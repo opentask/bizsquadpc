@@ -209,7 +209,7 @@ export class SquadPage {
     const path = Commons.userDataPath(gid, this.bizFire.currentUID);
     console.log("this.userCustomData",this.userCustomData);
     // get delete or add
-    if(this.userCustomData == null) {
+    if(this.userCustomData.data == null) {
       this.userCustomData.data = {[sid]: {}};
     }
 

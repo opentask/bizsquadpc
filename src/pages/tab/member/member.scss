@@ -3,7 +3,7 @@ page-member {
         border-radius: 100%;
         cursor: pointer;
     }
-    #statusBadge {
+    .statusBadge {
         position: absolute;
         border-radius: 100%;
         padding:0;
@@ -53,7 +53,6 @@ page-member {
         font-size: 14px;
     }
     .notPhoto{
-        background-color:#c96a5c;
         text-align: center;
     }
     .displayName{

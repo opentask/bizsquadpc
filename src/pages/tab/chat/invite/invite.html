@@ -22,7 +22,7 @@
                 <img class="photoURL" src="{{ member.data.photoURL }}">
                 <ion-badge id="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
             </ion-avatar>
-            <ion-avatar class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
+            <ion-avatar [style.background-color]="groupMainColor" class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
                 <span class="displayName">{{ member.data.user_icon }}</span>
                 <ion-badge id="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
             </ion-avatar>

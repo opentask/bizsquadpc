@@ -122,7 +122,7 @@ export class SquadChatPage {
     .stateChanges().subscribe(snap => {
       snap.forEach(d => {
         const msgData = {rid: d.payload.doc.id, data:d.payload.doc.data()} as IRoomMessages;
-        if(d.type == 'added' && msgData.data.message != '' || msgData.data.notice === 1){
+        if(d.type == 'added' && msgData.data.message != '' || msgData.data.notice){
           this.messages.push(msgData);
         }
         if(d.type == 'modified'){

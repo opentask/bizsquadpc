@@ -14,6 +14,7 @@ import { ChatService,IChatRoom } from '../../providers/chat.service';
 import { SquadService, ISquad } from '../../providers/squad.service';
 import { DataCache } from '../../classes/cache-data';
 import { TokenProvider } from '../../providers/token/token';
+import {STRINGS} from "../../biz-common/commons";
 
 @IonicPage({  
   name: 'page-tabs',
@@ -130,7 +131,9 @@ export class TabsPage {
         this.badgeCount = msgs.length;
     });
 
-    this.bizFire.afStore.collection("chat", ref => ref.where("group_id","==",this.currentGroup.gid))
+    this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.currentGroup.gid}/chat`,ref =>{
+        return ref.where('status', '==' ,true).where(`members.${this.bizFire.currentUID}`, '==', true);
+    })
     .snapshotChanges()
     .pipe(takeUntil(this._unsubscribeAll),takeUntil(this.bizFire.onUserSignOut),
         map(rooms => rooms.filter(r=>{

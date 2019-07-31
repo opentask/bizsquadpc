@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 import { IUser } from '../../../../../../_models/message';
 import { IroomData, IChatRoomData, IChatRoom } from '../../../../../../providers/chat.service';
 import { BizFireService } from '../../../../../../providers';
-import { STRINGS } from '../../../../../../biz-common/commons';
+import {Commons, STRINGS} from '../../../../../../biz-common/commons';
 import { IBizGroup, Igroup } from '../../../../../../providers/biz-fire/biz-fire';
 import { checkAndUpdateDirectiveDynamic } from '@angular/core/src/view/provider';
 import { combineLatest, BehaviorSubject, Subject } from 'rxjs';
@@ -47,12 +47,12 @@ export class InviteRoomPage {
     this.roomData = this.navParams.get('roomData');
     console.log(this.roomData);
 
-    this.bizFire.afStore.doc(`chat/${this.roomData.cid}`).valueChanges()
+    this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.group_id,this.roomData.cid)).valueChanges()
     .pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRoom : IChatRoomData) => {
       this.observableRoom = chatRoom;
     })
 
-    this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.roomData.data.group_id}`).valueChanges().pipe(takeUntil(this._unsubscribeAll))
+    this.bizFire.afStore.doc(Commons.groupPath(this.roomData.data.group_id)).valueChanges().pipe(takeUntil(this._unsubscribeAll))
     .subscribe((group : Igroup) => {
       this.currentGroup = group;
       if(this.currentGroup){
@@ -115,18 +115,11 @@ export class InviteRoomPage {
 
   invite(){
     let members = {};
-    let manager = {};
     
     this.isChecked.forEach(d => {
-      console.log()
-      manager[d.data.uid] = true;
-      members[d.data.uid] = {
-        name : d.data.displayName,
-        photoURL : d.data.photoURL
-      };
+      members[d.data.uid] = true;
     })
-    this.bizFire.afStore.doc(`chat/${this.roomData.cid}`).set({
-      manager : manager,
+    this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.group_id,this.roomData.cid)).set({
       members : members
     },{merge : true}).then(() =>{
       this.viewCtrl.dismiss();

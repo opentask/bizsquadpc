@@ -47,7 +47,7 @@ export class MemberChatMenuPage {
 
   leaveChatRoom(){
     this.viewCtrl.dismiss();
-    this.alertCtrl.leaveRoomAlert(this.roomData.uid,this.roomData.cid)
+    this.alertCtrl.leaveRoomAlert(this.roomData.uid,this.roomData.data.group_id,this.roomData.cid)
   }
   close(){
     this.viewCtrl.dismiss(); 

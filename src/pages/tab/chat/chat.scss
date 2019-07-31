@@ -57,6 +57,7 @@ page-chat {
         position: absolute !important;
         top:11px;
         left:38px;
+        height: 20px;
     }
     .member_4{
         min-width: 20px;
@@ -82,6 +83,7 @@ page-chat {
     .member_4:nth-child(3){
         top:11px;
         left:38px;
+        height:20px;
     }
     .member_4:nth-child(4){
         bottom: 11px;
@@ -144,7 +146,6 @@ page-chat {
         white-space: nowrap;
     }
     .notPhoto{
-        background-color:#c96a5c;
         text-align: center;
     }
     .displayName{

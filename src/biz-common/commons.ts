@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { IUserData } from '../_models/message';
+import { IUserData, IUser } from '../_models/message';
 
 export const STRINGS = {
   STRING_BIZGROUPS: 'bizgroups',
@@ -26,74 +26,102 @@ export class Commons {
         const isWhitespace = (control.value || '').trim().length === 0;
         const isValid = !isWhitespace;
         return isValid ? null : { 'whitespace': true };
-    }
-    
-    static squadPath(gid: string): string {
+      }
+      
+      static squadPath(gid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads`
-    }
-    static squadDocPath(gid: string, sid: string): string {
+      }
+      static squadDocPath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}`;
-    }
-    
-    static messagePath(gid: string, sid: string): string {
+      }
+      
+      static messagePath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/messages`;
-        //let path = `${STRINGS.STRING_BIZGROUPS}/${group.gid}/squads/${squad.sid}/messages
-    }
-    
-    static notificationPath(uid: string): string {
+      }
+      static messageDocPath(gid: string, sid: string, mid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/messages/${mid}`;
+      }
+      
+      static notificationPath(uid: string): string {
         return `users/${uid}/notifications`;
-    }
-    
-    static commentPath(gid: string, sid: string, mid: string): string {
+      }
+      
+      static commentPath(gid: string, sid: string, mid: string): string {
         const path = Commons.messagePath(gid, sid);
         return `${path}/${mid}/comments`;
-    }
-    
-    static groupPath(gid: string): string {
+      }
+      
+      static groupPath(gid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}`;
-    }
-    
-    static bbsPath(gid: string): string {
+      }
+      
+      static bbsPath(gid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/bbs`;
-    }
-    
-    static bbsDocPath(gid: string, bid: string): string {
+      }
+      
+      static bbsDocPath(gid: string, bid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/bbs/${bid}`;
-    }
-    
-    static schedulePath(gid: string, sid: string): string {
+      }
+      
+      static schedulePath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/calendar`;
-    }
-    
-    static initialChars(userData: IUserData, count = 2): string {
+      }
+      
+      static initialChars(userData: IUserData, count = 2): string {
         
         let ret;
         ret = userData['displayName'] || userData.email;
         
         if(ret && ret.length === 0){
-            ret = 'U';
+          ret = 'U';
         }
         
         if(ret && ret.length > count -1){
-            ret = ret.substr(0, count);
+          ret = ret.substr(0, count);
         }
         
         if(ret === null){
-            ret = 'U';
+          ret = 'U';
         }
         
         return ret;
-    }
-    
-    static userDataPath(gid: string, uid: string): string {
+      }
+      
+      static userDataPath(gid: string, uid: string): string {
         const path = `${STRINGS.STRING_BIZGROUPS}/${gid}/userData/${uid}`;
         return path;
-    }
-    
-    static userPath(uid: string): string {
+      }
+      
+      static userPath(uid: string): string {
         return `${STRINGS.USERS}/${uid}`;
-    }
+      }
+      
+      // /works : some invite actions
+      static userInfoSorter(a: IUser, b: IUser): number {
+        let index = 0;
+        let a_displayName = a.data.displayName || a.data.email;
+        let b_displayName = b.data.displayName || b.data.email;
+        if(a_displayName != null && b_displayName != null){
+          index = a_displayName > b_displayName ? 1 : -1 ;
+        }
+        return index;
+      }
     
-    // /works : some invite actions
+      static chatDocPath(gid: string, cid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}`;
+      }
+      static  chatPath(gid: string, type = 'group'): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat`;
+      }
+      
+      static  chatSquadPath(gid: string, sid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat`;
+      }
+      static chatSquadDocPath(gid: string, sid: string, cid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat/${cid}`;
+      }
     
+      static chatMsgPath(gid: string, cid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}/chat`;
+      }
 }

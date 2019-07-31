@@ -49,7 +49,7 @@ export class AlertProvider {
     return alert.present();
   }
 
-  leaveRoomAlert(uid,cid){
+  leaveRoomAlert(uid,gid,cid){
     const alert = this.alertCtrl.create({
       title: 'Leave Chatroom',
       message: 'Are you sure you want to leave this chatroom?',
@@ -60,7 +60,7 @@ export class AlertProvider {
         }, {
           text: 'Okay',
           handler: () => {
-            this.chatService.removeMember(uid,cid);
+            this.chatService.removeMember(uid,gid,cid);
           }
         }
       ]

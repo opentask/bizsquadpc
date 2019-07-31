@@ -9,6 +9,7 @@ import { DataCache } from '../../../classes/cache-data';
 import { filter, takeUntil } from 'rxjs/operators';
 import { FireDataKey } from '../../../classes/fire-data-key';
 import { Commons } from '../../../biz-common/commons';
+import { GroupColorProvider } from '../../../providers/group-color';
 
 
 @IonicPage({  
@@ -32,12 +33,15 @@ export class NotifyPage {
 
   noNotify: boolean = true;
 
+  groupMainColor: string;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public electron : Electron,
     private noticeService: NotificationService,
     private bizFire: BizFireService,
+    private groupColorProvider : GroupColorProvider
     ) {
 
       this.ipc = electron.ipc;
@@ -45,6 +49,9 @@ export class NotifyPage {
   }
 
   ngOnInit(): void {
+
+    this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
+
     this.noticeService.onNotifications
     .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
     .subscribe((msgs: INotification[]) => {

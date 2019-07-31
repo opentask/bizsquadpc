@@ -20,6 +20,7 @@ import { HttpModule } from '@angular/http';
 import { TokenProvider } from '../providers/token/token';
 import { GroupColorProvider } from '../providers/group-color';
 import { HttpClientModule } from '@angular/common/http';
+import { CacheService } from '../providers/cache/cache';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,6 @@ import { HttpClientModule } from '@angular/common/http';
     AngularFireAuthModule,
     HttpModule,
     HttpClientModule,
-
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -48,6 +48,7 @@ import { HttpClientModule } from '@angular/common/http';
     AlertProvider,
     TokenProvider,
     GroupColorProvider,
+    CacheService
   ]
 })
 export class AppModule {}

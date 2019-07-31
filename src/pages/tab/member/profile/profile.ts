@@ -223,17 +223,20 @@ export class ProfilePage {
     console.log("chatRooms",chatRooms);
     let selectedRoom: IChatRoom;
     for(let room of chatRooms) {
-      const member_list = room.data.manager;
+      const member_list = room.data.members;
       const member_count = Object.keys(member_list).length;
-      if(member_list){
-        if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(this.targetValue.uid) && room.data.is_group != 1){
+
+      if(Object.keys(member_list).length == 2) {
+        if(member_list.hasOwnProperty(this.targetValue.uid)) {
+          console.log("조건에 맞는 채팅방이 있습니다.",room);
           selectedRoom = room;
           break;
         }
       }
     }
+    
     if(selectedRoom == null){
-      this.chatService.createRoomByProfile("member",this.myValue,this.targetValue);
+      this.chatService.createRoomByProfile(this.targetValue);
     } else {
       this.chatService.onSelectChatRoom.next(selectedRoom);
       this.electron.openChatRoom(selectedRoom);

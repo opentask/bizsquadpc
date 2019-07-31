@@ -3,12 +3,14 @@ import { Electron } from './../../../../providers/electron/electron';
 import { ChatService, IChatRoom } from './../../../../providers/chat.service';
 import { AccountService } from './../../../../providers/account/account';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, PopoverController, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { BizFireService } from '../../../../providers';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IUser } from '../../../../_models/message';
 import { Subject } from 'rxjs';
+import deepEqual from 'deep-equal';
+
 @IonicPage({  
   name: 'page-invite',
   segment: 'invite',
@@ -132,25 +134,27 @@ export class InvitePage {
     let chatRooms = this.chatService.getChatRooms();
     console.log("chatRooms",chatRooms);
     let selectedRoom: IChatRoom;
-    let target_uid;
-    if(this.isChecked.length == 1){
-      target_uid = this.isChecked[0].uid;
-      console.log(target_uid);
+    let members = {
+      [this.bizFire.currentUID] : true
+    };
+    if(this.isChecked){
+      this.isChecked.forEach(u => {
+        members[u.uid] = true;
+      })
     }
     for(let room of chatRooms) {
-      const member_list = room.data.manager;
-      const member_count = Object.keys(member_list).length;
-      if(member_list){
-        if(member_list.hasOwnProperty(this.bizFire.currentUID) && member_list.hasOwnProperty(target_uid) && room.data.is_group != 1){
-          selectedRoom = room;
-          break;
-        }
+      const member_list = room.data.members;
+      console.log("member_list",member_list)
+
+      if(deepEqual(members,member_list)) {
+        selectedRoom = room;
+        break;
       }
     }
     console.log("체크포인트",selectedRoom);
     if(this.isChecked.length > 0){
       if(selectedRoom == null){
-        this.chatService.createRoomByFabs("member",this.isChecked);
+        this.chatService.createRoomByFabs(this.isChecked);
         this.viewCtrl.dismiss();
       } else {
         this.chatService.onSelectChatRoom.next(selectedRoom);
