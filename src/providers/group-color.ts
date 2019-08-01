@@ -8,8 +8,14 @@ export class GroupColorProvider {
 
   makeGroupColor(string) {
     switch(string) {
+      case '#f44336':
+         return 'warn';
+      case '#ff4081':
+          return 'accent';
+      case '#3f51b5':
+          return 'primary';
       case undefined:
-          return 'skyblue';
+          return 'default';
       default:
           return string;
     }

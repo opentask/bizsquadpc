@@ -107,7 +107,7 @@ export class TabsPage {
     //     });
 
     this.bizFire.onBizGroupSelected
-        .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
+        .pipe(filter(g=>g!=null))
         .subscribe((group) => {
             //console.log('onBizGroupSelected', group.gid);
 
@@ -119,7 +119,6 @@ export class TabsPage {
             // this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
             // set menu font color.
             this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
-
         });
 
     // get number of unfinished notices.

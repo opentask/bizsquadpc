@@ -85,7 +85,7 @@
             <ion-avatar *ngIf="user.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
               <img class="user-img" src="{{msg.data.photoURL}}">
             </ion-avatar>
-
+            
             <div class="msg-detail" *ngIf="!msg.data.notice">
               <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
                 <p>{{msg.data.senderName}}</p>
