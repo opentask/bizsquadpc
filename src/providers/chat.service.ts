@@ -154,16 +154,16 @@ export class ChatService {
             });
         }
     }
-    getMessagePath(type,gid,cid,sid?){
+    getMessagePath(type,gid,id){
         switch(type){
             case 'member-chat':
-              return Commons.chatMsgPath(gid,cid);
+              return Commons.chatMsgPath(gid,id);
             case 'squad-chat':
-              return 'bizgroups/'+ gid + '/squads/' + cid + '/chat';
+              return Commons.chatSquadMsgPath(gid,id);
             case 'member-chat-room':
-              return Commons.chatDocPath(gid,cid);
+              return Commons.chatDocPath(gid,id);
             case 'squad-chat-room':
-              return 'bizgroups/'+ gid + '/squads/' + cid;
+              return Commons.chatSquadPath(gid,id);
         }  
     }
     getUploadPath(type,cid,gid,message_id,fileName){
@@ -175,7 +175,7 @@ export class ChatService {
         }
       }
 
-    sendMessage(room_type,txt_message,gid,cid,file?:File) {
+    sendMessage(room_type,txt_message,gid,id,file?:File) {
 
             let checkFileText = txt_message;
             let filePath;
@@ -188,9 +188,10 @@ export class ChatService {
                 created: new Date(),
                 senderId: this.bizFire.currentUID
             }
-            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,cid)).add(newMessage).then(message =>{
+
+            return this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,id)).add(newMessage).then(message =>{
                 const uid = this.bizFire.currentUID;
-                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',gid,cid)).set({
+                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',gid,id)).set({
                     lastMessage : txt_message,
                     lastMessageTime : new Date().getTime() / 1000 | 0,
                     lastRead : {

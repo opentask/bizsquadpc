@@ -40,6 +40,7 @@ page-squad-chat {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+        width: 80%;
     }
     .members{
         padding-top: 5px;
@@ -66,7 +67,6 @@ page-squad-chat {
     
     // 프로필 사진이 없을 때.
     .notPhoto{
-        background-color:#c96a5c;
         text-align: center;
         margin-left:16px !important;
     }

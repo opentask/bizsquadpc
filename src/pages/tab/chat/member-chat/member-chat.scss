@@ -70,7 +70,6 @@ page-member-chat {
     
     // 프로필 사진이 없을 때.
     .notPhoto{
-        background-color:#c96a5c;
         text-align: center;
         margin-left:16px !important;
     }
@@ -174,7 +173,8 @@ page-member-chat {
           white-space: pre-line;
         }
 
-        .member_3{
+
+        .member_2{
             min-width: 30px;
             min-height: 30px;
             margin-right: 25px !important;
@@ -186,10 +186,42 @@ page-member-chat {
                 line-height: 1.7;
             }
         }
+        .member_2:nth-child(2){
+            position: absolute !important;
+            left: 12px;
+            bottom: 10px;
+            z-index: 100;
+        }
+
+        .member_3{
+            min-width: 25px;
+            min-height: 25px;
+            margin-top: 5px !important;
+            margin-right: 35px !important;
+            .photoURL{
+                width: 25px;
+                height: 25px;
+            }
+            .displayName{
+                line-height: 2.3;
+                font-size: 11px;
+            }
+        }
+        .member_3:nth-child(1){
+            margin-right: 35px;
+        }
+        .member_3:nth-child(2){
+            position: absolute !important;
+            bottom: 7px;
+            left: 15px;
+        }
         .member_3:nth-child(3){
             position: absolute !important;
-            left:15px;
+            top:13px;
+            left:30px;
+            height: 20px;
         }
+
         .member_4{
             min-width: 25px;
             min-height: 25px;
@@ -200,7 +232,8 @@ page-member-chat {
                 height: 25px;
             }
             .displayName{
-                line-height: 1.5;
+                line-height: 2.3;
+                font-size: 11px;
             }
         }
         .member_4:nth-child(n+3){
@@ -212,6 +245,7 @@ page-member-chat {
         .member_4:nth-child(4){
             top:13px;
             left:26px;
+            height: 20px;
         }
         .member_4:nth-child(5){
             // bottom: 10px;

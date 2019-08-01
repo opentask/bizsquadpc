@@ -23,6 +23,7 @@ import { IonContent } from '@ionic/angular';
 import { InfiniteScroll } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
+import { IBizGroup, IBizGroupData } from '../../../../providers/biz-fire/biz-fire';
 
 
 export interface Ichats {
@@ -109,7 +110,10 @@ export class MemberChatPage {
       const c_members = this.chatroom.data.members;
       this.chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
 
-      // 채팅방 정보 옵저버
+      //메세지 30개 가져오기
+      this.getMessages();
+
+      // 채팅방 정보 갱신. (초대,나가기)
       this.bizFire.afStore.doc(Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid))
       .valueChanges().subscribe((roomData : IChatRoomData) => {
         this.roomData = roomData;
@@ -126,8 +130,13 @@ export class MemberChatPage {
         })
       });
 
-      //메세지 가져오기
-      this.getMessages();
+      this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.group_id)).valueChanges().subscribe((data : IBizGroupData) => {
+        this.groupMainColor = this.groupColorProvider.makeGroupColor(data.team_color);
+        
+
+        // 그룹 탈퇴 당할시 채팅방을 닫는다.
+        // ...
+      })
 
 
       // 드래그해서 파일 첨부 기능.
@@ -177,7 +186,8 @@ export class MemberChatPage {
       const now = new Date();
       const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
 
-      this.chatService.sendMessage("member-chat",value,this.chatroom.data.group_id,this.chatroom.cid);
+      this.chatService.sendMessage("member-chat",value,this.chatroom.data.group_id,this.chatroom.cid)
+      .then(() => this.scrollToBottom(0));
       // if(value != '' && now.getDay() <= lastmessage.getDay()) {
       //   this.chatService.sendMessage("member-chat",value,this.chatroom.cid);
       // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
@@ -205,7 +215,7 @@ export class MemberChatPage {
           this.messages.push(msgData);
         });
 
-        this.scrollToBottom(300);
+        this.scrollToBottom(400);
 
       });
     })
@@ -248,32 +258,32 @@ export class MemberChatPage {
   }
 
   file(file){
-    let fileInfo;
-    fileInfo = file.target.files[0];
-    if(file.target.files.length === 0 ) {
-      return;
-    }
-    if(file && file.target.files[0].size > 10000000){
-      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
-      return;
-    } else {
-      this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.group_id,fileInfo);
-    }
+    // let fileInfo;
+    // fileInfo = file.target.files[0];
+    // if(file.target.files.length === 0 ) {
+    //   return;
+    // }
+    // if(file && file.target.files[0].size > 10000000){
+    //   this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+    //   return;
+    // } else {
+    //   this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.group_id,fileInfo);
+    // }
   }
 
-  dragFile(file){
-    console.log(file.size);
-    console.log(file.name);
-    if(file.length === 0 ) {
-      return;
-    }
-    if(file && file.size > 10000000){
-      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
-      return;
-    } else {
-      this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.group_id,file);
-    }
-  }
+  // dragFile(file){
+  //   console.log(file.size);
+  //   console.log(file.name);
+  //   if(file.length === 0 ) {
+  //     return;
+  //   }
+  //   if(file && file.size > 10000000){
+  //     this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+  //     return;
+  //   } else {
+  //     this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.group_id,file);
+  //   }
+  // }
 
   downloadFile(path) {
     console.log(path);

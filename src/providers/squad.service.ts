@@ -17,7 +17,9 @@ export interface ISquad {
         member_count?:any,
         lastMessage?:string,
         lastMessageTime?:number,
-        read?:any
+        read?:any,
+        color?: string,
+        photoURL?: string
     },
     members?: any,
 }

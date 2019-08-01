@@ -107,21 +107,25 @@ export class Commons {
         return index;
       }
     
-      static chatDocPath(gid: string, cid: string): string {
-        return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}`;
-      }
+      // 채팅방 리스트 불러오기
       static  chatPath(gid: string, type = 'group'): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat`;
       }
-      
-      static  chatSquadPath(gid: string, sid: string): string {
-        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat`;
+      // 해당 채팅방 문서 정보.
+      static chatDocPath(gid: string, cid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}`;
       }
-      static chatSquadDocPath(gid: string, sid: string, cid: string): string {
-        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat/${cid}`;
-      }
-    
+      // 멤버 채팅 메세지 작성 경로.
       static chatMsgPath(gid: string, cid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}/chat`;
       }
+      // 스쿼드 채팅방 정보 (스쿼드 정보)
+      static  chatSquadPath(gid: string, sid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}`;
+      }
+      // 스쿼드채팅 메세지 작성 경로.
+      static chatSquadMsgPath(gid: string, sid: string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat`;
+      }
+  
 }

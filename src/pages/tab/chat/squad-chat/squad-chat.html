@@ -1,49 +1,68 @@
 <ion-header>
     <ion-item class="drag listBorder" no-margin no-padding no-lines>
-        <div class="electron-menu">
-          <ion-item class="opacity">
-            <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="opacityChanges(opacity)"></ion-range>   
-          </ion-item>
-          <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
-            <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
-          </button>
-          <button ion-button icon-only clear small color="light" (click)="windowClose()">
-            <ion-icon class="login-top-menu" name="md-close"></ion-icon>
-          </button>
-        </div>
-        <div class="squadChatTitleCon">
-          <h2 class="chatName"> {{ roomName }}</h2>
-          <p class="members" *ngIf="roomCount > 1"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
-          <p class="members" *ngIf="roomCount == 1"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
-          <div class="header-menu">
-            <button ion-button clear icon-only small color="dark">
-              <ion-icon name="search"></ion-icon>
-            </button>
-            <button ion-button clear icon-only small color="dark">
-              <ion-icon name="notifications"></ion-icon>
-            </button>
-            <button ion-button clear icon-only small color="dark">
-              <ion-icon name="menu"></ion-icon>
-            </button>
-          </div>
-        </div>
+      <div class="electron-menu">
+        <ion-item class="opacity">
+          <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="opacityChanges(opacity)"></ion-range>   
+        </ion-item>
+        <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
+          <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
+        </button>
+        <button ion-button icon-only clear small color="light" (click)="windowClose()">
+          <ion-icon class="login-top-menu" name="md-close"></ion-icon>
+        </button>
+      </div>
+
+      <ion-avatar *ngIf="selectSquad.data.photoURL" style="margin-left: 16px !important" item-start>
+        <img class="photoURL" src="{{selectSquad.data.photoURL}}">
+      </ion-avatar>
+      <ion-avatar *ngIf="selectSquad.data.photoURL == null" [style.background-color]="squadMainColor" class="notPhoto" item-start>
+          <span class="displayName">{{ selectSquad.data.name | slice:0:2 }}</span>
+      </ion-avatar>
+
+      <h2 class="chatName"> {{ selectSquad.data.name }}</h2>
+      <p class="members" *ngIf="roomCount"><ion-icon name="person"></ion-icon> {{ roomCount }} </p> 
+      <div class="header-menu">
+        <button ion-button clear icon-only small color="dark">
+          <ion-icon name="search"></ion-icon>
+        </button>
+        <button ion-button clear icon-only small color="dark">
+          <ion-icon name="notifications"></ion-icon>
+        </button>
+        <button ion-button clear icon-only small color="dark">
+          <ion-icon name="menu"></ion-icon>
+        </button>
+      </div>
     </ion-item>
   </ion-header>
    
-   <ion-content #scrollMe (onScrollUp)="onScrollUp()">
+   <ion-content #scrollMe>
       <div class="message-wrap">
+        <ion-infinite-scroll position="top" (ionInfinite)="doInfinite($event)" *ngIf="messages.length >= 30">
+          <ion-infinite-scroll-content loadingText="Loading more chats..."></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
         <div *ngFor="let msg of messages"
              class="message"
              [class.left]="msg.data.senderId != this.bizFire.currentUID"
              [class.right]="msg.data.senderId === this.bizFire.currentUID">
-          <ion-avatar class="notPhoto" item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
-            <span class="senderName">{{ msg.data.senderName | slice:0:1 }}</span>
-          </ion-avatar>
-          <ion-avatar *ngIf="msg.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
-            <img class="user-img" src="{{msg.data.photoURL}}">
-          </ion-avatar>
 
           <div class="notice_content" *ngIf="msg.data.notice">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-1>
+                  <hr>
+                </ion-col>
+                <ion-col col-10 class="time_notice">
+                  <div>{{ msg.data.message }}</div>
+                </ion-col>
+                <ion-col col-1>
+                  <hr>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+    
+
+          <!-- <div class="notice_content" *ngIf="msg.data.notice">
             <ion-grid>
               <ion-row>
                 <ion-col col-4>
@@ -57,50 +76,59 @@
                 </ion-col>
               </ion-row>
             </ion-grid>
-          </div>
+          </div> -->
+          <ng-container *ngIf="getUserObserver(msg.data) | async; let user">
+            <ion-avatar class="notPhoto" [style.background-color]="squadMainColor"
+            item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID && !msg.data.notice">
+              <span class="senderName">{{ user.data.displayName | slice:0:2 }}</span>
+            </ion-avatar>
+            <ion-avatar *ngIf="user.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
+              <img class="user-img" src="{{msg.data.photoURL}}">
+            </ion-avatar>
 
-          <div class="msg-detail">
-            <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
-              <p>{{msg.data.senderName}}</p>
-            </div>
-
-            <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
-                <span class="triangle" *ngIf="msg.data.senderId == this.bizFire.currentUID"></span>
-                <p class="line-breaker textdrag">{{msg.data.message}}</p>
-                <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
-                  <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
-                </div>
+            <div class="msg-detail" *ngIf="!msg.data.notice">
+              <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
+                <p>{{msg.data.senderName}}</p>
               </div>
 
-              <ng-container *ngIf="msg.data.files != null">
-                <div class="msg-content-file" *ngIf="msg.data.files.type == '' || msg.data.files.type.substring(0,3) == 'app' || msg.data.files.type.substring(0,4) == 'text'">
-                  <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
-                    <ion-icon name="download"></ion-icon>
-                  </button>
-                  <p class="line-breaker">{{msg.data.files.name}}</p>
-                  <p class="line-breaker file-volume">Size: {{ msg.data.files.size / 1000 | number: '1.0-1' }}KB</p>
+              <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
+                  <span class="triangle" *ngIf="msg.data.senderId == this.bizFire.currentUID"></span>
+                  <p class="line-breaker textdrag">{{msg.data.message}}</p>
                   <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
                     <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
                   </div>
                 </div>
-              </ng-container>
 
-              <ng-container *ngIf="msg.data.files != null">
-                <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image' || msg.data.files.type.substring(0,5)=='jpg'">
-                  <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
-                    <ion-icon name="download"></ion-icon>
-                  </button>
-                  <img class="msg-img" [ngClass]="{'msg-img-svg': msg.data.files.type == 'image/svg+xml'}" [src]="msg.data.files.url">
-                  <span class="triangle" *ngIf="!msg.data.files && msg.data.senderId == this.bizFire.currentUID"></span>
-                  <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
-                    <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+                <ng-container *ngIf="msg.data.files != null">
+                  <div class="msg-content-file" *ngIf="msg.data.files.type == '' || msg.data.files.type.substring(0,3) == 'app' || msg.data.files.type.substring(0,4) == 'text'">
+                    <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
+                      <ion-icon name="download"></ion-icon>
+                    </button>
+                    <p class="line-breaker">{{msg.data.files.name}}</p>
+                    <p class="line-breaker file-volume">Size: {{ msg.data.files.size / 1000 | number: '1.0-1' }}KB</p>
+                    <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
+                      <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+                    </div>
                   </div>
-                </div>
-              </ng-container>
-            <div class="msg-time-content" *ngIf="msg.data.senderId != this.bizFire.currentUID  && msg.data.notice != 1">
-              <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+                </ng-container>
+
+                <ng-container *ngIf="msg.data.files != null">
+                  <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image' || msg.data.files.type.substring(0,5)=='jpg'">
+                    <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
+                      <ion-icon name="download"></ion-icon>
+                    </button>
+                    <img class="msg-img" [ngClass]="{'msg-img-svg': msg.data.files.type == 'image/svg+xml'}" [src]="msg.data.files.url">
+                    <span class="triangle" *ngIf="!msg.data.files && msg.data.senderId == this.bizFire.currentUID"></span>
+                    <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
+                      <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+                    </div>
+                  </div>
+                </ng-container>
+              <div class="msg-time-content" *ngIf="msg.data.senderId != this.bizFire.currentUID">
+                <span class="time">{{ msg.data.created * 1000 | date: 'a hh:mm' }}</span>
+              </div>
             </div>
-          </div>
+          </ng-container>
         </div>
       </div>
     </ion-content>
@@ -119,7 +147,7 @@
                   #chat_input
                   [(ngModel)]="editorMsg"
                   (keydown)="keydown($event)">
-        </textarea>  
+        </textarea>
         <button color="dark" class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)" [disabled]="!editorMsg">
           send
         </button>

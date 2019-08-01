@@ -1,18 +1,21 @@
+import { ISquad } from './../../../../providers/squad.service';
 import { AccountService } from './../../../../providers/account/account';
 import { Electron } from './../../../../providers/electron/electron';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { ISquad } from '../../../../providers/squad.service';
 import { BizFireService } from '../../../../providers';
-import { STRINGS } from '../../../../biz-common/commons';
+import { STRINGS, Commons } from '../../../../biz-common/commons';
 import { IUser } from '../../../../_models/message';
-import { ChatService, IRoomMessages } from '../../../../providers/chat.service';
+import { ChatService, IRoomMessages, IRoomMessagesData } from '../../../../providers/chat.service';
 import { IchatMember } from '../member-chat/member-chat';
 import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IonContent } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
+import { GroupColorProvider } from '../../../../providers/group-color';
+import { Observable } from 'rxjs';
+import { CacheService } from '../../../../providers/cache/cache';
 
 @IonicPage({  
   name: 'page-squad-chat',
@@ -36,6 +39,7 @@ export class SquadChatPage {
   roomName = "";
   currentGroup : IBizGroup;
   opacity = 100;
+  squadMainColor: any;
 
   selectSquad : ISquad;
   squad : ISquad;
@@ -46,6 +50,9 @@ export class SquadChatPage {
   editorMsg = '';
   ipc : any;
 
+  start : any;
+  end : any;
+
   constructor(
      public navCtrl: NavController,
      public navParams: NavParams,
@@ -53,6 +60,8 @@ export class SquadChatPage {
      public bizFire : BizFireService,
      public accountService : AccountService,
      public chatService : ChatService,
+     public groupColorProvider: GroupColorProvider,
+     private cacheService : CacheService,
      public electron: Electron) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -70,71 +79,104 @@ export class SquadChatPage {
 
   ngOnInit(): void {
     this.selectSquad = this.navParams.get("roomData");
-    console.log(this.selectSquad);
-    if(this.selectSquad != null){
-      // 스쿼드 데이터
-      this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}/squads/${this.selectSquad.sid}`).snapshotChanges()
-      .subscribe(d => {
-        if(d.payload.exists){
-            this.squad = ({sid: d.payload.id, data: d.payload.data()} as ISquad);
-            // 스쿼드 채팅이름.
-            this.roomName = this.squad.data.name;
-            if(this.squad.data.type == "private")
-            this.roomCount = Object.keys(this.squad.data.members).length;
+
+    if(this.selectSquad != null) {
+      this.roomCount = Object.keys(this.selectSquad.data.members).length;
+      this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
+
+
+      //메세지 30개 가져오기
+      this.getMessages();
+      
+      // 스쿼드 데이터 경로
+      const path = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
+      
+      // 스쿼드 데이터 갱신
+      this.bizFire.afStore.doc(path).snapshotChanges().subscribe(snap => {
+        if(snap.payload.exists) {
+          this.selectSquad = ({sid: snap.payload.id, data: snap.payload.data()} as ISquad);
+          this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
+          this.roomCount = Object.keys(this.selectSquad.data.members).length;
+          
+          // 스쿼드 권한 검사 후 팅기기 추가에정
         }
       })
-      // 비즈그룹 데이터 방 인원 수. 일단 한번 가져온 후 값 변경 시 변경
-      if(this.selectSquad){
-        this.bizFire.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}`).snapshotChanges()
-        .subscribe(snap =>{
-          if(snap.payload.exists){
-            this.groupMember = ({gid: snap.payload.id, data: snap.payload.data()} as IBizGroup);
-            if(this.selectSquad.data.type == "public" && this.groupMember.data.partners != null){
-              this.roomCount = Object.keys(this.groupMember.data.members).length -  Object.keys(this.groupMember.data.partners).length;
-            } else if (this.selectSquad.data.type == "public"){
-              this.roomCount = Object.keys(this.groupMember.data.members).length;
-            }
-          }
-        });
-      }
-      const drag_file = document.getElementById('drag-file');
-      drag_file.addEventListener('drop',(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        let data = e.dataTransfer;
-        if(data.items){
-          for (var i=0; i < data.files.length; i++) {
-              console.log(data.files[i]);
-              this.dragFile(data.files[i]);
-            }
-        }
-      })
-      // angular keydown.enter는 이벤트가 두번실행 되므로 이벤트 리스너로 대체 해결.
-      // drag_file.addEventListener('keydown',(e) => {
-      //   if(e.key === 'Escape' || e.keyCode === 13){
-      //     this.sendMsg();
+      // const drag_file = document.getElementById('drag-file');
+      // drag_file.addEventListener('drop',(e) => {
+      //   e.preventDefault();
+      //   e.stopPropagation();
+      //   let data = e.dataTransfer;
+      //   if(data.items){
+      //     for (var i=0; i < data.files.length; i++) {
+      //         console.log(data.files[i]);
+      //         this.dragFile(data.files[i]);
+      //       }
       //   }
       // })
     }
+  }
 
-    // 입력한 메세지 배열에 담기
-    this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.selectSquad.data.gid}/squads/${this.selectSquad.sid}/chat`, ref => ref.orderBy('created',"asc"))
-    .stateChanges().subscribe(snap => {
-      snap.forEach(d => {
-        const msgData = {rid: d.payload.doc.id, data:d.payload.doc.data()} as IRoomMessages;
-        if(d.type == 'added' && msgData.data.message != '' || msgData.data.notice){
+  // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
+  getMessages() {
+
+    const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
+    console.log("msgPath",msgPath);
+    this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
+    .get().subscribe((snapshots) => {
+
+      this.start = snapshots.docs[snapshots.docs.length - 1];
+      console.log(this.start);
+
+      this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
+        .startAt(this.start))
+        .stateChanges().subscribe((messages) => {
+
+        messages.forEach((message) => {
+          const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
           this.messages.push(msgData);
-        }
-        if(d.type == 'modified'){
-          let ret = msgData.data.files != null && msgData.data.message != '';
-          if(ret){
-            this.messages.push(msgData);
-          }
-        }
-        this.scrollToBottom();
-      })
-      this.chatService.updateLastRead("squad-chat-room",this.bizFire.currentUID,this.selectSquad.sid,this.selectSquad.data.gid)
+        });
+        console.log(messages);
+
+        this.scrollToBottom(400);
+
+      });
     })
+  }
+
+  getMoreMessages() {
+
+    const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
+
+    this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc')
+    .startAt(this.start).limit(10)).get()
+    .subscribe((snapshots) => {
+      this.end = this.start;
+      this.start = snapshots.docs[snapshots.docs.length - 1];
+
+      this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
+      .startAt(this.start).endBefore(this.end))
+      .stateChanges().subscribe((messages) => {
+
+        messages.reverse().forEach((message) => {
+          const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
+          this.messages.unshift(msgData);
+        })
+      });
+
+      console.log("more_messages",this.messages);
+    })
+  }
+
+  doInfinite(infiniteScroll) {
+    console.log('Begin async operation');
+
+    setTimeout(() => {
+      this.getMoreMessages();
+
+      console.log('Async operation has ended');
+
+      infiniteScroll.complete();
+    }, 500);
   }
 
   keydown(e : any){
@@ -161,64 +203,57 @@ export class SquadChatPage {
     if(value.length > 0){
 
       const now = new Date();
-      const lastmessage = new Date(this.squad.data.lastMessageTime * 1000);
+      const lastmessage = new Date(this.selectSquad.data.lastMessageTime * 1000);
 
-      if(value != '' && now.getDay() <= lastmessage.getDay()){
-        this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
-      } else if(value != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null) {
-        this.chatService.writeTodayAndSendMsg("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
-      }
+      this.chatService.sendMessage("squad-chat",value,this.selectSquad.data.gid,this.selectSquad.sid)
+      .then(() => this.scrollToBottom(0));
+      // if(value != '' && now.getDay() <= lastmessage.getDay()){
+      //   this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
+      // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null) {
+      //   this.chatService.writeTodayAndSendMsg("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
+      // }
     }
-    // 앞, 뒤 공백제거 => resultString
-    // if(this.editorMsg !=null){
-    //   const resultString = this.editorMsg.replace(/(^\s*)|(\s*$)/g, '');
-    //   this.editorMsg = '';
-    //   const now = new Date();
-    //   const lastmessage = new Date(this.squad.data.lastMessageTime * 1000);
-
-    //   if(resultString != '' && now.getDay() <= lastmessage.getDay()){
-    //       this.chatService.sendMessage("squad-chat",resultString,this.selectSquad.sid,this.selectSquad.data.gid);
-    //   } else if(resultString != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null){
-    //     console.log("여기실행");
-    //     this.chatService.writeTodayAndSendMsg("squad-chat",resultString,this.selectSquad.sid,this.selectSquad.data.gid);
-    //   }
-    // }
-    // this.editorMsg = '';
   }
 
   file(file){
-    let fileInfo;
-    fileInfo = file.target.files[0];
-    if(file.target.files.length === 0 ) {
-      return;
-    }
-    if(file && file.target.files[0].size > 10000000){
-      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
-      return;
-    } else {
-      this.chatService.sendMessage("squad-chat",fileInfo.name,this.selectSquad.sid,this.selectSquad.data.gid,fileInfo);
+    // let fileInfo;
+    // fileInfo = file.target.files[0];
+    // if(file.target.files.length === 0 ) {
+    //   return;
+    // }
+    // if(file && file.target.files[0].size > 10000000){
+    //   this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+    //   return;
+    // } else {
+    //   this.chatService.sendMessage("squad-chat",fileInfo.name,this.selectSquad.sid,this.selectSquad.data.gid,fileInfo);
+    // }
+  }
+
+  // dragFile(file){
+  //   if(file.length === 0 ) {
+  //     return;
+  //   }
+  //   if(file && file.size > 10000000){
+  //     this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+  //     return;
+  //   } else {
+  //     this.chatService.sendMessage("squad-chat",file.name,this.selectSquad.sid,this.selectSquad.data.gid,file);
+  //   }
+  // }
+  
+  getUserObserver(msg: IRoomMessagesData): Observable<IUser>{
+    if(!msg.notice) {
+      return this.cacheService.userGetObserver(msg.senderId);
     }
   }
 
-  dragFile(file){
-    if(file.length === 0 ) {
-      return;
-    }
-    if(file && file.size > 10000000){
-      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
-      return;
-    } else {
-      this.chatService.sendMessage("squad-chat",file.name,this.selectSquad.sid,this.selectSquad.data.gid,file);
-    }
-  }
-
-  scrollToBottom() {
+  scrollToBottom(num : number) {
     if (this.contentArea.scrollToBottom) {
         setTimeout(() => {
             this.contentArea.scrollToBottom(0);
-        });
+        },num);
     }
-}
+  }
 
   downloadFile(path){
     console.log(path);
@@ -248,5 +283,5 @@ export class SquadChatPage {
       }
     }, 500);
   }
-  
+
 }

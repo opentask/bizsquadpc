@@ -17,29 +17,41 @@
           <ion-avatar style="margin-left: 16px !important" item-start *ngIf="member && member.data.photoURL">
             <img class="photoURL" src="{{member.data.photoURL}}">
           </ion-avatar>
-          <ion-avatar class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
-              <span class="displayName">{{ member.data.displayName | slice:0:1 }}</span>
+          <ion-avatar class="notPhoto" [style.background-color]="groupMainColor" item-start *ngIf="member && member.data.photoURL == null">
+              <span class="displayName">{{ member.data.displayName | slice:0:2 }}</span>
           </ion-avatar>
         </ng-container>
         <!-- 자신 제외 2명 일 경우 -->
-       <ng-container *ngIf="roomCount == 3">
+      <ng-container *ngIf="roomCount == 3">
+          <ion-avatar class="member_2" style="margin-left: 16px !important" item-start *ngIf="member && member.data.photoURL">
+            <img class="photoURL" src="{{member.data.photoURL}}">
+          </ion-avatar>
+          <ion-avatar class="notPhoto member_2" [style.background-color]="groupMainColor" item-start *ngIf="member && member.data.photoURL == null">
+              <span class="displayName">{{ member.data.displayName | slice:0:1 }}</span>
+          </ion-avatar>
+      </ng-container>
+
+        <!-- 자신 제외 3명 일 경우 -->
+        <ng-container *ngIf="roomCount == 4">
           <ion-avatar class="member_3" style="margin-left: 16px !important" item-start *ngIf="member && member.data.photoURL">
             <img class="photoURL" src="{{member.data.photoURL}}">
           </ion-avatar>
-          <ion-avatar class="notPhoto member_3" item-start *ngIf="member && member.data.photoURL == null">
+          <ion-avatar class="notPhoto member_3" [style.background-color]="groupMainColor" item-start *ngIf="member && member.data.photoURL == null">
               <span class="displayName">{{ member.data.displayName | slice:0:1 }}</span>
           </ion-avatar>
-       </ng-container>
-        <!-- 3명 이상 -->
-        <ng-container *ngIf="roomCount > 3">
+        </ng-container>
+
+        <!-- 자신 제외 4명 이상 -->
+        <ng-container *ngIf="roomCount > 4">
           <ion-avatar class="member_4" style="margin-left: 16px !important" item-start *ngIf="member && member.data.photoURL">
             <img class="photoURL" src="{{member.data.photoURL}}">
           </ion-avatar>
-          <ion-avatar class="notPhoto member_4" item-start *ngIf="member && member.data.photoURL == null">
+          <ion-avatar class="notPhoto member_4" [style.background-color]="groupMainColor" item-start *ngIf="member && member.data.photoURL == null">
               <span class="displayName">{{ member.data.displayName | slice:0:1 }}</span>
           </ion-avatar>
         </ng-container>
       </ng-container>
+
       <ng-container *ngIf="roomCount === 1">
         <!-- 방에 혼자 있다면... -->
         <div style="height:40px; width:20px; position: relative; float: left;"></div>

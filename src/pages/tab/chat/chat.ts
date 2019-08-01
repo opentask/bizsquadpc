@@ -136,6 +136,10 @@ export class ChatPage {
     console.log(room)
   }
 
+  makeSquadColor(color : string) {
+    return this.groupColorProvider.makeSquadColor(color);
+  }
+
 
   gotoRoom(value:IChatRoom){
       value.uid = this.bizFire.currentUID;
