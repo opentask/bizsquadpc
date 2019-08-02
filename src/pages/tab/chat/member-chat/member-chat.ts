@@ -72,7 +72,7 @@ export class MemberChatPage {
   logout : any;
   fileSpinner = false;
 
-  maxFileSize = 10000000;
+  maxFileSize = 10000000; // max file size = 10mb;
 
   constructor(
     public navCtrl: NavController, 

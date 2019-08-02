@@ -50,7 +50,7 @@ export class SquadChatPage {
   editorMsg = '';
   ipc : any;
 
-  maxFileSize = 10000000;
+  maxFileSize = 10000000; // max file size = 10mb;
 
   start : any;
   end : any;
