@@ -132,8 +132,7 @@ export class MemberChatPage {
 
       this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.group_id)).valueChanges().subscribe((data : IBizGroupData) => {
         this.groupMainColor = this.groupColorProvider.makeGroupColor(data.team_color);
-        
-
+        console.log("this.groupMainColorthis.groupMainColor",this.groupMainColor);
         // 그룹 탈퇴 당할시 채팅방을 닫는다.
         // ...
       })
@@ -187,7 +186,7 @@ export class MemberChatPage {
       const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
 
       this.chatService.sendMessage("member-chat",value,this.chatroom.data.group_id,this.chatroom.cid)
-      .then(() => this.scrollToBottom(0));
+
       // if(value != '' && now.getDay() <= lastmessage.getDay()) {
       //   this.chatService.sendMessage("member-chat",value,this.chatroom.cid);
       // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
@@ -215,7 +214,8 @@ export class MemberChatPage {
           this.messages.push(msgData);
         });
 
-        this.scrollToBottom(400);
+        this.scrollToBottom(500);
+        this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.data.group_id,this.chatroom.cid);
 
       });
     })

@@ -117,7 +117,8 @@
 <!--          </div>-->
 
           <ng-container *ngIf="getUserObserver(msg.data) | async; let user">
-            <ion-avatar class="notPhoto" item-start *ngIf="user.data.photoURL == null && msg.data.senderId != chatroom.uid && !msg.data.notice">
+            <ion-avatar class="notPhoto" [style.background-color]="groupMainColor"
+            item-start *ngIf="user.data.photoURL == null && msg.data.senderId != chatroom.uid && !msg.data.notice">
               <span class="senderName">{{ user.data.displayName | slice:0:2 }}</span>
             </ion-avatar>
             <ion-avatar *ngIf="user.data.photoURL != null && msg.data.senderId != chatroom.uid">

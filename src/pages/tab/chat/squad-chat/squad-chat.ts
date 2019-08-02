@@ -137,7 +137,8 @@ export class SquadChatPage {
         });
         console.log(messages);
 
-        this.scrollToBottom(400);
+        this.scrollToBottom(500);
+        this.chatService.updateLastRead("squad-chat-room",this.bizFire.currentUID,this.selectSquad.data.gid,this.selectSquad.sid);
 
       });
     })
@@ -205,8 +206,7 @@ export class SquadChatPage {
       const now = new Date();
       const lastmessage = new Date(this.selectSquad.data.lastMessageTime * 1000);
 
-      this.chatService.sendMessage("squad-chat",value,this.selectSquad.data.gid,this.selectSquad.sid)
-      .then(() => this.scrollToBottom(0));
+      this.chatService.sendMessage("squad-chat",value,this.selectSquad.data.gid,this.selectSquad.sid);
       // if(value != '' && now.getDay() <= lastmessage.getDay()){
       //   this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
       // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null) {

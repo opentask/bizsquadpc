@@ -189,7 +189,7 @@ export class ChatService {
                 senderId: this.bizFire.currentUID
             }
 
-            return this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,id)).add(newMessage).then(message =>{
+            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,id)).add(newMessage).then(message =>{
                 const uid = this.bizFire.currentUID;
                 this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',gid,id)).set({
                     lastMessage : txt_message,
@@ -296,13 +296,11 @@ export class ChatService {
         });
     }
 
-    updateLastRead(room_type,uid,cid,gid?){
+    updateLastRead(room_type,uid,gid,id){
         return new Promise<void>( (resolve, reject) => {
           const now = new Date();
-          this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,cid,gid)).set({
-            lastRead : {
-              [uid] : now.getTime() / 1000 | 0
-            }
+          this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type,gid,id)).set({
+            lastRead : { [uid] : now.getTime() / 1000 | 0 }
           },{merge : true}).then((s)=>{
             resolve(s);
           }).catch(error=>{
