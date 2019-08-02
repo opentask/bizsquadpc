@@ -119,6 +119,15 @@ export class Commons {
       static chatMsgPath(gid: string, cid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}/chat`;
       }
+
+      static chatImgPath(gid: string, cid: string): string {
+        return `${gid}/chat/${cid}/`;
+      }
+    
+      static squadChatImgPath(gid: string, sid: string): string {
+        return `${gid}/${sid}/chat/`;
+      }
+      
       // 스쿼드 채팅방 정보 (스쿼드 정보)
       static  chatSquadPath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}`;

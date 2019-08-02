@@ -5,7 +5,7 @@ import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { BizFireService } from '../../../../providers';
+import { BizFireService, LoadingProvider } from '../../../../providers';
 import { STRINGS, Commons } from '../../../../biz-common/commons';
 import { IUser } from '../../../../_models/message';
 import { ChatService, IRoomMessages, IRoomMessagesData } from '../../../../providers/chat.service';
@@ -50,6 +50,8 @@ export class SquadChatPage {
   editorMsg = '';
   ipc : any;
 
+  maxFileSize = 10000000;
+
   start : any;
   end : any;
 
@@ -62,6 +64,7 @@ export class SquadChatPage {
      public chatService : ChatService,
      public groupColorProvider: GroupColorProvider,
      private cacheService : CacheService,
+     private loading: LoadingProvider,
      public electron: Electron) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -203,10 +206,16 @@ export class SquadChatPage {
 
     if(value.length > 0){
 
-      const now = new Date();
-      const lastmessage = new Date(this.selectSquad.data.lastMessageTime * 1000);
+      const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
+      const roomPath = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
 
-      this.chatService.sendMessage("squad-chat",value,this.selectSquad.data.gid,this.selectSquad.sid);
+      const message = {
+        created : new Date(),
+        message : value,
+        senderId : this.bizFire.currentUserValue.uid,
+      };
+
+      this.chatService.addMsg(msgPath,message,roomPath);
       // if(value != '' && now.getDay() <= lastmessage.getDay()){
       //   this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
       // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null) {
@@ -216,17 +225,37 @@ export class SquadChatPage {
   }
 
   file(file){
-    // let fileInfo;
-    // fileInfo = file.target.files[0];
-    // if(file.target.files.length === 0 ) {
-    //   return;
-    // }
-    // if(file && file.target.files[0].size > 10000000){
-    //   this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
-    //   return;
-    // } else {
-    //   this.chatService.sendMessage("squad-chat",fileInfo.name,this.selectSquad.sid,this.selectSquad.data.gid,fileInfo);
-    // }
+
+    if(file.target.files.length === 0 ){
+      return;
+    }
+    if(file.target.files[0].size > this.maxFileSize){ 
+      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+    } else {
+      this.loading.show();
+      const attachedFile  = file.target.files[0];
+
+      const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
+      const roomPath = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
+      const filePath = Commons.squadChatImgPath(this.selectSquad.data.gid,this.selectSquad.sid) + attachedFile.name;
+
+      this.chatService.uploadFilesToChat(filePath,attachedFile).then((url) => {
+        let upLoadFileMsg = {
+          created : new Date(),
+          message : attachedFile.name,
+          senderId : this.bizFire.currentUserValue.uid,
+          files :{
+            storagePath:filePath,
+            url : url,
+            size : attachedFile.size,
+            type : attachedFile.type,
+          }
+        };
+        this.chatService.addMsg(msgPath,upLoadFileMsg,roomPath);
+        this.loading.hide();
+      })
+
+    }
   }
 
   // dragFile(file){

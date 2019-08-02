@@ -166,23 +166,45 @@ export class ChatService {
               return Commons.chatSquadPath(gid,id);
         }  
     }
-    getUploadPath(type,cid,gid,message_id,fileName){
-        switch(type){
-          case 'member-chat':
-            return 'chat/'+ gid +'/'+ cid + '/' + 'chat/'+ message_id + '/' +fileName;
-          case 'squad-chat':
-            return 'chatsquad/'+ gid + '/' + cid + '/' + 'chat/'+ message_id + '/' + fileName; 
-        }
+
+    uploadFilesToChat(filePath: string,file: File): Promise<any> {
+        return new Promise<{storagePath: string, url: String}>((resolve, reject) => {
+          let storageRef;
+    
+          storageRef = this.bizFire.afStorage.storage.ref(filePath);
+          storageRef.put(file).then(fileSnapshot => {
+            fileSnapshot.ref.getDownloadURL().then((url) => {
+              resolve(url);
+            }).catch(err => {
+              console.log(err);
+              reject(err);
+            });
+          }).catch(err => {
+            console.log(err);
+            reject(err);
+          })
+        })
       }
 
-    sendMessage(room_type,txt_message,gid,id,file?:File) {
+    addMsg(path : string, msg : any,roomPath : string) {
+
+        this.bizFire.afStore.firestore.collection(path).add(msg).then(() => {
+            if(roomPath) {
+            this.bizFire.afStore.firestore.doc(roomPath).set({
+                lastMessage : msg.message,
+                lastMessageTime : new Date().getTime() / 1000 | 0,
+                lastRead : {
+                [this.bizFire.currentUID] : new Date().getTime() / 1000 | 0
+                }
+            },{merge : true}).catch(err => console.error("chat : last Data err =>",err))
+            }
+        }).catch(err => console.error("chat : add Msg err =>",err));
+    }
+
+    sendMessage(room_type,txt_message,gid,id) {
 
             let checkFileText = txt_message;
-            let filePath;
-            if(file != null) {
-                checkFileText = '';
-                this.loading.show();
-            }
+
             const newMessage: IRoomMessagesData = {
                 message: checkFileText,
                 created: new Date(),
@@ -198,35 +220,6 @@ export class ChatService {
                       [uid] : new Date().getTime() / 1000 | 0
                     }
                 },{merge : true}).then(() => {
-
-                    // if(room_type == "squad-chat" && file != null) {
-                    //     filePath = `chatsquad/${gid}/${cid}/chat/${message.id}/${file.name}`
-                    // } else if(room_type == "member-chat" && file != null) {
-                    //     filePath = `chat/${gid}/${cid}/chat/${message.id}/${file.name}`
-                    // }
-                    // if(file != null) {
-                    //     this.uploadFilesToChat(file,room_type,cid,gid,message.id,file.name).then(url =>{
-                    //         message.set({
-                    //             message: file.name,
-                    //             files: {
-                    //                 name: file.name,
-                    //                 type:file.type,
-                    //                 storagePath: filePath,
-                    //                 size:file.size,
-                    //                 url: url
-                    //             }
-                    //         },{merge : true}).then(() => {
-                    //             this.loading.hide();
-                    //             resolve(url);
-                    //         }).catch(err => {
-                    //             this.loading.hide();
-                    //             rejects(err);
-                    //         })
-                    //     })
-                    // } else {
-                    //     resolve('');
-                    //     this.loading.hide();
-                    // }
 
                 }).catch(error => console.log("라스트 메세지 작성에러",error))
 
@@ -245,8 +238,7 @@ export class ChatService {
         }
         
         this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(() => {
-            if(txt_message != '')
-            this.sendMessage(room_type,txt_message,id,gid,file);
+
         })
     }
 
@@ -262,37 +254,16 @@ export class ChatService {
         
     }
 
-    uploadFilesToChat(file,type,id,gid,message_id,fileName): Promise<any> {
-        return new Promise<{storagePath: string, url: String}>((resolve, reject) => {
-            let storageRef;
-            const filePath = this.getUploadPath(type,id,gid,message_id,fileName);
-
-            storageRef = this.bizFire.afStorage.storage.ref(filePath);
-            storageRef.put(file).then(fileSnapshot => {
-                fileSnapshot.ref.getDownloadURL().then((url) => {
-                    resolve(url);
-                }).catch(err => {
-                    console.log(err);
-                    reject(err);
-                });
-            }).catch(err => {
-                console.log(err);
-                reject(err);
-            })
-        })
-    }
-
-
     removeMember(uid,gid,cid) {
         return new Promise<void>( (resolve, reject) => {
-        this.bizFire.afStore.firestore.doc(Commons.chatDocPath(gid,cid)).update({
-            ['members.' + uid]: firebase.firestore.FieldValue.delete()
-        }).then(()=>{
-            this.electron.windowClose();
-            resolve();
-        }).catch(error=>{
-            reject(error);
-        });  
+            this.bizFire.afStore.firestore.doc(Commons.chatDocPath(gid,cid)).update({
+                ['members.' + uid]: firebase.firestore.FieldValue.delete()
+            }).then(()=>{
+                this.electron.windowClose();
+                resolve();
+            }).catch(error=>{
+                reject(error);
+            });  
         });
     }
 

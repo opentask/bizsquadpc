@@ -13,7 +13,7 @@ import {
   IChatRoomData,
   IRoomMessagesData
 } from '../../../../providers/chat.service';
-import { BizFireService } from '../../../../providers';
+import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { IUser } from '../../../../_models/message';
@@ -72,6 +72,8 @@ export class MemberChatPage {
   logout : any;
   fileSpinner = false;
 
+  maxFileSize = 10000000;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -83,6 +85,7 @@ export class MemberChatPage {
     public popoverCtrl :PopoverController,
     public alertCtrl: AlertProvider,
     public groupColorProvider: GroupColorProvider,
+    private loading: LoadingProvider,
     private cacheService : CacheService
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
@@ -182,10 +185,16 @@ export class MemberChatPage {
 
     if(value.length > 0){
 
-      const now = new Date();
-      const lastmessage = new Date(this.roomData.lastMessageTime * 1000);
+      const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
+      const roomPath = Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid);
 
-      this.chatService.sendMessage("member-chat",value,this.chatroom.data.group_id,this.chatroom.cid)
+      const message = {
+        created : new Date(),
+        message : value,
+        senderId : this.bizFire.currentUserValue.uid,
+      };
+
+      this.chatService.addMsg(msgPath,message,roomPath);
 
       // if(value != '' && now.getDay() <= lastmessage.getDay()) {
       //   this.chatService.sendMessage("member-chat",value,this.chatroom.cid);
@@ -205,20 +214,26 @@ export class MemberChatPage {
 
       this.start = snapshots.docs[snapshots.docs.length - 1];
 
-      this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
-        .startAt(this.start))
-        .stateChanges().subscribe((messages) => {
-
-        messages.forEach((message) => {
-          const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
-          this.messages.push(msgData);
-        });
-
-        this.scrollToBottom(500);
-        this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.data.group_id,this.chatroom.cid);
-
-      });
+      this.getNewMessages(msgPath,this.start)
     })
+  }
+
+  getNewMessages(msgPath,start) {
+
+    this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
+    .startAt(start))
+    .stateChanges().subscribe((messages) => {
+
+      messages.forEach((message) => {
+        const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
+        this.messages.push(msgData);
+      });
+
+      this.scrollToBottom(500);
+      this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.data.group_id,this.chatroom.cid);
+
+    });
+
   }
 
   getMoreMessages() {
@@ -258,17 +273,37 @@ export class MemberChatPage {
   }
 
   file(file){
-    // let fileInfo;
-    // fileInfo = file.target.files[0];
-    // if(file.target.files.length === 0 ) {
-    //   return;
-    // }
-    // if(file && file.target.files[0].size > 10000000){
-    //   this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
-    //   return;
-    // } else {
-    //   this.chatService.sendMessage("member-chat",fileInfo.name,this.chatroom.cid,this.chatroom.data.group_id,fileInfo);
-    // }
+
+    if(file.target.files.length === 0 ){
+      return;
+    }
+    if(file.target.files[0].size > this.maxFileSize){ 
+      this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
+    } else {
+      this.loading.show();
+      const attachedFile  = file.target.files[0];
+
+      const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
+      const roomPath = Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid);
+      const filePath = Commons.chatImgPath(this.chatroom.data.group_id,this.chatroom.cid) + attachedFile.name;
+
+      this.chatService.uploadFilesToChat(filePath,attachedFile).then((url) => {
+        let upLoadFileMsg = {
+          created : new Date(),
+          message : attachedFile.name,
+          senderId : this.bizFire.currentUserValue.uid,
+          files :{
+            storagePath:filePath,
+            url : url,
+            size : attachedFile.size,
+            type : attachedFile.type,
+          }
+        };
+        this.chatService.addMsg(msgPath,upLoadFileMsg,roomPath);
+        this.loading.hide();
+      })
+
+    }
   }
 
   // dragFile(file){

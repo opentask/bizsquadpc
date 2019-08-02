@@ -163,7 +163,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             slashes: true,
         }))
 
-        chatWindowState.manage(testRooms[chatRoomId]);
+        // chatWindowState.manage(testRooms[chatRoomId]);
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
