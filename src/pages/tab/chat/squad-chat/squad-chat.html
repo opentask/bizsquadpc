@@ -117,7 +117,7 @@
                     <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
                       <ion-icon name="download"></ion-icon>
                     </button>
-                    <img class="msg-img" [ngClass]="{'msg-img-svg': msg.data.files.type == 'image/svg+xml'}" [src]="msg.data.files.url">
+                    <img class="msg-img" [src]="msg.data.files.url">
                     <span class="triangle" *ngIf="!msg.data.files && msg.data.senderId == this.bizFire.currentUID"></span>
                     <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">
                       <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
