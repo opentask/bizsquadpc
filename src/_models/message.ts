@@ -30,61 +30,63 @@ export interface IUserData {
 }
 
 export interface IAlarmConfig {
-    all?: boolean,
-    groupInvite: boolean,
-    squadInOut: boolean,
-    squadInvite: boolean,
-    schedule: boolean,
-    post: boolean,
-    comment: boolean,
-    bbs: boolean,
-    version?: string,
-    toFirestoreData?:()=>any;
+  
+  /* 필수 항목들 */
+  on?: boolean,
+  
+  groupInvite: boolean,
+  //squadInvite: boolean, // 스쿼드는 초대 개념이 아님. 단톡방에는 초대받고 들어가지 않음.
+  bbs: boolean,
+  post: boolean,
+  groupInOut?: boolean, // 그룹에 조인했을때 같은 그룹 사용자들에게 알람.
+  
+  /* 다음 버전 */
+  comment?: boolean,//다음버전?
+  schedule?: boolean, // 다음버전
+  version?: string,
+  squadInOut?: boolean, // 스쿼드에 참가 이벤트는 있을 필요가 없다.
+  
+  
 }
 
 export interface INotification{
-    mid: string,
-    data: INotificationData,
+  mid: string,
+  data: INotificationData,
+}
+
+export interface INotificationItem extends INotification {
+  html?: {
+    header: string[],
+    content: string[],
+    link?:string[],
+    user?: IUser
+  }
 }
 
 export type NotificationType = 'invitation' | 'notify' | 'reply';
 export type NotifyType = 'post'|'comment'| 'join'| 'exit'| 'delete';
-export type InvitationType = 'group'|'squad';
-export interface INotificationData extends IAlarmConfig {
-    type: NotificationType,//'invitation' | 'notify' | 'reply',
-    from?: string, // uid
-    to?: string,
-    invitation?: {
-      type: InvitationType, // 'group', 'squad',
-      
-      gid: string,
-      sid?: string,
-      
-      info?: {
-        auth?: string // 'member', 'manager', 'partner'
-      }
-    },
-    
-    notify?: {
-      type: NotifyType,
-      
-      info?: {
-        title?: string,
-        comment?: string,
-        cid?: string,
-          eid?: string,
-        join?: any
-      },
-      sid?: string,
-      gid: string,
-      mid?: string,
-      
-    },
-    
-    created?: any,
-    statusInfo?: {done: boolean}
 
+export interface INotificationData extends IAlarmConfig {
+
+  from: string, // uid
+  to?: string, // uid
+  gid: string,
+  info?: {
+    type?: string,
+    sid?: string,
+    mid?: string,
+    title?: string,
+    comment?: string,
+    cid?: string,
+    eid?: string,
+    join?: any,
+    auth?: string // 'member', 'manager', 'partner'
+    message?: any
   }
+  created: any,
+  statusInfo: {done: boolean}
+
+}
 
 
 export interface IFolderItem {

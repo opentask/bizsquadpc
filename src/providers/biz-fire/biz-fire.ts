@@ -106,8 +106,6 @@ export class BizFireService {
       let ret;
       if(this.afAuth.auth.currentUser){
           ret = this.afAuth.auth.currentUser.uid;
-      } else {
-          console.error(`currentUID requested but afAuth.auth.currentUser is ${this.afAuth.auth.currentUser}`);
       }
       return ret;
   }

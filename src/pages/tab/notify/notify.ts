@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NotificationService } from '../../../providers/notification.service';
-import { Subject, zip } from 'rxjs';
-import { INoticeItem, INotification, INotificationData } from '../../../_models/message';
+import { Subject, zip, Observable } from 'rxjs';
+import { INoticeItem, INotification, INotificationData, INotificationItem, IUser } from '../../../_models/message';
 import { BizFireService } from '../../../providers/biz-fire/biz-fire';
 import { Electron } from './../../../providers/electron/electron';
 import { DataCache } from '../../../classes/cache-data';
@@ -10,7 +10,6 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { FireDataKey } from '../../../classes/fire-data-key';
 import { Commons } from '../../../biz-common/commons';
 import { GroupColorProvider } from '../../../providers/group-color';
-
 
 @IonicPage({  
   name: 'page-notify',
@@ -25,7 +24,7 @@ export class NotifyPage {
 
   private _unsubscribeAll;
 
-  messages: INoticeItem[];
+  messages: INotification[];
 
   ipc: any;
 
@@ -53,32 +52,56 @@ export class NotifyPage {
     this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
 
     this.noticeService.onNotifications
-    .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
-    .subscribe((msgs: INotification[]) => {
-      let groupMsg;
-      groupMsg = msgs.filter(m => {
-        let ret;
-        if(m.data.type === 'invitation') {
-          if(m.data.invitation.type === 'group') {
-              return true;
-            } else {
-              ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
-            }
-          }
-          if(m.data.type === 'notify') {
-            ret = m.data.notify.gid == this.bizFire.onBizGroupSelected.getValue().gid;
-          }
-          return ret;
-        })
-        this.messages = groupMsg.map((m: INotification) => this.noticeService.makeMessage(m));
-        if(this.messages.length > 0){
-          this.noNotify = false;
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe(msgs => {
+      this.messages = msgs.filter(m => {
+        let ret : boolean;
+        if(m.data.statusInfo.done !== true) {
+          ret = m.data.gid === this.bizFire.onBizGroupSelected.getValue().gid;
         } else {
-          this.noNotify = true;
+          ret = false;
         }
-        console.log("가공된 메세지(전체)", this.messages)
-        
+        return ret;
+      });
+      this.noNotify = this.messages.length === 0;
+      console.log("messages",this.messages);
     });
+
+
+    
+    // this.noticeService.onNotifications
+    // .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
+    // .subscribe((msgs: INotification[]) => {
+    //   let groupMsg;
+    //   groupMsg = msgs.filter(m => {
+    //     let ret;
+    //     if(m.data.type === 'invitation') {
+    //       if(m.data.invitation.type === 'group') {
+    //           return true;
+    //         } else {
+    //           ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
+    //         }
+    //       }
+    //       if(m.data.type === 'notify') {
+    //         ret = m.data.notify.gid == this.bizFire.onBizGroupSelected.getValue().gid;
+    //       }
+    //       return ret;
+    //     })
+    //     this.messages = groupMsg.map((m: INotification) => this.noticeService.makeMessage(m));
+    //     if(this.messages.length > 0){
+    //       this.noNotify = false;
+    //     } else {
+    //       this.noNotify = true;
+    //     }
+    //     console.log("가공된 메세지(전체)", this.messages)
+        
+    // });
+
+
+  }
+
+  makeHtml(notification: INotification) {
+    return this.noticeService.makeHtml(notification);
   }
 
   clickNotify(msg){
@@ -86,7 +109,8 @@ export class NotifyPage {
   }
 
   onClickNotifyContents(msg){
-    this.noticeService.onClickNotifyContents(msg);
+    console.log(msg)
+    // this.noticeService.onClickNotifyContents(msg);
   }
 
 
@@ -94,7 +118,9 @@ export class NotifyPage {
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
-    
-    this.noticeService.dataCache.clear();
+  }
+
+  msginfo(msg,item){
+    console.log(msg,item);
   }
 }

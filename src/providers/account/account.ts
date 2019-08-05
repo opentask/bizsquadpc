@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
 import { IUser } from './../../_models/message';
 import { BizFireService } from './../biz-fire/biz-fire';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 
 @Injectable()
 export class AccountService {
@@ -34,28 +34,12 @@ export class AccountService {
                         newUser.next({uid: d.payload.id, data: d.payload.data()} as IUser);
                     } else {
                         console.error(`user[${uid}] data not found from /users/${uid}`);
-                    }
-                });
-            this.userObserverMap[uid] = newUser;
-            return this.userObserverMap[uid].asObservable();
-        }
-    }
 
-    getChatUserObserver(uid: string): Observable<IUser | null> {
-        if(this.userObserverMap[uid] != null){
-            return this.userObserverMap[uid].asObservable(); //pipe needed?
-        } else {
-            const newUser = new BehaviorSubject<IUser>(null);
-            this.bizFire.afStore.doc(`users/${uid}`).snapshotChanges()
-                .pipe(takeUntil(this.bizFire.onUserSignOut))
-                .subscribe(d => {
-                    if(d.payload.exists){
-                        newUser.next({uid: d.payload.id, data: d.payload.data()} as IUser);
-                    } else {
-                        console.error(`user[${uid}] data not found from /users/${uid}`);
                     }
                 });
+
             this.userObserverMap[uid] = newUser;
+
             return this.userObserverMap[uid].asObservable();
         }
     }
@@ -71,9 +55,11 @@ export class AccountService {
         } else {
 
             const push = [];
+
             uids.forEach(uid => {
                 push.push(this.getUserObserver(uid));
             });
+
             return combineLatest(push);
         }
     }

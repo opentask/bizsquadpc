@@ -2,31 +2,30 @@
     <ion-scroll class="scrollable" scrollY="true">
         <section id="cd-timeline" class="cd-container">
             <div *ngFor="let msg of messages">
-                <div class="cd-timeline-block">
-                    <ng-container *ngIf="msg.data.user != null">
-                        <div class="cd-timeline-picture text-center white" *ngIf="msg.data.user.data.photoURL != null">
-                            <img src="{{ msg.data.user.data.photoURL }}">
+                <ng-container *ngIf="makeHtml(msg) | async as noticeItem">
+                    <div class="cd-timeline-block">
+                        <div *ngIf="noticeItem.html.user.data.photoURL" class="cd-timeline-picture text-center white">
+                            <img src="{{ noticeItem.html.user.data.photoURL }}">
                         </div>
-                        <ion-avatar [style.background-color]="groupMainColor" class="cd-timeline-picture text-center notPhoto" item-start *ngIf="msg.data.user.data.photoURL == null">
-                            <span class="displayName">{{ msg.data.user.data.displayName | slice:0:1 }}</span>
+                        <ion-avatar *ngIf="!noticeItem.html.user.data.photoURL" [style.background-color]="groupMainColor" class="cd-timeline-picture text-center notPhoto" item-start>
+                            <span class="displayName">{{ noticeItem.html.user.data.displayName | slice:0:2 }}</span>
                         </ion-avatar>
-                        <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(msg)">
+                        <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(noticeItem)">
                             <p class="cd-author marginTop5 marginBottom5">
-                                <span class="from">{{msg.data.header[0]}}</span>
-                                <span class="created">{{msg.notification.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>
-                            </p> 
+                                <span class="from">{{noticeItem.html.user.data.displayName}}</span>
+                                <span class="created">{{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>
+                            </p>
                             <p class="timelineText marginBottom5 marginTop5">
-                                <span class="notifyType">[{{msg.notification.type}}]</span>
-                                {{msg.data.header[1]}}
+                                {{noticeItem.html.header[0]}} {{noticeItem.html.header[1]}}
                             </p>
                         </div>
-                    </ng-container>
-                </div>
+                    </div>
+                </ng-container>
             </div>
         </section>
     </ion-scroll>
-        <div class="noNotify" *ngIf="noNotify">
-            <img src="imgs/none_alarm.svg">
-            <p>No new notifications</p>
-        </div>
+    <!-- <div class="noNotify" *ngIf="noNotify">
+        <img src="imgs/none_alarm.svg">
+        <p>No new notifications</p>
+    </div> -->
 </ion-content> 

@@ -1,10 +1,10 @@
 import { NotifyPage } from './../../tab/notify/notify';
 import { Electron } from './../../../providers/electron/electron';
-import { BizFireService,IBizGroup } from './../../../providers/biz-fire/biz-fire';
+import { BizFireService,IBizGroup, Igroup } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { filter, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject,combineLatest, BehaviorSubject } from 'rxjs';
 import { NotificationService } from '../../../providers/notification.service';
 import { INotification, INoticeItem } from '../../../_models/message';
 @IonicPage({  
@@ -26,24 +26,23 @@ export class MenuPage {
   badgeCount = 0;
   groupBadgeCount = 0;
 
-  messages: INoticeItem[];
-  groupMessagesAll: INoticeItem[];
-  groupMessages: INotification[];
-  curruntNotify: INotification;
-  notifyLength = 0;
+  allMessages: INotification[];
+
+  messages: INotification[];
+
   noNotify: boolean = false;
 
   isPartner = false;
   
   ipc: any;
 
-  // * COLOR
-  team_color = '#5b9ced'; // default opentask blue
-  team_icon = 'B';
+
 
   private _unsubscribeAll;
 
   isListShown : boolean = true;
+
+  private filterGid$ = new BehaviorSubject<string>(null);
 
   constructor(
     public navCtrl: NavController, 
@@ -56,98 +55,47 @@ export class MenuPage {
   }
   ngOnInit(): void {
 
-    // get user's bizgroup.
-    this.bizFire.onBizGroups
-    .pipe(filter(g=>g!=null),
-        takeUntil(this._unsubscribeAll))
-    .subscribe(bizGroups => {
-        bizGroups.forEach(group => {
-          if(group){
-            const newData = group.data;
-            newData['gid'] = group.gid;
-            newData['group_squads'] = 0;
-            newData['group_members'] = Object.keys(group.data.members).length;
-            newData['team_color'] = group.data.team_color || this.team_color;
-            
-            if(group.data.team_name == null || group.data.team_name.length === 0 ) {
-              newData['team_icon'] = 'BG';
-            } else {
-                let count = 2;
-                if(group.data.team_name.length === 1) {
-                    count = 1;
-                }
-                newData['team_icon'] = group.data.team_name.substr(0, count);
-            }
-            // get group_squads number
-            this.bizFire.afStore.firestore.collection(`bizgroups/${group.gid}/squads`).get().then(snap => {
-              newData['group_squads'] = snap.docs.length;
-            });
-          }
-        });
-        this.groups = bizGroups;
-        console.log("그룹정보",this.groups);
-    });
+    combineLatest(this.bizFire.onBizGroups,this.noticeService.onNotifications,this.filterGid$)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(([groups,msgs,filter_gid]) => {
 
-    this.noticeService.onNotifications
-    .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
-    .subscribe((msgs: INotification[]) => {
-        this.messages = msgs.map((m: INotification) => this.noticeService.makeMessage(m));
-        if(this.messages.length > 0){
-          this.badgeCount = this.messages.length;
-          if(this.badgeCount > 0){
-            this.badgeVisible = true;
-          } else {
-            this.badgeVisible = false;
-          }
-          this.noNotify = false;
+        this.groups = groups;
+        this.allMessages = msgs;
+  
+        if(filter_gid !== null) {
+          this.messages = msgs.filter(m => m.data.gid === filter_gid && m.data.statusInfo.done !== true);
         } else {
-          this.noNotify = true;
+          this.messages = msgs.filter(m => m.data.statusInfo.done !== true);
         }
-        console.log("가공된 메세지(전체)", this.messages)
-        this.makeEachGroup();
-    });
-    // // get number of unfinished notices.
-    // this.noticeService.onNotifications
-    // .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
-    // .subscribe((msgs: INotification[]) => {
-    //     // get unfinished notification count.
-    //     this.messages = msgs;
-    //     this.badgeCount = this.messages.filter(m => m.data.statusInfo.done !== true).length;
-    //     if(this.badgeCount > 0){
-    //       this.noNotify = false;
-    //     }
-    //     this.badgeVisible = this.badgeCount > 0;
-    //     this.messages.forEach((m: INotification) => {
-    //       m['text'] = this.noticeService.makeDisplayString(m.data);
-    //       m['path'] = this.noticeService.makeJumpPath(m.data);
-    //     });
-    //     this.makeEachGroup();
-    // });
 
-    // this.bizFire.onUserSignOut.subscribe(()=>{
-    //   this.messages = [];
-    // });
+        this.badgeCount = this.allMessages.length;
+        this.noNotify = this.badgeCount === 0;
+
+        // this.makeEachGroup(this.messages);
+        console.log("combineLatest : [groups,msgs]",groups,msgs);
+        console.log("filter_gid", filter_gid);
+
+      });
   }
 
-  private makeEachGroup(){
-    this.eachGroups = {};
-    if(this.groups != null && this.messages != null){
-      console.log(this.messages);
-      this.messages.forEach(m => {
-        if(m.notification.type === 'notify') {
-          if(this.eachGroups[m.notification.notify.gid] == null){
-            this.eachGroups[m.notification.notify.gid] = [];
-          }
-          this.eachGroups[m.notification.notify.gid].push(m);
-        } else if(m.notification.type === 'invitation') {
-          if(this.eachGroups[m.notification.invitation.gid] == null){
-            this.eachGroups[m.notification.invitation.gid] = [];
-          }
-          this.eachGroups[m.notification.invitation.gid].push(m);
-        }
-      })
-      console.log(this.eachGroups);
-    };
+  notifyFilter(group) {
+    this.filterGid$.next(group.gid);
+  }
+
+  groupCountBadge(gid) {
+    return this.allMessages.filter(m => m.data.gid === gid).length;
+  }
+
+  showAllNotify(){
+    this.filterGid$.next(null);
+  }
+
+  makeHtml(notification: INotification) {
+    return this.noticeService.makeHtml(notification);
+  }
+
+  onClickNotifyContents(msg){
+    this.noticeService.onClickNotifyContents(msg);
   }
 
   toggleList() {
@@ -158,37 +106,10 @@ export class MenuPage {
     }
   }
 
-  showNotify(group) {
-    console.log(group);
-    console.log(this.eachGroups);
-
-    // 그룹 전체보기 숨김.
-    if(!this.isListShown)
-    this.isListShown = true;
-
-    // get number of unfinished notices.
-    if(this.messages){
-      this.messages = this.eachGroups[group.gid];
-    };
-  }
-
-  clickNotify(msg){
-    console.log(msg);
-    // 웹페이지로 이동. 여기에 작성
-
-  }
-  showAllNotify(){
-    // get number of unfinished notices.
-    this.messages = this.noticeService.onNotifications.getValue().map((m: INotification) => this.noticeService.makeMessage(m));
-  }
-
-  onClickNotifyContents(msg){
-    this.noticeService.onClickNotifyContents(msg);
-  }
-
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
+    this.filterGid$.next(null);
   }
 
 }

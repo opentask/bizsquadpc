@@ -12,7 +12,7 @@ page-menu {
         width: 45px !important;
         height: 53px !important;
         display: inline-block !important;
-        margin-right: 7px !important;
+        margin-right: 4px !important;
     }
     ion-list{
         padding-left:16px;
@@ -29,7 +29,7 @@ page-menu {
         height: 10px;
         background-color: red;
     }
-    #groupBadge{
+    .groupBadge{
         position: absolute;
         // top: -3px;
         right: 1px;

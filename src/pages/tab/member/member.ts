@@ -117,13 +117,11 @@ export class MemberPage {
                             //null check
                             // getAllUserInfos returns, [null, null, {}, {}...];
                             let ret;
-                            ret = l.filter(ll => ll != null).length === allUsers.length;
+                            ret = l.filter(ll => ll != null);
                             return ret;
-                            })
-                            ,
-                            takeUntil(this._unsubscribeAll)
-                            )
+                            }),takeUntil(this._unsubscribeAll))
                         .subscribe(all => {
+                            console.log("this.allCollectedUsers :",this.allCollectedUsers);
                             this.allCollectedUsers = all;
                             this.managerAuthUser = this.allCollectedUsers.filter(u => u.uid == this.managerUid);
                             this.memberAuthUser = this.allCollectedUsers.filter(u => u.uid != this.managerUid && u.uid != this.partnerUid);

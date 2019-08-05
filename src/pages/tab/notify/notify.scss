@@ -64,6 +64,7 @@ page-notify {
         text-transform: capitalize;
     }
     .created{
+        font-size: 11px;
         float: right;
     }
     /* -------------------------------- 
@@ -130,7 +131,7 @@ page-notify {
     }
     .cd-author {
         color:gray;
-        font-weight: 500;
+        font-weight: 400;
     }
     #cd-timeline {
         position: relative;

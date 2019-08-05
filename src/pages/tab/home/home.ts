@@ -60,7 +60,7 @@ export class HomePage implements OnInit {
 
   // notification badge visible value
   notification : INotification[];
-  badgeVisible : boolean = false;
+  badgeCount : number = 0;
 
   messages: INotification[];
 
@@ -148,32 +148,50 @@ export class HomePage implements OnInit {
       this.isPartner = this.bizFire.isPartner(this.group);
       this.manager = this.group.data.manager != null && this.group.data.manager[this.bizFire.currentUID] === true;
     }
-    this.noticeService.onNotifications
-    .pipe(filter(n => n !=null),takeUntil(this._unsubscribeAll))
-    .subscribe((msgs: INotification[]) => {
-      this.messages = msgs.filter(m => {
-        let ret;
-        if(m.data.type === 'invitation') {
-          if(m.data.invitation.type === 'group') {
-            return true;
-          } else {
-            ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
-          }
-        }
-        if(m.data.type === 'notify'){
-          ret = m.data.notify.gid == this.bizFire.onBizGroupSelected.getValue().gid;
-        }
-        return ret;
-      })
-      if(this.messages.length > 0) {
-        this.badgeVisible = true;
-      } else if(this.messages.length == 0) {
-        this.badgeVisible = false;
-      }
-    });
+    // this.noticeService.onNotifications
+    // .pipe(filter(n => n !=null),takeUntil(this._unsubscribeAll))
+    // .subscribe((msgs: INotification[]) => {
+    //   this.messages = msgs.filter(m => {
+    //     let ret;
+    //     if(m.data.type === 'invitation') {
+    //       if(m.data.invitation.type === 'group') {
+    //         return true;
+    //       } else {
+    //         ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
+    //       }
+    //     }
+    //     if(m.data.type === 'notify'){
+    //       ret = m.data.notify.gid == this.bizFire.onBizGroupSelected.getValue().gid;
+    //     }
+    //     return ret;
+    //   })
+    //   if(this.messages.length > 0) {
+    //     this.badgeVisible = true;
+    //   } else if(this.messages.length == 0) {
+    //     this.badgeVisible = false;
+    //   }
+    // });
 
-    this.bizFire.onUserSignOut.subscribe(()=>{
-      this.dataCache.clear();
+    this.noticeService.onNotifications
+    .pipe(
+      filter(n=>n != null),takeUntil(this._unsubscribeAll))
+    .subscribe((msgs: INotification[]) => {
+      
+      if(msgs){
+        // get unfinished notification count.
+        this.badgeCount = msgs.filter(m => {
+          let ret : boolean;
+          if(m.data.statusInfo.done !== true) {
+            ret = m.data.gid === this.group.gid;
+          } else {
+            ret = false;
+          }
+          return ret;
+        }).length;
+  
+        console.log("selectGroup MSG :",this.badgeCount);
+      }
+      
     });
 }
 
