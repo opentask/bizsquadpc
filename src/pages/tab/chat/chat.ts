@@ -61,7 +61,14 @@ export class ChatPage {
     this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
     
     // 그룹 유저정보 가져오기.
-    this.members = Object.keys(this.bizFire.onBizGroupSelected.getValue().data.members).filter(uid => uid != this.bizFire.currentUID);
+    this.members = this.bizFire.onBizGroupSelected.getValue().data.members;
+    this.members = Object.keys(this.members)
+    .filter(uid => this.members[uid] === true)
+    .filter(uid => uid != this.bizFire.currentUID)
+    .map(uid => uid);
+    console.log("this.members :",this.members);
+    
+
     if(this.members != null && this.members.length > 0){
       this.accountService.getAllUserInfos(this.members)
       .pipe(filter(l => {
@@ -91,7 +98,8 @@ export class ChatPage {
     .subscribe((rooms) => {
       rooms.forEach(room =>{
         const newData = room.data;
-        newData["member_count"] = Object.keys(room.data.members).length;
+        newData["member_count"] = Object.keys(room.data.members).filter(uid => room.data.members[uid] === true).length;
+
         if(room.data.lastMessageTime == null) {
           newData["lastMessageTime"] = 1;
         }

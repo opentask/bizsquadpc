@@ -119,9 +119,11 @@ export class MemberChatPage {
       // 채팅방 정보 갱신. (초대,나가기)
       this.bizFire.afStore.doc(Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid))
       .valueChanges().subscribe((roomData : IChatRoomData) => {
-        this.roomData = roomData;
-        this.chatMembers = Object.keys(this.roomData.members).filter(uid => this.roomData.members[uid] === true && uid != this.chatroom.uid);
-        this.roomCount = Object.keys(this.roomData.members).length;
+        console.log('aaaaaa');
+        console.log(roomData.members);
+        this.chatMembers = Object.keys(roomData.members).filter(uid => roomData.members[uid] === true && uid != this.chatroom.uid);
+        console.log(this.chatMembers);
+        this.roomCount = Object.keys(this.chatMembers).length + 1;
 
         this.accountService.getAllUserInfos(this.chatMembers).pipe(filter(m => m != null))
         .subscribe(members => {

@@ -67,37 +67,6 @@ export class NotifyPage {
       console.log("messages",this.messages);
     });
 
-
-    
-    // this.noticeService.onNotifications
-    // .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
-    // .subscribe((msgs: INotification[]) => {
-    //   let groupMsg;
-    //   groupMsg = msgs.filter(m => {
-    //     let ret;
-    //     if(m.data.type === 'invitation') {
-    //       if(m.data.invitation.type === 'group') {
-    //           return true;
-    //         } else {
-    //           ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
-    //         }
-    //       }
-    //       if(m.data.type === 'notify') {
-    //         ret = m.data.notify.gid == this.bizFire.onBizGroupSelected.getValue().gid;
-    //       }
-    //       return ret;
-    //     })
-    //     this.messages = groupMsg.map((m: INotification) => this.noticeService.makeMessage(m));
-    //     if(this.messages.length > 0){
-    //       this.noNotify = false;
-    //     } else {
-    //       this.noNotify = true;
-    //     }
-    //     console.log("가공된 메세지(전체)", this.messages)
-        
-    // });
-
-
   }
 
   makeHtml(notification: INotification) {

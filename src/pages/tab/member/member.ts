@@ -113,13 +113,13 @@ export class MemberPage {
                 // * get ALL USERS DATA !
                 if (allUsers && allUsers.length > 0) {
                     this.accountService.getAllUserInfos(allUsers)
-                        .pipe(filter(l => {
-                            //null check
-                            // getAllUserInfos returns, [null, null, {}, {}...];
+                        .pipe(filter(l => 
+                            {
                             let ret;
-                            ret = l.filter(ll => ll != null);
+                            ret = l.filter(ll => ll != null).length === allUsers.length;
                             return ret;
-                            }),takeUntil(this._unsubscribeAll))
+                            }
+                            ),takeUntil(this._unsubscribeAll))
                         .subscribe(all => {
                             console.log("this.allCollectedUsers :",this.allCollectedUsers);
                             this.allCollectedUsers = all;

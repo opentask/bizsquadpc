@@ -204,16 +204,27 @@ export class NotificationService {
                 // 누가 어느 그룹에
                 zip(userObserver, groupObserver)
                 .subscribe(([u, g]) => {
+
+                  let team_name;
+                  let userName;
+                  if(u != null ){
+                    userName = u.data['displayName'] || u.data['email'];
+                  } else {
+                    userName = `deleted user`;
+                  }
+                  if( g != null){
+                    team_name = g['team_name'];
+                  } else {
+                    team_name = `deleted BizGroup`;
+                  }
         
-                    const userData = u.data;
-        
-                    // set content
-                    item.html.header = [`${userData['displayName'] || userData['email']}`,`invited you to BizGroup ${g['team_name']}`];
-                    item.html.content = [`Invitation to <span class="font-weight-bold">${g['team_name']}</span>`];
-                    item.html.link = [`https://product.bizsquad.net`];
-                    item.html.user = u;
-        
-                    resolve.next(item);
+                  // set content
+                  item.html.header = [`${userName}`,`invited you to BizGroup ${team_name}`];
+                  item.html.content = [`Invitation to ${team_name}`];
+                  item.html.link = [`https://product.bizsquad.net`];
+                  item.html.user = u;
+
+                  resolve.next(item);
                 });
             }
         });
@@ -244,10 +255,23 @@ export class NotificationService {
             zip(userObserver, groupObserver, squadObserver)
                 .subscribe(([u, g, s]) => {
 
+                  let team_name;
+                  let userName;
+                  if(u != null ){
+                    userName = u.data['displayName'] || u.data['email'];
+                  } else {
+                    userName = `deleted user`;
+                  }
+                  if( g != null){
+                    team_name = g['team_name'];
+                  } else {
+                    team_name = `deleted BizGroup`;
+                  }
+
                 // set content
-                item.html.header = [`${u.data['displayName'] || u.data['email']}`, `posted ${info.title}`];
+                item.html.header = [`${userName}`, `posted ${info.title}`];
                 item.html.content = [`${info.title}`];
-                item.html.link = [`${g['team_name']} > ${s['name']}`, `/squad/${data.gid}/${info.sid}/post`];
+                item.html.link = [`${team_name} > ${s['name']}`, `/squad/${data.gid}/${info.sid}/post`];
                 item.html.user = u;
 
                 resolve.next(item);
@@ -262,7 +286,14 @@ export class NotificationService {
                     .subscribe(([u, g]) => {
 
                     const title = info.title || '';
-                    const userName = u.data['displayName'] || u.data['email'];
+                    let userName;
+
+                    if(u != null ){
+                      userName = u.data['displayName'] || u.data['email'];
+                    } else {
+                      userName = `deleted user`;
+                    }
+
                     // set content
                     item.html.header = [`${userName}`, `registered a new notice ${title}`];
                     item.html.content = [`${userName} 씨가 새 게시글 등록했다. 보려면 밑에 링크를 클릭하라.`];
@@ -292,31 +323,33 @@ export class NotificationService {
         
             // convert
             const item: INotificationItem = notification;
-            item.html = { header: null, content: null, link: null, user: null };
+            item.html = { header: null, content: null, link: null};
         
-            /*
-            notifyData.groupInOut = true;
-            notifyData.info.join = this.bizFire.uid;
-            notifyData.info.auth = notificationData.info.auth;
-            */
-        
-            // squad or group ?
-            // this is a group. 현재(b54) 스쿼드 초대 / 탈퇴는 알람 메시지를 안보냄.
-        
+
             zip(userObserver, groupObserver)
                 .subscribe(([u, g])=>{
+
+                  let team_name;
+                  let userName;
+                  if(u != null ){
+                    userName = u.data['displayName'] || u.data['email'];
+                  } else {
+                    userName = `deleted user`;
+                  }
+                  if( g != null){
+                    team_name = g['team_name'];
+                  } else {
+                    team_name = `deleted BizGroup`;
+                  }
         
-                const userName = u.data['displayName'] || u.data['email'];
-        
-                // user joined a group.
-                item.html.header = [`${userName}`, `joined ${g['team_name']}`];
-                item.html.content = [`${userName} joined BizGroup <span class="font-weight-bold">${g['team_name']}</span>`];
-                //item.html.link = [`${g['team_name']}`, `/main/${notify.gid}`];
-                item.html.user = u;
-        
-                resolve.next(item);
-        
-                });
+                  // user joined a group.
+                  item.html.header = [`${userName}`, `joined ${team_name}`];
+                  item.html.content = [`${userName} joined BizGroup ${team_name}`];
+                  //item.html.link = [`${g['team_name']}`, `/main/${notify.gid}`];
+
+                  resolve.next(item);
+
+                  });
     
         });
     

@@ -7,9 +7,9 @@
       </ion-avatar>
     </ion-item>
     <ng-container *ngFor="let group of groups;">
-      <ion-item class="group-list-item" no-lines (click)="notifyFilter(group)">
+      <ion-item class="group-list-item" no-lines (click)="notifyFilter(group)" *ngIf="groupCountBadge(group.gid) > 0">
         <ion-avatar class="hoverAvatar" item-start *ngIf="!group.data.photoURL" [style.background-color]="group.data.team_color">
-          {{group.data.team_icon}}
+          {{ group.data.team_name | slice:0:2 }}
           <ion-badge *ngIf="groupCountBadge(group.gid)" class="groupBadge">{{ groupCountBadge(group.gid) }}</ion-badge>
         </ion-avatar>
         <ion-avatar class="hoverAvatar" *ngIf="group.data.photoURL" item-start [style.background-color]="group.data.team_color">
@@ -27,21 +27,29 @@
        <div *ngFor="let msg of messages">
           <ng-container *ngIf="makeHtml(msg) | async as noticeItem">
              <div class="cd-timeline-block">
-                <div class="cd-timeline-picture text-center white" *ngIf="noticeItem.html.user.data.photoURL != null">
+              <ng-container *ngIf="noticeItem.html.user">
+                  <div class="cd-timeline-picture text-center white" *ngIf="noticeItem.html.user.data.photoURL != null">
                     <img src="{{ noticeItem.html.user.data.photoURL }}">
+                  </div>
+                  <ion-avatar class="cd-timeline-picture text-center notPhoto" item-start *ngIf="noticeItem.html.user.data.photoURL == null">
+                     <span class="displayName">{{ noticeItem.html.user.data.displayName | slice:0:2 }}</span>
+                  </ion-avatar>
+              </ng-container>
+              <ng-container *ngIf="!noticeItem.html.user">
+                 <div class="cd-timeline-picture text-center white">
+                    <img src="imgs/btn_close.svg">
+                 </div>
+              </ng-container>
+                <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(noticeItem)">
+                    <p class="cd-author marginTop5 marginBottom5">
+                        <span class="from" *ngIf="noticeItem.html.user">{{noticeItem.html.user.data.displayName}}</span>
+                        <span class="from" *ngIf="!noticeItem.html.user">{{noticeItem.html.header[0]}}</span>
+                        <span class="created">{{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>
+                    </p>
+                    <p class="timelineText marginBottom5 marginTop5">
+                        {{noticeItem.html.header[0]}} {{noticeItem.html.header[1]}}
+                    </p>
                 </div>
-                    <ion-avatar class="cd-timeline-picture text-center notPhoto" item-start *ngIf="noticeItem.html.user.data.photoURL == null">
-                        <span class="displayName">{{ noticeItem.html.user.data.displayName | slice:0:2 }}</span>
-                    </ion-avatar>
-                    <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(noticeItem)">
-                       <p class="cd-author marginTop5 marginBottom5">
-                           <span class="from">{{noticeItem.html.user.data.displayName}}</span>
-                           <span class="created">{{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>
-                       </p>
-                       <p class="timelineText marginBottom5 marginTop5">
-                           {{noticeItem.html.header[0]}} {{noticeItem.html.header[1]}}
-                       </p>
-                    </div>
               </div>
           </ng-container>
        </div>

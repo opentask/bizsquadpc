@@ -4,15 +4,23 @@
             <div *ngFor="let msg of messages">
                 <ng-container *ngIf="makeHtml(msg) | async as noticeItem">
                     <div class="cd-timeline-block">
-                        <div *ngIf="noticeItem.html.user.data.photoURL" class="cd-timeline-picture text-center white">
-                            <img src="{{ noticeItem.html.user.data.photoURL }}">
-                        </div>
-                        <ion-avatar *ngIf="!noticeItem.html.user.data.photoURL" [style.background-color]="groupMainColor" class="cd-timeline-picture text-center notPhoto" item-start>
-                            <span class="displayName">{{ noticeItem.html.user.data.displayName | slice:0:2 }}</span>
-                        </ion-avatar>
+                        <ng-container *ngIf="noticeItem.html.user">
+                          <div *ngIf="noticeItem.html.user.data.photoURL" class="cd-timeline-picture text-center white">
+                              <img src="{{ noticeItem.html.user.data.photoURL }}">
+                          </div>
+                          <ion-avatar *ngIf="!noticeItem.html.user.data.photoURL" [style.background-color]="groupMainColor" class="cd-timeline-picture text-center notPhoto" item-start>
+                              <span class="displayName">{{ noticeItem.html.user.data.displayName | slice:0:2 }}</span>
+                          </ion-avatar>
+                        </ng-container>
+                        <ng-container *ngIf="!noticeItem.html.user">
+                            <div class="cd-timeline-picture text-center white">
+                               <img src="imgs/btn_close.svg">
+                            </div>
+                        </ng-container>
                         <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(noticeItem)">
                             <p class="cd-author marginTop5 marginBottom5">
-                                <span class="from">{{noticeItem.html.user.data.displayName}}</span>
+                                <span class="from" *ngIf="noticeItem.html.user">{{noticeItem.html.user.data.displayName}}</span>
+                                <span class="from" *ngIf="!noticeItem.html.user">{{noticeItem.html.header[0]}}</span>
                                 <span class="created">{{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>
                             </p>
                             <p class="timelineText marginBottom5 marginTop5">
