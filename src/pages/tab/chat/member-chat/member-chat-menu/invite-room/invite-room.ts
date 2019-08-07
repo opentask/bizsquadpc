@@ -5,10 +5,10 @@ import { IroomData, IChatRoomData, IChatRoom } from '../../../../../../providers
 import { BizFireService } from '../../../../../../providers';
 import {Commons, STRINGS} from '../../../../../../biz-common/commons';
 import { IBizGroup, Igroup } from '../../../../../../providers/biz-fire/biz-fire';
-import { checkAndUpdateDirectiveDynamic } from '@angular/core/src/view/provider';
 import { combineLatest, BehaviorSubject, Subject } from 'rxjs';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { AccountService } from '../../../../../../providers/account/account';
+import { GroupColorProvider } from '../../../../../../providers/group-color';
 
 @IonicPage({  
   name: 'page-invite-room',
@@ -27,6 +27,7 @@ export class InviteRoomPage {
   allCollectedUsers: IUser[];
   isChecked : IUser[] = [];
   currentGroup : Igroup;
+  groupMainColor: string;
 
   roomData : IroomData;
   observableRoom : IChatRoomData;
@@ -37,6 +38,7 @@ export class InviteRoomPage {
     public navParams: NavParams,
     public viewCtrl: ViewController,
     public bizFire : BizFireService,
+    public groupColorProvider: GroupColorProvider,
     public accountService: AccountService) {
 
       this._unsubscribeAll = new Subject<any>();
@@ -56,6 +58,7 @@ export class InviteRoomPage {
     .subscribe((group : Igroup) => {
       this.currentGroup = group;
       if(this.currentGroup){
+        this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.team_color);
         let allUsers;
         const members = this.currentGroup.members;
         if(members){

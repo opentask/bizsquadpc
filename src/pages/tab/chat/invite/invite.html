@@ -1,8 +1,8 @@
 <ion-header>
   <!-- 선택된 멤버가 없으면 텍스트 출력 -->
-  <p *ngIf="isChecked.length == 0" class="title" [style.background-color]="this.currentGroup.data.team_color" no-margin>Select the member<br> you want to chat with in the list.</p>
+  <p *ngIf="isChecked.length == 0" class="title" [style.background-color]="currentGroup.data.team_color" no-margin>Select the member<br> you want to chat with in the list.</p>
   <ion-scroll class="scrollable" scrollY="true">
-    <div *ngIf="isChecked && isChecked.length > 0" class="badge-memberCon" [style.background-color]="this.currentGroup.data.team_color">
+    <div *ngIf="isChecked && isChecked.length > 0" class="badge-memberCon" [style.background-color]="currentGroup.data.team_color">
       <ng-container *ngFor="let member of allCollectedUsers;">
         <button *ngIf="member.data.isChecked" class="memberList-button" ion-button icon-end round color="light" (click)="badgeMember(member)">
             {{ member.data.displayName }}
@@ -11,7 +11,7 @@
       </ng-container>
     </div>
   </ion-scroll>
-  <ion-searchbar [style.background-color]="this.currentGroup.data.team_color" [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
+  <ion-searchbar [style.background-color]="currentGroup.data.team_color" [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
 </ion-header>
 
 <ion-content no-padding> 

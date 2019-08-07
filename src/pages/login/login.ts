@@ -25,7 +25,7 @@ export class LoginPage implements OnInit {
   rememberId : boolean = false;
   loginForm: FormGroup;
   version: any;
-  hideForm = true;
+  hideForm = false;
   imgPath = "imgs/main512.png";
   userEmail = '';
 
@@ -52,7 +52,6 @@ export class LoginPage implements OnInit {
     private loading: LoadingProvider,
     public formBuilder: FormBuilder
     ) {
-      this.hideForm = true;
       this.loginForm = formBuilder.group({
         email: ['', this.emailValidator],
         password: ['', this.passwordValidator]
@@ -61,16 +60,20 @@ export class LoginPage implements OnInit {
       this._unsubscribeAll = new Subject<any>();
   }
   ionViewCanEnter(){
+    this.hideForm = true;
     electron.ipcRenderer.send('giveMeRoomValue', 'ping');
     electron.ipcRenderer.on('selectRoom', (event, roomData : IChatRoom) => {
       if(roomData != null) {
         this.hideForm = false;
+        this.loading.show();
         if(roomData.data.type == "member"){
           this.navCtrl.setRoot('page-member-chat',{roomData : roomData});
+          this.loading.hide();
           console.log("룸데이터가있습니다.",roomData); // "select member data" 출력)
         } else {
           console.log("스쿼드채팅입니다.",roomData);
           this.navCtrl.setRoot('page-squad-chat',{roomData : roomData});
+          this.loading.hide();
         }
       } else {
         this.hideForm = true;
@@ -109,9 +112,10 @@ export class LoginPage implements OnInit {
   }
 
   async onLogin() {
-    this.loading.show();
-
+  
     if(this.loginForm.valid) {
+
+      this.loading.show();
 
       try {
         const email = this.loginForm.value['email'];
@@ -143,6 +147,8 @@ export class LoginPage implements OnInit {
         this.loading.hide();
         this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
       }
+    } else {
+      this.electron.showErrorMessages("Login failed.","Email format is invalid or password has 6 digits or less.");
     }
 
   }
