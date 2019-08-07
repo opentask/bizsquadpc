@@ -229,9 +229,7 @@ export class HomePage implements OnInit {
     this._unsubscribeAll.complete();
   }
   windowClose() {
-    this.bizFire.windowCloseAndUserStatus().then(() => {
-      this.electron.windowClose();
-    });
+    this.electron.windowHide();
   }
 
   logout(){

@@ -204,8 +204,8 @@ export class LoginPage implements OnInit {
       }
     })
   }
-  windowClose() {
-    this.electron.windowClose();
+  windowHide() {
+    this.electron.windowHide();
   }
 
   windowMimimize() {

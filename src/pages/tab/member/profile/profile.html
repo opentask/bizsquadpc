@@ -17,7 +17,7 @@
           <img class="photoURL" src="{{ imageSrc }}">
       </ion-avatar>
       <!-- 프로필 사진이 없으면 -->
-      <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null">
+      <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null" [style.background-color]="groupColor">
           <span class="displayName">{{ notImg }}</span>
       </ion-avatar> 
     </ion-item>
@@ -34,18 +34,18 @@
       </ion-row>
       <ion-row>
         <ion-col class="profileTitle" col-3 offset-1>auth</ion-col>
-        <ion-col col-8 *ngIf="checkManager">Manager</ion-col>
+        <ion-col col-8 *ngIf="checkManager" class="manager">Manager</ion-col>
         <ion-col col-8 *ngIf="!checkManager && !partner">Member</ion-col>
         <ion-col col-8 *ngIf="!checkManager && partner">Partner</ion-col>
       </ion-row>
       <ion-row *ngIf="who">
         <ion-col col-6 offset-3>
-            <button class="profile_button" ion-button round full (click)="editProfileShow()">edit Profile</button>
+            <button class="profile_button" ion-button round full (click)="editProfileShow()" [color]="groupColor">edit Profile</button>
         </ion-col>
       </ion-row> 
       <ion-row *ngIf="!who">
         <ion-col col-6 offset-3>
-            <button class="profile_button" ion-button round full (click)="gotoChat()">1:1 Chat</button>
+            <button class="profile_button" ion-button round full (click)="gotoChat()" [color]="groupColor">1:1 Chat</button>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -91,10 +91,10 @@
         </ion-row>
         <ion-row>
           <ion-col col-5 offset-1>
-              <button class="profile_button" ion-button round full (click)="editSubmit()">ok</button>
+              <button class="profile_button" ion-button round full (click)="editSubmit()" [color]="groupColor">ok</button>
           </ion-col>
           <ion-col col-5>
-              <button class="profile_button" ion-button round full (click)="cancelEdit()">cancel</button>
+              <button class="profile_button" ion-button round full (click)="cancelEdit()" [color]="groupColor">cancel</button>
           </ion-col>
         </ion-row>
       </ion-grid>

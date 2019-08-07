@@ -88,11 +88,11 @@
             </ion-avatar>
 
             <div class="msg-detail" *ngIf="!msg.data.notice">
-              <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid && msg.data.message != ''">
+              <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid">
                 <p>{{user.data.displayName}}</p>
               </div>
 
-              <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
+              <div class="msg-content" *ngIf="msg.data.files == null">
                 <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
                 <p class="line-breaker textdrag">{{msg.data.message}}</p>
                 <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">

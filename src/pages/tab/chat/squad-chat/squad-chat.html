@@ -78,20 +78,20 @@
             </ion-grid>
           </div> -->
           <ng-container *ngIf="getUserObserver(msg.data) | async; let user">
-            <ion-avatar class="notPhoto" [style.background-color]="squadMainColor"
-            item-start *ngIf="msg.data.photoURL == null && msg.data.senderId != this.bizFire.currentUID && !msg.data.notice">
+            <ion-avatar *ngIf="!msg.data.photoURL && msg.data.senderId != this.bizFire.currentUID && !msg.data.notice"
+            class="notPhoto" [style.background-color]="squadMainColor" item-start>
               <span class="senderName">{{ user.data.displayName | slice:0:2 }}</span>
             </ion-avatar>
-            <ion-avatar *ngIf="user.data.photoURL != null && msg.data.senderId != this.bizFire.currentUID">
-              <img class="user-img" src="{{msg.data.photoURL}}">
+            <ion-avatar *ngIf="user.data.photoURL && msg.data.senderId != this.bizFire.currentUID">
+              <img class="user-img" src="{{user.data.photoURL}}">
             </ion-avatar>
             
             <div class="msg-detail" *ngIf="!msg.data.notice">
-              <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID && msg.data.message != ''">
+              <div class="msg-info" *ngIf="msg.data.senderId != this.bizFire.currentUID">
                 <p>{{user.data.displayName}}</p>
               </div>
 
-              <div class="msg-content" *ngIf="msg.data.files == null && msg.data.message != ''">
+              <div class="msg-content" *ngIf="msg.data.files == null">
                   <span class="triangle" *ngIf="msg.data.senderId == this.bizFire.currentUID"></span>
                   <p class="line-breaker textdrag">{{msg.data.message}}</p>
                   <div class="msg-time-content" *ngIf="msg.data.senderId == this.bizFire.currentUID">

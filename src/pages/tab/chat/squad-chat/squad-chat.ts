@@ -82,6 +82,7 @@ export class SquadChatPage {
 
   ngOnInit(): void {
     this.selectSquad = this.navParams.get("roomData");
+    console.log("this.selectSquadthis.selectSquad",this.selectSquad);
 
     if(this.selectSquad != null) {
       this.roomCount = Object.keys(this.selectSquad.data.members).length;
@@ -256,6 +257,11 @@ export class SquadChatPage {
       })
 
     }
+  }
+
+
+  userDataConsole(u) {
+    console.log(u);
   }
 
   // dragFile(file){

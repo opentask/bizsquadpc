@@ -118,8 +118,8 @@ export class GroupListPage {
   //                   //
   //  -- electron --   //
   //                   //
-  windowClose() {
-      this.electron.windowClose();
+  windowHide() {
+      this.electron.windowHide();
   }
 
   windowMimimize() {

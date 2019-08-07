@@ -8,6 +8,9 @@ page-profile {
     .toolbar-background{
         background-color: white !important;
     }
+    .manager {
+        color: rgb(206, 56, 56);
+    }
     .photoURL {
         width: 100% !important;
         height: 100% !important;
@@ -38,7 +41,6 @@ page-profile {
         cursor: pointer;
     }
     .notPhoto{
-        background-color:#c96a5c;
         text-align: center;
     }
     .displayName{

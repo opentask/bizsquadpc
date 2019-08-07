@@ -23,6 +23,7 @@ export class ProfilePage {
 
   // 본인 프로필인지 다른 유저의 프로필인지 체크
   who : boolean = false;
+  editProfileForm: FormGroup;
 
   // 프로필 변경 버튼 클릭
   editProfile : boolean = false;
@@ -31,15 +32,12 @@ export class ProfilePage {
   checkProfile: boolean = false;
 
   targetValue : IUser;
-  myValue: IUser;
-  manager: any;
-  partner: boolean = false;
+
   checkManager: boolean = false;
   notImg : string = '';
   imageSrc : string = '';
   displayName: string;
-
-  editProfileForm: FormGroup;
+  groupColor: string;
 
   attachFile: File;
 
@@ -70,27 +68,23 @@ export class ProfilePage {
 
   ngOnInit(): void {
 
-    // 본인 프로필값 -채팅을 위한
-    this.myValue = this.navParams.get('me');
     // 본인선택시 본인프로필값 / 유저선택시 유저 프로필값 가져옴.
     this.targetValue = this.navParams.get('target');
-    // 매니저 체크 값.
-    this.manager = this.navParams.get('manager');
-    // 파트너 체크 값.
-    this.partner = this.navParams.get('partner');
-    this.loadUserData();
+    this.groupColor = this.navParams.get('groupColor');
 
-    console.log(this.myValue);
     console.log(this.targetValue);
-    console.log("you partner?",this.partner);
 
-    if(this.targetValue != null && this.targetValue.uid){
-      this.checkManager = this.manager != null && this.manager[this.targetValue.uid] === true;
-      console.log("관리자체크",this.checkManager)
+
+    if(this.targetValue){
+
+      this.loadUserData();
+
+      this.checkManager = this.bizFire.isManager(this.targetValue.data.uid);
+
+      // 본인인가, 유저인가
+      this.who = this.bizFire.currentUID == this.targetValue.uid;
+      console.log("관리자체크",this.checkManager);
     }
-    // 본인인가, 유저인가
-    this.who = this.bizFire.currentUID == this.targetValue.uid;
-    console.log("본인체크",this.who);
 
     this.editProfileForm = this.formBuilder.group({
       displayName: [this.targetValue.data.displayName, this.displayNameValidator],

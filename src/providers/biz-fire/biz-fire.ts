@@ -329,6 +329,21 @@ export class BizFireService {
             return false;
         }
     }
+
+    isManager(uid: string) : boolean {
+        let group : IBizGroup;
+        if(this.onBizGroupSelected.value) {
+            group = this.onBizGroupSelected.value;
+            if(group.data.manager[uid] != null) {
+                return group.data.manager[uid] === true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     signOut(navigateToLoginWhenDone = true): Promise<boolean> {
 
         console.log('BizFireService.signOut()');
@@ -388,7 +403,6 @@ export class BizFireService {
 
     })
   }
-
   
 
   editUserProfile(editData) {

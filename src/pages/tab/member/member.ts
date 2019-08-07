@@ -45,7 +45,6 @@ export class MemberPage {
   managerAuthUser: IUser[];
   memberAuthUser: IUser[];
   partnerAuthUser: IUser[];
-  mydata: IUser;
 
   managerUid: any;
   manager: boolean = false;
@@ -127,7 +126,6 @@ export class MemberPage {
                             this.memberAuthUser = this.allCollectedUsers.filter(u => u.uid != this.managerUid && u.uid != this.partnerUid);
                             this.allCollectedUsers.filter(u => u.uid == this.bizFire.currentUID)
                             .forEach(user =>{
-                              this.mydata = user;
                               console.log(user.data.displayName);
                             });
                             if(this.partnerUid){
@@ -192,7 +190,8 @@ export class MemberPage {
     // 이벤트 버블링 중지
     ev.stopPropagation();
     console.log("show my profile");
-    let popover = this.popoverCtrl.create('page-profile',{me: this.mydata,target : target,manager: this.managerUid,partner: this.Partner}, {cssClass: 'page-profile'});
+    
+    let popover = this.popoverCtrl.create('page-profile',{target : target,groupColor : this.groupMainColor}, {cssClass: 'page-profile'});
     popover.present({
       animate: false,
     });

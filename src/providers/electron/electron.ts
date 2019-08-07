@@ -16,9 +16,13 @@ export class Electron {
     this.ipc = electron.ipcRenderer;
   }
 
+  windowHide(){
+    electron.remote.getCurrentWindow().hide();
+  }
   // 디폴트 상태창 숨기고 X버튼에 프로그램 종료이벤트 추가.
+  // windowClose는 채팅창에서만 사용
   windowClose(){
-    electron.remote.getCurrentWindow().close();
+    electron.remote.getCurrentWindow().hide();
   }
   windowMimimize(){
     electron.remote.getCurrentWindow().minimize();

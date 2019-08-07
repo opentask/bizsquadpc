@@ -198,10 +198,8 @@ export class TabsPage {
     this.navCtrl.setRoot('page-group-list').catch(error => console.error(error));
   }
   
-  windowClose() {
-    this.bizFire.windowCloseAndUserStatus().then(() => {
-      this.electron.windowClose();
-    });
+  windowHide() {
+    this.electron.windowHide();
   }
 
   windowMimimize() {

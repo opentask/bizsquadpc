@@ -73,7 +73,7 @@ function createWindow() {
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -95,13 +95,16 @@ app.on('ready', function(){
 });
 // 모든 창이 닫히면 애플리케이션 종료.
 app.on('window-all-closed', () => {
-    app.quit();
     // macOS의 대부분의 애플리케이션은 유저가 Cmd + Q 커맨드로 확실하게
     // 종료하기 전까지 메뉴바에 남아 계속 실행됩니다.
-    // if (process.platform !== 'darwin') {
-    //     app.quit();
-    // }
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
+
+app.on('activate', () => { 
+    win.show() 
+})
 
 ipcMain.on('windowsFlashFrame',(event, count) => {
     if(count > 0) {
@@ -163,7 +166,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             slashes: true,
         }))
 
-        // chatWindowState.manage(testRooms[chatRoomId]);
+        chatWindowState.manage(testRooms[chatRoomId]);
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
@@ -221,17 +224,18 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
     // git의 버전을 담습니다.
     let releaseNameG = "";
     if(releaseName){
-        releaseNameG = 'There is a new BizSquad version '+releaseName+'.'; 
+        releaseNameG = 'The new version is installed. '+releaseName+'.'; 
     } else {
-        releaseNameG = 'There is a new BizSquad version.';
+        releaseNameG = 'The new version is installed.';
     }
 
+    // 여기에 패치내용 작성.
     const dialogOpts = {
         type: 'question',
-        buttons: ['Install and Relaunch', 'Later'],
+        buttons: ['Restart now', 'Later'],
         title: 'Application Update',
         message: releaseNameG,
-        detail: 'Do you want to install it now?\nWhen you quit the app,it will automatically start the installation.',
+        detail: '1.채팅창 외 메인 윈도우에서 X버튼 클릭 시 앱이 종료되지 않고 트레이 됨\n종료를 원하면 최소화된 앱아이콘을 우 마우스 클릭후 종료\n(윈도우 사용자 테스트 부탁드립니다).\n2.채팅 버그수정',
         icon: path.join(__dirname, 'logo512.png'),
         noLink : true
     }
@@ -241,6 +245,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
 });
 
 autoUpdater.checkForUpdatesAndNotify();
+
 // 10분마다 버전 체크 후 업데이트
 setInterval(function() {
     autoUpdater.checkForUpdatesAndNotify();
