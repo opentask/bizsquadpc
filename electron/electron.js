@@ -73,7 +73,7 @@ function createWindow() {
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -93,17 +93,24 @@ function createWindow() {
 app.on('ready', function(){
     createWindow();
 });
+
 // 모든 창이 닫히면 애플리케이션 종료.
 app.on('window-all-closed', () => {
+
+    app.quit();
     // macOS의 대부분의 애플리케이션은 유저가 Cmd + Q 커맨드로 확실하게
     // 종료하기 전까지 메뉴바에 남아 계속 실행됩니다.
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    // if (process.platform !== 'darwin') {
+    //     app.quit();
+    // }
 });
 
-app.on('activate', () => { 
-    win.show() 
+
+// 앱이 하이드된 상태에서 앱아이콘을 클릭 시
+app.on('activate', () => {
+    if(win !== null){
+        win.show();
+    }
 })
 
 ipcMain.on('windowsFlashFrame',(event, count) => {
@@ -166,7 +173,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             slashes: true,
         }))
 
-        chatWindowState.manage(testRooms[chatRoomId]);
+        // chatWindowState.manage(testRooms[chatRoomId]);
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
@@ -235,7 +242,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         buttons: ['Restart now', 'Later'],
         title: 'Application Update',
         message: releaseNameG,
-        detail: '1.채팅창 외 메인 윈도우에서 X버튼 클릭 시 앱이 종료되지 않고 트레이 됨\n종료를 원하면 최소화된 앱아이콘을 우 마우스 클릭후 종료\n(윈도우 사용자 테스트 부탁드립니다).\n2.채팅 버그수정',
+        detail: '1.채팅창 외 메인 윈도우에서 X버튼 클릭 시 앱이 종료되지 않고 트레이 됨\n종료를 원하면 최소화된 앱아이콘을 우 마우스 클릭후 종료\n(윈도우 사용자 테스트 부탁드립니다).\n2.chat bug fixed\n3.user status bug fixed',
         icon: path.join(__dirname, 'logo512.png'),
         noLink : true
     }

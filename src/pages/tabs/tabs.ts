@@ -85,6 +85,13 @@ export class TabsPage {
     ) {
       // test notification count   
       this._unsubscribeAll = new Subject<any>();
+
+    // 채팅이 아닌 메인 윈도우를 우클릭으로 완전 종료시 유저상태변경하는 리스너.
+      window.addEventListener('unload', () => {
+        this.bizFire.windowCloseAndUserStatus().then(() => {
+            this.bizFire.signOut();
+        });
+      })
   }
 
   ngOnInit() {

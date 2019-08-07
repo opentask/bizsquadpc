@@ -95,10 +95,7 @@ export class LoginPage implements OnInit {
     this.bizFire.authState
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((state: IUserState) => {
-        if(state.user && state.autoSignIn) {
-          console.log('user already logged in, Force SignOut?',state.user.email);
-          this.bizFire.signOut();
-        }
+      console.log("statestatestate",state);
     });
 
     electron.ipcRenderer.on('message',function(text) {
@@ -110,35 +107,6 @@ export class LoginPage implements OnInit {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
-
-  // onLogin() {
-  //   this.loading.show();
-  //   console.log(this.loginForm.valid);
-  //   if (!this.loginForm.valid) {
-  //
-  //     this.loading.hide();
-  //     this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
-  //   } else {
-  //     // 로그인 정보 인증
-  //       this.bizFire.loginWithEmail(this.loginForm.value['email'], this.loginForm.value['password']).then(user  => {
-  //         console.log(user);
-  //         this.loading.hide();
-  //         this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
-  //
-  //         this.bizFire.getUserOnlineStatus().then(() =>{
-  //
-  //           this.electron.updateOnlineStatus();
-  //
-  //           this.navCtrl.setRoot('page-group-list').catch(error => console.error(error));
-  //         })
-  //
-  //       }).catch(err => {
-  //         // 로그인 인증 실패
-  //         this.loading.hide();
-  //         this.electron.showErrorMessages("Login failed.","you entered an incorrect email address or password.");
-  //       });
-  //   }
-  // }
 
   async onLogin() {
     this.loading.show();
