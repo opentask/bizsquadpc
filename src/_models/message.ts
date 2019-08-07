@@ -1,4 +1,5 @@
 import { ISquad } from "../providers/squad.service";
+import { IBizGroup } from "../providers/biz-fire/biz-fire";
 
 export interface IUser {
     uid: string,
@@ -59,7 +60,8 @@ export interface INotificationItem extends INotification {
     header: string[],
     content: string[],
     link?:string[],
-    user?: IUser
+    user?: IUser,
+    groupColor?: string
   }
 }
 

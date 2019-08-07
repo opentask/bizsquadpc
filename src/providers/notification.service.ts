@@ -197,14 +197,14 @@ export class NotificationService {
         
             // convert
             const item: INotificationItem = notification;
-            item.html = { header: null, content: null, link: null, user:null };
+            item.html = { header: null, content: null, link: null, user:null,groupColor: null };
         
             // to where?
             if (info.type === 'group') {
                 // 누가 어느 그룹에
                 zip(userObserver, groupObserver)
                 .subscribe(([u, g]) => {
-
+                
                   let team_name;
                   let userName;
                   if(u != null ){
@@ -214,6 +214,7 @@ export class NotificationService {
                   }
                   if( g != null){
                     team_name = g['team_name'];
+                    item.html.groupColor = g['team_color'];
                   } else {
                     team_name = `deleted BizGroup`;
                   }
@@ -245,7 +246,7 @@ export class NotificationService {
 
             // convert
             const item: INotificationItem = notification;
-            item.html = { header: null, content: null, link: null, user: null};
+            item.html = { header: null, content: null, link: null, user: null,groupColor: null};
 
             if (data.post === true) {
 
@@ -264,6 +265,7 @@ export class NotificationService {
                   }
                   if( g != null){
                     team_name = g['team_name'];
+                    item.html.groupColor = g['team_color'];
                   } else {
                     team_name = `deleted BizGroup`;
                   }
@@ -292,6 +294,10 @@ export class NotificationService {
                       userName = u.data['displayName'] || u.data['email'];
                     } else {
                       userName = `deleted user`;
+                    }
+
+                    if( g != null){
+                      item.html.groupColor = g['team_color'];
                     }
 
                     // set content
@@ -323,7 +329,7 @@ export class NotificationService {
         
             // convert
             const item: INotificationItem = notification;
-            item.html = { header: null, content: null, link: null};
+            item.html = { header: null, content: null, link: null,groupColor : null};
         
 
             zip(userObserver, groupObserver)
@@ -338,6 +344,7 @@ export class NotificationService {
                   }
                   if( g != null){
                     team_name = g['team_name'];
+                    item.html.groupColor = g['team_color'];
                   } else {
                     team_name = `deleted BizGroup`;
                   }

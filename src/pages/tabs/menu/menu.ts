@@ -1,3 +1,4 @@
+import { GroupColorProvider } from './../../../providers/group-color';
 import { NotifyPage } from './../../tab/notify/notify';
 import { Electron } from './../../../providers/electron/electron';
 import { BizFireService,IBizGroup, Igroup } from './../../../providers/biz-fire/biz-fire';
@@ -42,28 +43,29 @@ export class MenuPage {
 
   isListShown : boolean = true;
 
-  private filterGid$ = new BehaviorSubject<string>(null);
+  private filterGroup$ = new BehaviorSubject<IBizGroup>(null);
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     private bizFire: BizFireService,
     public electron : Electron,
+    public groupColorProvider : GroupColorProvider,
     private noticeService: NotificationService) {
       this._unsubscribeAll = new Subject<any>(); 
       this.ipc = electron.ipc;
   }
   ngOnInit(): void {
 
-    combineLatest(this.bizFire.onBizGroups,this.noticeService.onNotifications,this.filterGid$)
+    combineLatest(this.bizFire.onBizGroups,this.noticeService.onNotifications,this.filterGroup$)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(([groups,msgs,filter_gid]) => {
+      .subscribe(([groups,msgs,filterGroup]) => {
 
         this.groups = groups;
         this.allMessages = msgs;
   
-        if(filter_gid !== null) {
-          this.messages = msgs.filter(m => m.data.gid === filter_gid && m.data.statusInfo.done !== true);
+        if(filterGroup !== null) {
+          this.messages = msgs.filter(m => m.data.gid === filterGroup.gid && m.data.statusInfo.done !== true);
         } else {
           this.messages = msgs.filter(m => m.data.statusInfo.done !== true);
         }
@@ -73,13 +75,14 @@ export class MenuPage {
 
         // this.makeEachGroup(this.messages);
         console.log("combineLatest : [groups,msgs]",groups,msgs);
-        console.log("filter_gid", filter_gid);
+        console.log("filter_gid", filterGroup);
 
       });
   }
 
   notifyFilter(group) {
-    this.filterGid$.next(group.gid);
+    console.log(group);
+    this.filterGroup$.next(group);
   }
 
   groupCountBadge(gid) {
@@ -87,7 +90,7 @@ export class MenuPage {
   }
 
   showAllNotify(){
-    this.filterGid$.next(null);
+    this.filterGroup$.next(null);
   }
 
   makeHtml(notification: INotification) {
@@ -109,7 +112,7 @@ export class MenuPage {
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
-    this.filterGid$.next(null);
+    this.filterGroup$.next(null);
   }
 
 }

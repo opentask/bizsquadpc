@@ -49,8 +49,6 @@ export class NotifyPage {
 
   ngOnInit(): void {
 
-    this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
-
     this.noticeService.onNotifications
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(msgs => {

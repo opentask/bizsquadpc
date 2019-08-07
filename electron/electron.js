@@ -173,7 +173,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             slashes: true,
         }))
 
-        // chatWindowState.manage(testRooms[chatRoomId]);
+        chatWindowState.manage(testRooms[chatRoomId]);
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
@@ -226,6 +226,7 @@ autoUpdater.on('download-progress', function (progressObj) {
     log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
     sendStatusToWindow(log_message);
 });
+
 autoUpdater.on('update-downloaded', (event,releaseName) => {
 
     // git의 버전을 담습니다.
@@ -242,7 +243,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         buttons: ['Restart now', 'Later'],
         title: 'Application Update',
         message: releaseNameG,
-        detail: '1.채팅창 외 메인 윈도우에서 X버튼 클릭 시 앱이 종료되지 않고 트레이 됨\n종료를 원하면 최소화된 앱아이콘을 우 마우스 클릭후 종료\n(윈도우 사용자 테스트 부탁드립니다).\n2.chat bug fixed\n3.user status bug fixed',
+        detail: 'Do you want to restart now?',
         icon: path.join(__dirname, 'logo512.png'),
         noLink : true
     }

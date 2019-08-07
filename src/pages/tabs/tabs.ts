@@ -96,23 +96,6 @@ export class TabsPage {
 
   ngOnInit() {
 
-    // * current User for RIGHT MENU
-    // this.bizFire.currentUser
-    //     .pipe(filter(d=>d!=null), takeUntil(this._unsubscribeAll))
-    //     .subscribe(user => {
-    //         this.currentUser = user;
-    //         this.displayName = this.bizFire.getDiplayNameInitial();
-    //         this.fullName = user.displayName || user.email;
-    // });
-
-    // this.bizFire.onBizGroups
-    //     .pipe(filter(g=>g!=null),
-    //     takeUntil(this._unsubscribeAll))
-    //     .subscribe((groups: IBizGroup[]) => {
-    //
-    //       this.currentGroupList = groups;
-    //     });
-
     this.bizFire.onBizGroupSelected
         .pipe(filter(g=>g!=null))
         .subscribe((group) => {
@@ -120,11 +103,6 @@ export class TabsPage {
 
             // set selected group to
             this.currentGroup = group;
-
-            // this.isPartner = this.bizFire.isPartner(group);
-            // set select values.
-            // this.groupList = this.currentGroupList.filter(g => g.gid!==this.currentGroup.gid);
-            // set menu font color.
             this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
         });
 
