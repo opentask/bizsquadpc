@@ -5,14 +5,14 @@
             <ng-container>
                 <ion-list no-margin *ngFor="let manager of managerAuthUser">
                     <ion-item style="background-color: #f6f6f6" no-lines> 
-                            <span [style.color]="groupMainColor" class="list">Manager</span>
+                            <span [style.color]="currentGroup.data.team_color" class="list">Manager</span>
                     </ion-item>
                     <ion-item class="userList listBorder" no-lines *ngIf="!serachValue || manager.data.displayName.indexOf(serachValue.trim())>-1"> 
                         <ion-avatar item-start *ngIf="manager && manager.data.photoURL" (click)="clickAvatar($event,manager)">
                             <img class="photoURL" src="{{ manager.data.photoURL }}">
                             <ion-badge class="statusBadge" [style.background-color]="manager.data.user_onlineColor"></ion-badge>
                         </ion-avatar>
-                        <ion-avatar [style.background-color]=groupMainColor class="notPhoto" item-start *ngIf="manager && manager.data.photoURL == null" (click)="clickAvatar($event,manager)">
+                        <ion-avatar [style.background-color]=currentGroup.data.team_color class="notPhoto" item-start *ngIf="manager && manager.data.photoURL == null" (click)="clickAvatar($event,manager)">
                             <span class="displayName">{{ manager.data.user_icon }}</span>
                             <ion-badge class="statusBadge" [style.background-color]="manager.data.user_onlineColor"></ion-badge>
                         </ion-avatar>
@@ -21,7 +21,7 @@
                     </ion-item>
                 </ion-list>
                 <ion-item style="background-color: #f6f6f6" no-lines *ngIf="memberCount > 0">
-                    <span [style.color]="groupMainColor" class="list">Member <span class="member-count">&nbsp;{{ memberCount }}</span></span>
+                    <span [style.color]="currentGroup.data.team_color" class="list">Member <span class="member-count">&nbsp;{{ memberCount }}</span></span>
                 </ion-item>
                 <ion-list no-margin>
                     <ng-container *ngFor="let member of memberAuthUser">
@@ -30,7 +30,7 @@
                                 <img class="photoURL" src="{{ member.data.photoURL }}">
                                 <ion-badge class="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
                             </ion-avatar>
-                            <ion-avatar [style.background-color]=groupMainColor class="notPhoto" item-start *ngIf="member && member.data.photoURL == null" (click)="clickAvatar($event,member)">
+                            <ion-avatar [style.background-color]=currentGroup.data.team_color class="notPhoto" item-start *ngIf="member && member.data.photoURL == null" (click)="clickAvatar($event,member)">
                                 <span class="displayName">{{ member.data.user_icon }}</span>
                                 <ion-badge class="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
                             </ion-avatar>
@@ -40,7 +40,7 @@
                     </ng-container>
                 </ion-list>
                 <ion-item style="background-color: #f6f6f6" no-lines *ngIf="partnerCount > 0">
-                    <span [style.color]="groupMainColor" class="list">Partner <span class="member-count">&nbsp;{{ partnerCount }}</span></span>
+                    <span [style.color]="currentGroup.data.team_color" class="list">Partner <span class="member-count">&nbsp;{{ partnerCount }}</span></span>
                 </ion-item> 
                 <ion-list no-margin>
                     <ng-container *ngFor="let partner of partnerAuthUser">
@@ -49,7 +49,7 @@
                                 <img class="photoURL" src="{{ partner.data.photoURL }}">
                                 <ion-badge class="statusBadge" [style.background-color]="partner.data.user_onlineColor"></ion-badge>
                             </ion-avatar>
-                            <ion-avatar class="notPhoto" item-start *ngIf="partner && partner.data.photoURL == null" (click)="clickAvatar($event,partner)">
+                            <ion-avatar [style.background-color]=currentGroup.data.team_color class="notPhoto" item-start *ngIf="partner && partner.data.photoURL == null" (click)="clickAvatar($event,partner)">
                                 <span class="displayName">{{ partner.data.user_icon }}</span>
                                 <ion-badge class="statusBadge" [style.background-color]="partner.data.user_onlineColor"></ion-badge>
                             </ion-avatar>

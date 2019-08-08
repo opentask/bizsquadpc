@@ -21,11 +21,12 @@
                         <ng-container *ngIf="!isPartner">
 
                           <ion-item no-lines>
-                            <span class="list" [style.color]="groupMainColor">Bookmark</span>
+                            <span class="list" [style.color]="currentBizGroup.data.team_color">Bookmark</span>
                           </ion-item>
 
                           <ng-container *ngFor="let squad of bookmark">
-                            <ion-item *ngIf="squad.data.type === 'public'" no-lines class="squadList-item" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
+                            <ion-item *ngIf="squad.data.type === 'public'" no-lines class="squadList-item" 
+                            (click)="ipc.send('loadGH',webUrl+customToken+'&url=squad/'+currentBizGroup.gid+'/'+squad.sid);">
                               <span class="long-text">{{squad.data.name}}</span>
                               <span class="member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>
                               <button class="squadList-button" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
@@ -56,10 +57,11 @@
 <!--                                </div>-->
 <!--                            </ion-item>-->
                             <ion-item no-lines>
-                              <span class="list" [style.color]="groupMainColor">Squads</span>
+                              <span class="list" [style.color]="currentBizGroup.data.team_color">Squads</span>
                             </ion-item>
 
-                            <ion-item no-lines class="squadList-item" *ngFor="let squad of publicSquads" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
+                            <ion-item no-lines class="squadList-item" *ngFor="let squad of publicSquads"
+                            (click)="ipc.send('loadGH',webUrl+customToken+'&url=squad/'+currentBizGroup.gid+'/'+squad.sid);">
                                 <span class="long-text">{{squad.data.name}}</span>
                                 <span class="member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>
                                 <button class="squadList-button" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
@@ -96,11 +98,12 @@
 <!--                            </div>-->
 <!--                        </ion-item>-->
                         <ion-item no-lines>
-                          <span class="list" [style.color]="groupMainColor">Bookmark</span>
+                          <span class="list" [style.color]="currentBizGroup.data.team_color">Bookmark</span>
                         </ion-item>
 
                         <ng-container *ngFor="let squad of bookmark">
-                          <ion-item *ngIf="squad.data.type === 'private'" no-lines class="squadList-item" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
+                          <ion-item *ngIf="squad.data.type === 'private'" no-lines class="squadList-item" 
+                          (click)="ipc.send('loadGH',webUrl+customToken+'&url=squad/'+currentBizGroup.gid+'/'+squad.sid);">
                             <span class="long-text">{{squad.data.name}}</span>
                             <span class="member-count"><ion-icon name="person"></ion-icon> {{ generalMembers }}</span>
                             <button class="squadList-button" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">
@@ -114,10 +117,11 @@
                         </ng-container>
 
                         <ion-item no-lines>
-                          <span class="list" [style.color]="groupMainColor">Squads</span>
+                          <span class="list" [style.color]="currentBizGroup.data.team_color">Squads</span>
                         </ion-item>
 
-                        <ion-item no-lines class="squadList-item" *ngFor="let squad of privateSquads" (click)="ipc.send('loadGH','https://product.bizsquad.net/main/'+currentBizGroup.gid+'/'+squad.sid+'?token='+customToken);">
+                        <ion-item no-lines class="squadList-item" *ngFor="let squad of privateSquads" 
+                        (click)="ipc.send('loadGH',webUrl+customToken+'&url=squad/'+currentBizGroup.gid+'/'+squad.sid);">
                             <span class="long-text">{{squad.data.name}}</span>
                             <span class="member-count"><ion-icon name="person"></ion-icon> {{squad.data.member_count}}</span>
                             <button class="squadList-button" [color]="groupMainColor" ion-button clear icon-only (click)="onSquadChat($event,squad)">

@@ -237,7 +237,6 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         releaseNameG = 'The new version is installed.';
     }
 
-    // 여기에 패치내용 작성.
     const dialogOpts = {
         type: 'question',
         buttons: ['Restart now', 'Later'],

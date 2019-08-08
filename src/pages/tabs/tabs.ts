@@ -82,6 +82,7 @@ export class TabsPage {
     public accountService : AccountService,
     public alertCtrl: AlertProvider,
     public groupColorProvider : GroupColorProvider,
+    private tokenService: TokenProvider
     ) {
       // test notification count   
       this._unsubscribeAll = new Subject<any>();
@@ -104,16 +105,24 @@ export class TabsPage {
             // set selected group to
             this.currentGroup = group;
             this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
+
         });
 
-    // get number of unfinished notices.
     this.noticeService.onNotifications
-    .pipe(filter(n => n!=null),takeUntil(this._unsubscribeAll))
+    .pipe(
+      filter(n=>n != null),takeUntil(this._unsubscribeAll))
     .subscribe((msgs: INotification[]) => {
-        console.log("tabs notifi",msgs);
-        console.log(msgs.length);
-        this.badgeCount = msgs.length;
+      if(msgs){
+        // get unfinished notification count.
+        console.log("msgsmsgsmsgsmsgs",msgs);
+        this.badgeCount = msgs.filter(m => m.data.statusInfo.done !== true).length;
+
+        if(this.badgeCount > 99){ this.badgeCount = 99; }
+        console.log("tabs badgeCount:",this.badgeCount);
+      }
+      
     });
+
 
     this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.currentGroup.gid}/chat`,ref =>{
         return ref.where('status', '==' ,true).where(`members.${this.bizFire.currentUID}`, '==', true);

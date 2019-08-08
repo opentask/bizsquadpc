@@ -6,11 +6,11 @@
         <ion-badge id="statusBadge" (click)="showStatus()" [style.background-color]="myStatus">V</ion-badge>
     </ion-avatar>
     <!-- 프로필 사진이 없으면 -->
-    <ion-avatar class="notPhoto" item-start *ngIf="currentUser && currentUser.photoURL == null && displayName != null">
+    <ion-avatar class="notPhoto" [style.background-color]=group.data.team_color item-start *ngIf="currentUser && currentUser.photoURL == null && displayName != null">
         <span class="displayName">{{ displayName }}</span>
         <ion-badge id="statusBadge" (click)="showStatus()" [style.background-color]="myStatus">V</ion-badge>
     </ion-avatar>
-    <ion-badge *ngIf="badgeCount" class="notifiBadge" (click)="showNotify()">&nbsp;</ion-badge>
+    <ion-badge *ngIf="badgeCount" class="notifiBadge" (click)="showNotify()">{{ badgeCount }}</ion-badge>
     <h2 class="user-name" *ngIf="currentUser.displayName != null">{{ fullName }}
         <button end ion-button icon-only clear color="dark" style="float: right" (click)="showMenu()">
             <ion-icon name="more"></ion-icon>
@@ -30,7 +30,7 @@
   </ion-item>
   <div id="popup" *ngIf="menuShow">
     <ul>
-        <li id="profileSetting" (click)="ipc.send('loadGH','https://product.bizsquad.net/teamlist/account?token='+'customToken')">My Account</li>
+        <li id="profileSetting"(click)="ipc.send('loadGH',webUrl+customToken+'&url=mypage')">My Account</li>
         <li id="signoutBtn" (click)="logout()">Sign out</li>
         <li id="exitBtn" (click)="windowClose()">Exit</li>
     </ul>
@@ -46,19 +46,19 @@
     <span>Taskbox</span>
         <ul>
             <li>
-                <button id="extMember" (click)="ipc.send('loadGH','https://product.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
-                    <img src="imgs/member.svg"> 
-                    <span class="title">Member</span> 
+                <button id="extMember" (click)="ipc.send('loadGH',webUrl+customToken+'&url=home/'+group.gid+'/users');">
+                    <img src="imgs/member.svg">
+                    <span class="title">Member</span>
                 </button>
             </li>
             <li>
-                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH','https://product.bizsquad.net/bbs/'+group.gid+'&token='+customToken);">
+                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH',webUrl+customToken+'&url=bbs/'+group.gid);">
                     <img src="imgs/notice.svg">
                     <span class="title">Notice</span>
                 </button>
             </li>
             <li>
-                <button [disabled]="!manager" (click)="ipc.send('loadGH','https://product.bizsquad.net/teamlist/members?gid='+group.gid+'&token='+customToken);">
+                <button [disabled]="!manager" (click)="ipc.send('loadGH',webUrl+customToken+'&url=home/'+group.gid+'/property');">
                     <img src="imgs/setting.svg">
                     <span class="title">Management</span>
                 </button>

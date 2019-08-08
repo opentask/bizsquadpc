@@ -74,10 +74,7 @@ export class HomePage implements OnInit {
 
   private _unsubscribeAll;
 
-  private nameMargins: Subscription[] = []; // margin name arrays.
-
-  private dataCache = new DataCache();
-
+  webUrl = 'http://localhost:4200/auth?token=';
 
   constructor(
     public navCtrl: NavController, 
@@ -97,7 +94,13 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
 
-    this.customToken = this.tokenService.customToken;
+    this.group = this.bizFire.onBizGroupSelected.getValue();
+
+    this.bizFire.userCustomToken
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((token) => {
+      this.customToken = token;
+    })
 
     // * current User for RIGHT MENU
     this.bizFire.currentUser
@@ -123,7 +126,6 @@ export class HomePage implements OnInit {
         this.fullName = user.displayName;
     });
 
-    this.group = this.bizFire.onBizGroupSelected.getValue();
 
 
     this.bizFire.userCustomLinks.pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
@@ -189,7 +191,7 @@ export class HomePage implements OnInit {
           return ret;
         }).length;
   
-        console.log("selectGroup MSG :",this.badgeCount);
+        if(this.badgeCount > 99){ this.badgeCount = 99; }
       }
       
     });

@@ -29,7 +29,7 @@ export interface IAlarm {
 })
 export class NotificationService {
 
-    webUrl = "https://product.bizsquad.net/";
+    webUrl = 'http://localhost:4200/auth?token=';
 
     // for notice component.
     onNotifications = new BehaviorSubject<INotification[]>(null);
@@ -50,6 +50,8 @@ export class NotificationService {
 
     public ipc: any;
 
+    customToken: any;
+
     constructor(
         private bizFire: BizFireService,
         private tokenService : TokenProvider,
@@ -58,14 +60,25 @@ export class NotificationService {
         ) {
             this.ipc = this.electron.ipc;
 
+            this.bizFire.userCustomToken
+            .pipe(takeUntil(this.bizFire.onUserSignOut))
+            .subscribe((token) => {
+              this.customToken = token;
+            })
+
             // delete all notifications
             this.bizFire.onUserSignOut.subscribe(()=>{
 
+                this.notifyKey = null;
                 //this.onUnfinishedNotices.next([]);
                 this.onNotifications.next(null);
                 // clear cache.
                 this.fireData.clear();
-                this.notifyKey = null;
+
+                if(this.notifySub){
+                    this.notifySub.unsubscribe();
+                    this.notifySub = null;
+                }
             
             });
 
@@ -154,14 +167,14 @@ export class NotificationService {
     }
 
     // Click alarm text. 아직 안씀 보류
-    onClickNotifyContents(msg: INoticeItem) {
-        if(msg.data && msg.data.link != null && msg.data.link.length > 1){
-            
-            // found rounterLink
-            const link = msg.data.link[1];
+    onClickNotifyContents(msg: INotificationItem) {
 
-            this.ipc.send('loadGH',link);
-        }
+        // 알람 스테이터스 true로 변경.
+        this.bizFire.setReadNotify(msg).then(() => {
+            console.log(msg);
+            // 웹 링크로 이동.
+            this.ipc.send('loadGH',msg.html.link[0]);
+        })
     }
 
 
@@ -222,7 +235,7 @@ export class NotificationService {
                   // set content
                   item.html.header = [`${userName}`,`invited you to BizGroup ${team_name}`];
                   item.html.content = [`Invitation to ${team_name}`];
-                  item.html.link = [`https://product.bizsquad.net`];
+                  item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
                   item.html.user = u;
 
                   resolve.next(item);
@@ -273,7 +286,7 @@ export class NotificationService {
                 // set content
                 item.html.header = [`${userName}`, `posted ${info.title}`];
                 item.html.content = [`${info.title}`];
-                item.html.link = [`${team_name} > ${s['name']}`, `/squad/${data.gid}/${info.sid}/post`];
+                item.html.link = [`${this.webUrl}${this.customToken}&url=squad/${data.gid}/${info.sid}/post`];
                 item.html.user = u;
 
                 resolve.next(item);
@@ -305,7 +318,7 @@ export class NotificationService {
                     item.html.content = [`${userName} 씨가 새 게시글 등록했다. 보려면 밑에 링크를 클릭하라.`];
 
                     // second array is a routerLink !
-                    item.html.link = [`${title}`, `/bbs/${data.gid}/${data.info.mid}/read`];
+                    item.html.link = [`${this.webUrl}${this.customToken}&url=bbs/${data.gid}/${data.info.mid}/read`];
                     item.html.user = u;
 
                     resolve.next(item);
@@ -352,7 +365,7 @@ export class NotificationService {
                   // user joined a group.
                   item.html.header = [`${userName}`, `joined ${team_name}`];
                   item.html.content = [`${userName} joined BizGroup ${team_name}`];
-                  //item.html.link = [`${g['team_name']}`, `/main/${notify.gid}`];
+                  item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
 
                   resolve.next(item);
 

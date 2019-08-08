@@ -7,13 +7,14 @@ page-tabs {
     }
     #badge {
         position: absolute;
-        // top: -3px;
-        left:16px;
-        top: 4px;
+        left: 14px;
+        top: 1px;
         border-radius: 100%;
-        padding:0;
-        width: 10px;
-        height: 10px;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+        font-size: 12px;
+        line-height: 1.4;
         background-color: red;
     }
     .tab-button ion-badge{

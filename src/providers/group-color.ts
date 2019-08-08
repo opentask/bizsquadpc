@@ -14,6 +14,9 @@ export class GroupColorProvider {
           return 'accent';
       case '#3f51b5':
           return 'primary';
+      case '#5b9ced':
+          return 'skyblue';
+
       case undefined:
           return 'default';
       default:

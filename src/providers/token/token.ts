@@ -11,28 +11,13 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class TokenProvider {
 
-    customToken : any;
+    customToken : string;
 
     constructor(
         private http: HttpClient,
         private bizFire:BizFireService) {
     }
-
-    async getToken(uid) {
-        const path = `${environment.bizServerUri}/customToken`;
-        const header = await this.bizFire.idTokenHeader();
-        const body = { 
-            uid: uid 
-        }
-        if(uid != null) {
-            this.http.post(path,body,{headers: header}).subscribe((res: any) => {
-                if(res.result === true) {
-                  this.customToken = res.customToken;
-                  console.log("커스텀 토큰 값",this.customToken);
-                }
-            })
-        }
-    }
+    
     async testSendFcm() {
         const path = `${environment.bizServerUri}/sendFCM`;
         const header = await this.bizFire.idTokenHeader();

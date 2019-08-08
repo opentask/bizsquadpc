@@ -52,8 +52,11 @@ export class MenuPage {
     public electron : Electron,
     public groupColorProvider : GroupColorProvider,
     private noticeService: NotificationService) {
+      
       this._unsubscribeAll = new Subject<any>(); 
+
       this.ipc = electron.ipc;
+      this.filterGroup$.next(null);
   }
   ngOnInit(): void {
 
@@ -62,20 +65,20 @@ export class MenuPage {
       .subscribe(([groups,msgs,filterGroup]) => {
 
         this.groups = groups;
-        this.allMessages = msgs;
+        if(msgs !== null) {
+          this.allMessages = msgs;
+
+          this.noNotify = this.allMessages.length === 0;
+          this.messages = msgs;
+    
+          if(filterGroup != null) {
+            // this.messages = msgs.filter(m => m.data.gid === filterGroup.gid && m.data.statusInfo.done !== true);
+            this.messages = msgs.filter(m => m.data.gid === filterGroup.gid);
+          }
   
-        if(filterGroup !== null) {
-          this.messages = msgs.filter(m => m.data.gid === filterGroup.gid && m.data.statusInfo.done !== true);
-        } else {
-          this.messages = msgs.filter(m => m.data.statusInfo.done !== true);
+          this.badgeCount = this.allMessages.filter(m => m.data.statusInfo.done !== true).length;
+  
         }
-
-        this.badgeCount = this.allMessages.length;
-        this.noNotify = this.badgeCount === 0;
-
-        // this.makeEachGroup(this.messages);
-        console.log("combineLatest : [groups,msgs]",groups,msgs);
-        console.log("filter_gid", filterGroup);
 
       });
   }
@@ -86,7 +89,22 @@ export class MenuPage {
   }
 
   groupCountBadge(gid) {
-    return this.allMessages.filter(m => m.data.gid === gid).length;
+    if(this.allMessages != null) {
+      return this.allMessages.filter(m => m.data.gid === gid && m.data.statusInfo.done !== true).length;
+    } else {
+      return 0;
+    }
+  }
+  groupNotify(gid) {
+    if(this.allMessages != null) {
+      if(this.allMessages.filter(m => m.data.gid === gid).length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false
+    }
   }
 
   showAllNotify(){
@@ -110,9 +128,9 @@ export class MenuPage {
   }
 
   ngOnDestroy(): void {
+    this.filterGroup$.next(null);
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
-    this.filterGroup$.next(null);
   }
 
 }

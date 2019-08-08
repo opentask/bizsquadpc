@@ -1,3 +1,4 @@
+import { TokenProvider } from './../../providers/token/token';
 import { Electron } from './../../providers/electron/electron';
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -50,7 +51,8 @@ export class LoginPage implements OnInit {
     public electron: Electron,
     private bizFire: BizFireService,
     private loading: LoadingProvider,
-    public formBuilder: FormBuilder
+    public formBuilder: FormBuilder,
+    private TokenProvider: TokenProvider
     ) {
       this.loginForm = formBuilder.group({
         email: ['', this.emailValidator],
@@ -130,8 +132,8 @@ export class LoginPage implements OnInit {
 
         this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
 
-
         const gid = await this.findLastBizGroup();
+
         if(gid && await this.bizFire.onSelectGroup(gid)) {
           // this.navCtrl.setRoot('page-group-list');
           this.navCtrl.setRoot('page-tabs');

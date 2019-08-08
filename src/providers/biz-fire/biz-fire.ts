@@ -1,6 +1,7 @@
+import { TokenProvider } from './../token/token';
 import {App} from 'ionic-angular';
 import { Injectable } from '@angular/core';
-import { IUserData } from './../../_models/message';
+import {INoticeItem, INotificationData, IUserData, INotificationItem} from './../../_models/message';
 import { User } from 'firebase';
 import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -11,9 +12,10 @@ import firebase from 'firebase';
 import { LangService } from '../../biz-common/lang-service';
 import { STRINGS, Commons } from '../../biz-common/commons';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { FireDataKey } from '../../classes/fire-data-key';
 import { FireData } from '../../classes/fire-data';
+import { environment } from '../../environments/environments';
 
 export interface IUserState {
   status:'init'|'signIn'|'signOut',
@@ -123,6 +125,12 @@ export class BizFireService {
   }
 
   userCustomLinks = new BehaviorSubject<userLinks[]>(null);
+  
+  userCustomToken = new BehaviorSubject<string>(null);
+
+  get _userCustomToken(): string {
+    return this.userCustomToken.getValue();
+  }
 
 
   // * Biz Groups
@@ -158,6 +166,7 @@ export class BizFireService {
     public afAuth: AngularFireAuth,
     public afStore: AngularFirestore,
     public afStorage: AngularFireStorage,
+    private http: HttpClient,
     public _app : App
     ) {
         
@@ -180,6 +189,10 @@ export class BizFireService {
             }
 
             if(user){
+
+                if(this._userCustomToken == null) {
+                    this.getToken(user.uid);
+                }
 
                 if(this.bizGroupSub){
                     this.bizGroupSub();
@@ -227,6 +240,7 @@ export class BizFireService {
         this.userState.autoSignIn = false;
 
         this.afAuth.auth.signInWithEmailAndPassword(email, password).then(user => {
+
             resolve(user);
 
             this.afStore.firestore.collection(`users/${user.user.uid}/customlinks`).onSnapshot(linksSnap => {
@@ -244,6 +258,22 @@ export class BizFireService {
         });
     })
   }
+
+    async getToken(uid) {
+        const path = `${environment.bizServerUri}/customToken`;
+        const header = await this.idTokenHeader();
+        const body = {
+            uid: uid 
+        }
+        if(uid != null) {
+            this.http.post(path,body,{headers: header}).subscribe((res: any) => {
+                if(res.result === true) {
+                    this.userCustomToken.next(res.customToken);
+                    console.log(res.customToken);
+                }
+            })
+        }
+    }
 
   getDiplayNameInitial(count = 2, user: IUserData = null): string {
 
@@ -403,6 +433,26 @@ export class BizFireService {
 
     })
   }
+
+  setReadNotify(item : INotificationItem): Promise<boolean> {
+    const notification : INotificationData = item.data;
+    return new Promise<boolean>(resolve => {
+        if(notification.statusInfo != null){
+            if(notification.statusInfo.done !== true) {
+                //읽음 상태로 바꾼다.
+                this.afStore.collection(Commons.notificationPath(this.currentUID)).doc(item.mid).update({
+                    statusInfo: {
+                        done: true
+                    }
+                }).then(() => resolve(true))
+            } else {
+                resolve(false);
+            }
+        } else {
+            resolve(false);
+        }
+    })
+  }
   
 
   editUserProfile(editData) {
@@ -441,7 +491,6 @@ export class BizFireService {
 
   async idTokenHeader(): Promise<HttpHeaders> {
     const idToken = await this.afAuth.auth.currentUser.getIdToken(true);
-    console.log(idToken);
     return new HttpHeaders({
       'authorization': idToken
     });

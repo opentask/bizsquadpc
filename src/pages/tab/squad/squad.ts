@@ -59,6 +59,8 @@ export class SquadPage {
   private userDataChanged = new Subject<any>() ; // userData monitor.
   private userDataMargin: Subscription;
 
+  webUrl = 'http://localhost:4200/auth?token=';
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,

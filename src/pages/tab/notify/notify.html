@@ -1,39 +1,42 @@
 <ion-content no-padding class="content-color">
     <ion-scroll class="scrollable" scrollY="true">
         <section id="cd-timeline" class="cd-container">
-            <div *ngFor="let msg of messages">
-                <ng-container *ngIf="makeHtml(msg) | async as noticeItem">
-                    <div class="cd-timeline-block">
-                        <ng-container *ngIf="noticeItem.html.user">
-                          <div *ngIf="noticeItem.html.user.data.photoURL" class="cd-timeline-picture text-center white">
-                              <img src="{{ noticeItem.html.user.data.photoURL }}">
-                          </div>
-                          <ion-avatar *ngIf="!noticeItem.html.user.data.photoURL" [style.background-color]="noticeItem.html.groupColor" class="cd-timeline-picture text-center notPhoto" item-start>
-                              <span class="displayName">{{ noticeItem.html.user.data.displayName | slice:0:2 }}</span>
-                          </ion-avatar>
-                        </ng-container>
-                        <ng-container *ngIf="!noticeItem.html.user">
-                            <div class="cd-timeline-picture text-center white">
-                               <img src="imgs/btn_close.svg">
-                            </div>
-                        </ng-container>
-                        <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(noticeItem)">
-                            <p class="cd-author marginTop5 marginBottom5">
-                                <span class="from" *ngIf="noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.user.data.displayName}}</span>
-                                <span class="from" *ngIf="!noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[0]}}</span>
-                                <span class="created">{{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}</span>
-                            </p>
-                            <p class="timelineText marginBottom5 marginTop5">
-                                {{noticeItem.html.header[0]}} {{noticeItem.html.header[1]}}
-                            </p>
+          <div *ngFor="let msg of messages">
+              <ng-container *ngIf="makeHtml(msg) | async as noticeItem">
+                  <div class="cd-timeline-block">
+                      <ng-container *ngIf="noticeItem.html.user">
+                        <div *ngIf="noticeItem.html.user.data.photoURL" class="cd-timeline-picture text-center white">
+                            <img src="{{ noticeItem.html.user.data.photoURL }}">
                         </div>
-                    </div>
-                </ng-container>
-            </div>
+                        <ion-avatar *ngIf="!noticeItem.html.user.data.photoURL" [style.background-color]="noticeItem.html.groupColor" class="cd-timeline-picture text-center notPhoto" item-start>
+                            <span class="displayName">{{ noticeItem.html.user.data.displayName | slice:0:2 }}</span>
+                        </ion-avatar>
+                      </ng-container>
+                      <ng-container *ngIf="!noticeItem.html.user">
+                          <div class="cd-timeline-picture text-center white">
+                             <img src="imgs/btn_close.svg">
+                          </div>
+                      </ng-container>
+                      <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(noticeItem)">
+                          <p class="cd-author marginTop5 marginBottom5">
+                              <span class="from" *ngIf="noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.user.data.displayName}}</span>
+                              <span class="from" *ngIf="!noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[0]}}</span>
+                              <span class="created" [ngClass]="{'new-notify': noticeItem.data.statusInfo.done !== true}">
+                                {{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}
+                              </span>
+                          </p>
+                          <p class="timelineText marginBottom5 marginTop5">
+                              {{noticeItem.html.header[0]}} {{noticeItem.html.header[1]}}
+                          </p>
+                      </div>
+                  </div>
+              </ng-container>
+          </div>
         </section>
     </ion-scroll>
-    <!-- <div class="noNotify" *ngIf="noNotify">
-        <img src="imgs/none_alarm.svg">
-        <p>No new notifications</p>
-    </div> -->
-</ion-content> 
+</ion-content>
+
+<div class="noNotify" *ngIf="noNotify">
+  <img src="imgs/none_alarm.svg">
+  <p>No new notifications</p>
+</div>

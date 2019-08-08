@@ -2,7 +2,7 @@ import { GroupColorProvider } from './../../../providers/group-color';
 import { Electron } from './../../../providers/electron/electron';
 import { AccountService } from './../../../providers/account/account';
 import { ChatService, IChatRoom } from './../../../providers/chat.service';
-import { BizFireService } from './../../../providers/biz-fire/biz-fire';
+import { BizFireService, IBizGroup } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -29,6 +29,7 @@ export class ChatPage {
   memberCount : number;
   members = [];
   groupMainColor: string;
+  group: IBizGroup;
 
   allMembers: IUser[];
   memberNewMessage = 0;
@@ -59,6 +60,7 @@ export class ChatPage {
 
   ngOnInit() {
     this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
+    this.group = this.bizFire.onBizGroupSelected.getValue();
     
     // 그룹 유저정보 가져오기.
     this.members = this.bizFire.onBizGroupSelected.getValue().data.members;

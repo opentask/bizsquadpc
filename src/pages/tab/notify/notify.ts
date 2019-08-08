@@ -25,12 +25,13 @@ export class NotifyPage {
   private _unsubscribeAll;
 
   messages: INotification[];
+  newMessages: INotification[];
 
   ipc: any;
 
   jumpPath = '';
 
-  noNotify: boolean = true;
+  noNotify: boolean = false;
 
   groupMainColor: string;
 
@@ -52,17 +53,14 @@ export class NotifyPage {
     this.noticeService.onNotifications
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(msgs => {
-      this.messages = msgs.filter(m => {
-        let ret : boolean;
-        if(m.data.statusInfo.done !== true) {
-          ret = m.data.gid === this.bizFire.onBizGroupSelected.getValue().gid;
-        } else {
-          ret = false;
-        }
-        return ret;
-      });
-      this.noNotify = this.messages.length === 0;
-      console.log("messages",this.messages);
+
+      if(msgs !== null) {
+        this.noNotify = msgs.length === 0;
+
+        this.messages = msgs.filter(m => m.data.gid === this.bizFire.onBizGroupSelected.getValue().gid);
+  
+        console.log("messages",this.messages);
+      }
     });
 
   }
@@ -76,11 +74,8 @@ export class NotifyPage {
   }
 
   onClickNotifyContents(msg){
-    console.log(msg)
-    // this.noticeService.onClickNotifyContents(msg);
+    this.noticeService.onClickNotifyContents(msg);
   }
-
-
 
   ngOnDestroy(): void {
     this._unsubscribeAll.next();

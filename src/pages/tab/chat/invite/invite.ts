@@ -144,7 +144,8 @@ export class InvitePage {
     }
     for(let room of chatRooms) {
       const member_list = room.data.members;
-      console.log("member_list",member_list)
+      console.log("member_list",member_list);
+      // 유저 키값이 false가 되면 리스트에서 제외하고 같은방이있는지 검사해야함.
 
       if(deepEqual(members,member_list)) {
         selectedRoom = room;

@@ -4,7 +4,6 @@ import { Electron } from './../../providers/electron/electron';
 import { IBizGroup, BizFireService } from '../../providers/biz-fire/biz-fire';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { TokenProvider } from '../../providers/token/token';
 import { FireData } from '../../classes/fire-data';
 import {STRINGS} from "../../biz-common/commons";
 
@@ -33,15 +32,12 @@ export class GroupListPage {
     public navParams: NavParams,
     public electron : Electron,
     private bizFire: BizFireService,
-    private tokenService : TokenProvider,
     ) {
 
       this._unsubscribeAll = new Subject<any>();
   }
 
   ngOnInit() {
-
-    this.tokenService.getToken(this.bizFire.currentUID);
     
     // get user's bizgroup.
     this.bizFire.onBizGroups
