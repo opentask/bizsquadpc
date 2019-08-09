@@ -9,7 +9,8 @@ const contextMenu = require('electron-context-menu')
 
 // const {dialog} = require('electron');
 // Module to control application life.
-const { app,Notification,Menu } = electron;
+const { app } = require('electron');
+
 // Module to create native browser window.
 const { BrowserWindow } = electron;
 
@@ -17,8 +18,15 @@ const { BrowserWindow } = electron;
 const { autoUpdater } = require("electron-updater");
 const logger = require('electron-log');
 
-app.setAppUserModelId("com.bizsquad.ionic-electron");
+
+// app.setAppUserModelId("com.bizsquad.ionic-electron");
 app.setAsDefaultProtocolClient('bizsquad');
+
+
+// 맥이 아닐때만 실행.
+if (process.platform !== 'darwin') {
+    app.setUserTasks([]);
+}
 
 autoUpdater.logger = logger;
 autoUpdater.logger["transports"].file.level = "info";
@@ -30,7 +38,6 @@ let chatRooms;
 let selectChatRoom;
 let testRooms = {};
 
-
 contextMenu({
 	prepend: (defaultActions, params, browserWindow) => [{
 		label: 'default',
@@ -38,7 +45,6 @@ contextMenu({
 		visible: params.mediaType === 'image'
 	}]
 });
-
 
 function createWindow() {
 
