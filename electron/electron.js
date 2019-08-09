@@ -9,7 +9,7 @@ const contextMenu = require('electron-context-menu')
 
 // const {dialog} = require('electron');
 // Module to control application life.
-const { app } = require('electron');
+const { app, Tray } = require('electron');
 
 // Module to create native browser window.
 const { BrowserWindow } = electron;
@@ -19,9 +19,11 @@ const { autoUpdater } = require("electron-updater");
 const logger = require('electron-log');
 
 
-// app.setAppUserModelId("com.bizsquad.ionic-electron");
+app.setAppUserModelId("com.bizsquad.ionic-electron");
 app.setAsDefaultProtocolClient('bizsquad');
 
+// Electron 으로 Desktop 앱을 만드는 과정에서 자꾸 Tray 아이콘이 사라지는 현상이 발생하는 경우가 있는데, 이런 경우는 아래와 같이 수정하면 대부분 해결됩니다.
+let tray = null;
 
 // 맥이 아닐때만 실행.
 if (process.platform !== 'darwin') {
@@ -98,6 +100,12 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', function(){
     createWindow();
+
+    // x버튼 클릭시 작은 아이콘으로 표시.
+    tray = new Tray(path.join(__dirname,'logo16.png'));
+    tray.on('double-click',() => {
+        win.show();
+    })
 });
 
 // 모든 창이 닫히면 애플리케이션 종료.
