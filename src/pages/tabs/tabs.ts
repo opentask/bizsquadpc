@@ -67,8 +67,6 @@ export class TabsPage {
   tab4Root = 'page-notify';
   tab5Root = 'page-member';
 
-  
-
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,

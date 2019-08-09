@@ -14,7 +14,7 @@ import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IonContent } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
 import { GroupColorProvider } from '../../../../providers/group-color';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
 
 @IonicPage({  
@@ -55,6 +55,8 @@ export class SquadChatPage {
   start : any;
   end : any;
 
+  public loadProgress : number = 0;
+
   constructor(
      public navCtrl: NavController,
      public navParams: NavParams,
@@ -81,6 +83,20 @@ export class SquadChatPage {
   }
 
   ngOnInit(): void {
+
+    this.chatService.fileUploadProgress.subscribe(per => {
+      if(per === 100) {
+        // 2초 뒤 값을 초기화한다.
+        timer(2000).subscribe(() => {
+          this.chatService.fileUploadProgress.next(null);
+          this.loadProgress = 0;
+        })
+      } else {
+        this.loadProgress = per;
+      }
+      console.log(per);
+    })
+
     this.selectSquad = this.navParams.get("roomData");
     console.log("this.selectSquadthis.selectSquad",this.selectSquad);
 
@@ -233,7 +249,6 @@ export class SquadChatPage {
     if(file.target.files[0].size > this.maxFileSize){ 
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
     } else {
-      this.loading.show();
       const attachedFile  = file.target.files[0];
 
       const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
@@ -253,7 +268,6 @@ export class SquadChatPage {
           }
         };
         this.chatService.addMsg(msgPath,upLoadFileMsg,roomPath);
-        this.loading.hide();
       })
 
     }

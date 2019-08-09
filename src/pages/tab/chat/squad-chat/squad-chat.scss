@@ -1,4 +1,9 @@
 page-squad-chat {
+    .progress-Header{
+        background-color:#f4f4f4; 
+        position: relative !important;
+        top: 80px;
+    }
     ion-avatar{
         border-radius: 100%;
         float: left;

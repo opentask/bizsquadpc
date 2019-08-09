@@ -11,7 +11,6 @@
           <ion-icon class="login-top-menu" name="md-close"></ion-icon>
         </button>
       </div>
-
       <ng-container *ngIf="roomCount === 1">
         <!-- 방에 혼자 있다면... -->
         <div style="height:40px; width:20px; position: relative; float: left;"></div>
@@ -32,7 +31,9 @@
       </div>
   </ion-item>
 </ion-header>
-
+<ion-header class="progress-Header" *ngIf="loadProgress > 0">
+  <progress-bar [progress]="loadProgress"></progress-bar>
+</ion-header>
  <ion-content #scrollMe>
       <div class="message-wrap">
         <ion-infinite-scroll position="top" (ionInfinite)="doInfinite($event)" *ngIf="messages.length >= 30">

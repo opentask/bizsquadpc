@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
-
 //electron
 import { Electron } from '../providers/electron/electron';
 
@@ -16,7 +15,6 @@ import { environment } from './../environments/environments';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { HttpModule } from '@angular/http';
 import { TokenProvider } from '../providers/token/token';
 import { GroupColorProvider } from '../providers/group-color';
 import { HttpClientModule } from '@angular/common/http';
@@ -33,7 +31,6 @@ import { CacheService } from '../providers/cache/cache';
     AngularFirestoreModule,
     AngularFireStorageModule,
     AngularFireAuthModule,
-    HttpModule,
     HttpClientModule,
   ],
   bootstrap: [IonicApp],

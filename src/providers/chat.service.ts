@@ -79,6 +79,8 @@ export class ChatService {
 
     onRoomMessagesListChanged = new BehaviorSubject<IRoomMessages[]>([]);
 
+    fileUploadProgress = new BehaviorSubject<number>(null);
+
     constructor(
         public bizFire : BizFireService,
         public electron: Electron,
@@ -170,9 +172,13 @@ export class ChatService {
     uploadFilesToChat(filePath: string,file: File): Promise<any> {
         return new Promise<{storagePath: string, url: String}>((resolve, reject) => {
           let storageRef;
-    
-          storageRef = this.bizFire.afStorage.storage.ref(filePath);
-          storageRef.put(file).then(fileSnapshot => {
+
+          storageRef = this.bizFire.afStorage.storage.ref(filePath).put(file);
+          storageRef.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
+            let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            this.fileUploadProgress.next(parseFloat(progress.toFixed()));
+          });
+          storageRef.then(fileSnapshot => {
             fileSnapshot.ref.getDownloadURL().then((url) => {
               resolve(url);
             }).catch(err => {
@@ -184,7 +190,7 @@ export class ChatService {
             reject(err);
           })
         })
-      }
+    }
 
     addMsg(path : string, msg : any,roomPath : string) {
 

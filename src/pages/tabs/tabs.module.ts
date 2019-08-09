@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { TabsPage } from './tabs';
 import { AccountService } from '../../providers/account/account';
 import { GroupColorProvider } from '../../providers/group-color';
+import {ComponentsModule} from "../../components/components.module";
 
 @NgModule({
   declarations: [
@@ -10,6 +11,7 @@ import { GroupColorProvider } from '../../providers/group-color';
   ],
   imports: [
     IonicPageModule.forChild(TabsPage),
+    ComponentsModule,
   ],
   providers: [
     AccountService,

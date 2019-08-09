@@ -9,7 +9,7 @@ const contextMenu = require('electron-context-menu')
 
 // const {dialog} = require('electron');
 // Module to control application life.
-const { app, Tray } = require('electron');
+const { app,Tray,Menu } = require('electron');
 
 // Module to create native browser window.
 const { BrowserWindow } = electron;
@@ -24,11 +24,30 @@ app.setAsDefaultProtocolClient('bizsquad');
 
 // Electron 으로 Desktop 앱을 만드는 과정에서 자꾸 Tray 아이콘이 사라지는 현상이 발생하는 경우가 있는데, 이런 경우는 아래와 같이 수정하면 대부분 해결됩니다.
 let tray = null;
-
-// 맥이 아닐때만 실행.
-if (process.platform !== 'darwin') {
-    app.setUserTasks([]);
-}
+let trayContextMenu = Menu.buildFromTemplate([
+    {
+        label: 'Show',
+        accelerator: 'CmdOrCtrl+S',
+        click: function () {
+            win.show();
+        },
+    },
+    {
+        label: 'Update history',
+        accelerator: 'CmdOrCtrl+U',
+        click: function () {
+            historyWindow();
+        },
+    },
+    {
+        type: 'separator',
+    },
+    {
+        label: 'Quit',
+        accelerator: 'CmdOrCtrl+Q',
+        role:'quit',
+    }
+])
 
 autoUpdater.logger = logger;
 autoUpdater.logger["transports"].file.level = "info";
@@ -36,9 +55,15 @@ autoUpdater.logger["transports"].file.level = "info";
 logger.info('App starting...');
 
 let win;
+let history;
 let chatRooms;
 let selectChatRoom;
 let testRooms = {};
+
+
+// 프로그램 중복 실행방지.
+const gotTheLock = app.requestSingleInstanceLock();
+
 
 contextMenu({
 	prepend: (defaultActions, params, browserWindow) => [{
@@ -47,6 +72,29 @@ contextMenu({
 		visible: params.mediaType === 'image'
 	}]
 });
+function historyWindow() {
+    // Create the browser window.
+    history = new BrowserWindow({
+        width: 700,
+        height: 500,
+        frame: true,
+        titleBarStyle: 'hidden-inset',
+    });
+    
+
+    history.loadURL(url.format({
+        pathname: path.join(__dirname, '../www/history.html'),
+        protocol: 'file:',
+        slashes: true
+    }))
+
+    // history.webContents.openDevTools();
+
+    // 창이 닫히면 호출됩니다.
+    history.on('closed', () => {
+        history = null;
+    });
+}
 
 function createWindow() {
 
@@ -90,23 +138,43 @@ function createWindow() {
         // 해당하는 모든 윈도우 객체의 참조를 삭제해 주어야 합니다.
             win = null;
             testRooms = null;
+            history = null;
     });
 
     win.once('focus', () => win.flashFrame(false));
-}
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', function(){
-    createWindow();
 
     // x버튼 클릭시 작은 아이콘으로 표시.
     tray = new Tray(path.join(__dirname,'logo16.png'));
     tray.on('double-click',() => {
         win.show();
     })
-});
+    tray.setContextMenu(trayContextMenu);
+    tray.on('right-click',() => {
+        tray.popUpContextMenu(trayContextMenu);
+    })
+}
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+
+// 중복 실행 방지 gotTheLock
+if(!gotTheLock) {
+    app.quit();
+} else {
+
+    app.on('second-instance',(event , commandLine, workingDirectory) => {
+        if(win) {
+            if(win.isMinimized()) win.restore();
+            win.show();
+        }
+    })
+
+    app.on('ready', function(){
+        createWindow();
+    });
+}
+
 
 // 모든 창이 닫히면 애플리케이션 종료.
 app.on('window-all-closed', () => {

@@ -21,7 +21,7 @@ import { filter, take, takeUntil } from 'rxjs/operators';
 import { AlertProvider } from '../../../../providers/alert/alert';
 import { IonContent } from '@ionic/angular';
 import { InfiniteScroll } from 'ionic-angular';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import { IBizGroup, IBizGroupData } from '../../../../providers/biz-fire/biz-fire';
 
@@ -74,6 +74,8 @@ export class MemberChatPage {
 
   maxFileSize = 10000000; // max file size = 10mb;
 
+  public loadProgress : number = 0;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -103,6 +105,20 @@ export class MemberChatPage {
     }  
 
   ngOnInit(): void {
+
+    this.chatService.fileUploadProgress.subscribe(per => {
+      if(per === 100) {
+        // 2초 뒤 값을 초기화한다.
+        timer(2000).subscribe(() => {
+          this.chatService.fileUploadProgress.next(null);
+          this.loadProgress = 0;
+        })
+      } else {
+        this.loadProgress = per;
+      }
+      console.log(per);
+    })
+
     console.log(this.chatroom);
     this.chatroom = this.navParams.get('roomData');
 
@@ -282,7 +298,6 @@ export class MemberChatPage {
     if(file.target.files[0].size > this.maxFileSize){ 
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
     } else {
-      this.loading.show();
       const attachedFile  = file.target.files[0];
 
       const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
@@ -302,7 +317,6 @@ export class MemberChatPage {
           }
         };
         this.chatService.addMsg(msgPath,upLoadFileMsg,roomPath);
-        this.loading.hide();
       })
 
     }
