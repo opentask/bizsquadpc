@@ -225,6 +225,7 @@ export class NotificationService {
                   let userName;
                   if(u != null ){
                     userName = u.data['displayName'] || u.data['email'];
+                    item.html.user = u;
                   } else {
                     userName = `deleted user`;
                   }
@@ -239,7 +240,6 @@ export class NotificationService {
                   item.html.header = [`${userName}`,`invited you to BizGroup ${team_name}`];
                   item.html.content = [`Invitation to ${team_name}`];
                   item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
-                  item.html.user = u;
 
                   resolve.next(item);
                 });
@@ -276,6 +276,7 @@ export class NotificationService {
                   let userName;
                   if(u != null ){
                     userName = u.data['displayName'] || u.data['email'];
+                    item.html.user = u;
                   } else {
                     userName = `deleted user`;
                   }
@@ -290,7 +291,6 @@ export class NotificationService {
                 item.html.header = [`${userName}`, `posted ${info.title}`];
                 item.html.content = [`${info.title}`];
                 item.html.link = [`${this.webUrl}${this.customToken}&url=squad/${data.gid}/${info.sid}/post`];
-                item.html.user = u;
 
                 resolve.next(item);
 
@@ -308,6 +308,7 @@ export class NotificationService {
 
                     if(u != null ){
                       userName = u.data['displayName'] || u.data['email'];
+                      item.html.user = u;
                     } else {
                       userName = `deleted user`;
                     }
@@ -322,7 +323,6 @@ export class NotificationService {
 
                     // second array is a routerLink !
                     item.html.link = [`${this.webUrl}${this.customToken}&url=bbs/${data.gid}/${data.info.mid}/read`];
-                    item.html.user = u;
 
                     resolve.next(item);
 
@@ -345,7 +345,7 @@ export class NotificationService {
         
             // convert
             const item: INotificationItem = notification;
-            item.html = { header: null, content: null, link: null,groupColor : null};
+            item.html = { header: null, content: null, link: null,user : null,groupColor : null};
         
 
             zip(userObserver, groupObserver)
@@ -355,6 +355,7 @@ export class NotificationService {
                   let userName;
                   if(u != null ){
                     userName = u.data['displayName'] || u.data['email'];
+                    item.html.user = u;
                   } else {
                     userName = `deleted user`;
                   }
