@@ -86,8 +86,12 @@ export class SquadChatPage {
 
     this.chatService.fileUploadProgress.subscribe(per => {
       if(per === 100) {
-        // 2초 뒤 값을 초기화한다.
-        timer(2000).subscribe(() => {
+
+        // 용량이 작을때 프로그레스 바가 안나오므로..
+        this.loadProgress = per;
+
+        // 1.5초 뒤 값을 초기화한다.
+        timer(1500).subscribe(() => {
           this.chatService.fileUploadProgress.next(null);
           this.loadProgress = 0;
         })
