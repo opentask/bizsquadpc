@@ -5,7 +5,7 @@ import {INoticeItem, INotificationData, IUserData, INotificationItem} from './..
 import { User } from 'firebase';
 import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil, map } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { InitProcess } from './init-process';
 import firebase from 'firebase';
@@ -83,8 +83,10 @@ export interface Igroup {
 export class BizFireService {
 
   //--------------------------------------------//
-  // BUILD No 18.
+  // BUILD No 55.
   //--------------------------------------------//
+
+  buildNo = '55';
 
   private initProcess: InitProcess;
 
@@ -134,6 +136,10 @@ export class BizFireService {
 
 
   // * Biz Groups
+  get currentBizGroup(): IBizGroup {
+    return this.onBizGroupSelected.getValue();
+  }
+
   onBizGroupSelected = new BehaviorSubject<IBizGroup>(null);
   onBizGroups = new BehaviorSubject<IBizGroup[]>(null);
   generalMembers = new BehaviorSubject<number>(null);
@@ -397,6 +403,8 @@ export class BizFireService {
         // clear bookmark
         this.userCustomLinks.next(null);
 
+        this.userCustomToken.next(null);
+
         return this.afAuth.auth.signOut().then(()=> {
 
             // clear cache.
@@ -453,6 +461,7 @@ export class BizFireService {
         }
     })
   }
+
   
 
   editUserProfile(editData) {

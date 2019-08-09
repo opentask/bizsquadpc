@@ -14,18 +14,17 @@ page-home {
     }
     .notifiBadge {
         position: absolute;
-        right: 33px;
-        top: 33px;
+        right: 35px;
+        top: 18px;
         z-index: 1;
         border-radius: 100%;
         padding: 0;
         /* min-width: 12px !important; */
         /* max-width: 12px; */
-        width: 15px !important;
-        height: 15px !important;
+        width: 11px !important;
+        height: 11px !important;
         font-size: 11px;
         padding: 1px;
-        line-height: 1.3;
         background-color: red;
         color: white;
         cursor: pointer;

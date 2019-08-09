@@ -7,7 +7,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject,combineLatest, BehaviorSubject } from 'rxjs';
 import { NotificationService } from '../../../providers/notification.service';
-import { INotification, INoticeItem } from '../../../_models/message';
+import { INotification, INoticeItem, INotificationItem } from '../../../_models/message';
+import { AlertProvider } from '../../../providers/alert/alert';
 @IonicPage({  
   name: 'page-menu',
   segment: 'menu',
@@ -51,8 +52,9 @@ export class MenuPage {
     private bizFire: BizFireService,
     public electron : Electron,
     public groupColorProvider : GroupColorProvider,
+    private alertCtrl : AlertProvider,
     private noticeService: NotificationService) {
-      
+
       this._unsubscribeAll = new Subject<any>(); 
 
       this.ipc = electron.ipc;
@@ -115,8 +117,16 @@ export class MenuPage {
     return this.noticeService.makeHtml(notification);
   }
 
-  onClickNotifyContents(msg){
-    this.noticeService.onClickNotifyContents(msg);
+  onClickNotifyContents(msg : INotificationItem){
+    if(msg.data.groupInvite !== true) {
+      this.noticeService.onClickNotifyContents(msg);
+    }
+  }
+
+  groupInvite(msg) {
+
+    this.alertCtrl.groupInviteAlert('Accept Invitation','Are you sure you want to join this group?',msg);
+
   }
 
   toggleList() {

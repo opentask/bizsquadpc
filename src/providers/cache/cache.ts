@@ -1,6 +1,6 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable, timer } from 'rxjs';
-import { BizFireService } from '../biz-fire/biz-fire';
+import {BizFireService, IBizGroup} from '../biz-fire/biz-fire';
 import {CacheOptionBuilderFn, ICacheOption, ICacheOptionBuilder} from './cache-option';
 import { ICachePath } from './i-cache-path';
 import {CacheOptionBuilder} from './cache-option-builder';
@@ -376,6 +376,11 @@ export class CacheService {
         observer.next(datas);
       }
     });
+  }
+
+  groupValueObserver(gid: string): Observable<IBizGroup> {
+    const path = new Path(Commons.groupPath(gid), 'valueChange');
+    return this.getObserver(path, ref => ref.map(data => ({gid: gid, data: data} as IBizGroup)), true);
   }
   
 }

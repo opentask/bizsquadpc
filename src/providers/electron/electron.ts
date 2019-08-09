@@ -81,6 +81,7 @@ export class Electron {
     // 그리고 현재 디렉터리의 html을 로드합니다.
     // win.loadURL(url);
   }
+  
   resetValue(){
     // signOut할 경우 정상적으로 로그인페이지가 표시되도록 하기 위함.
     electron.ipcRenderer.send('resetValue');

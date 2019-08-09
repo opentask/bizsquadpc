@@ -254,22 +254,18 @@ page-menu {
         margin-left: 50px;
         background: white;
         border-radius: 0.25em;
-        border-color: #BDDFB3;
-        border-style: solid;
-        border-width: 1px;
         margin-bottom: 10px;
         box-shadow: 1px 1px 9px 2px #eeeeee;
         padding:7px;
     }
 
     .cd-timeline-content:hover{
-        background-color: #eee;
         cursor: pointer;
     }
     .new-notify {
         color : #3f51b5;
     }
-
+    
     .cd-timeline-content:after {
         content: "";
         display: table;

@@ -59,7 +59,7 @@ export class SquadPage {
   private userDataChanged = new Subject<any>() ; // userData monitor.
   private userDataMargin: Subscription;
 
-  webUrl = 'http://localhost:4200/auth?token=';
+  webUrl = 'https://product.bizsquad.net/auth?token=';
 
   constructor(
     public navCtrl: NavController, 

@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, combineLatest, zip, Subscription, Observable } from 'rxjs';
 import { INotification, IAlarmConfig, INoticeItem, INotificationData, INotificationItem } from '../_models/message';
-import { BizFireService } from './biz-fire/biz-fire';
+import { BizFireService, IBizGroup, IBizGroupData } from './biz-fire/biz-fire';
 import { IFireDataKey, IFireMessage } from '../classes/fire-model';
 import { FireData } from '../classes/fire-data';
 import { FireDataKey } from '../classes/fire-data-key';
-import { takeUntil } from 'rxjs/operators';
-import { Commons } from '../biz-common/commons';
+import { takeUntil, take } from 'rxjs/operators';
+import { Commons, STRINGS } from '../biz-common/commons';
 import { DataCache } from '../classes/cache-data';
 import { TokenProvider } from './token/token';
 import { Electron } from './electron/electron';
 import { DocumentChangeAction } from '@angular/fire/firestore';
 import { CacheService } from './cache/cache';
+import {environment} from "../environments/environments";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 export interface IAlarm {
     all: boolean,
@@ -29,7 +31,7 @@ export interface IAlarm {
 })
 export class NotificationService {
 
-    webUrl = 'http://localhost:4200/auth?token=';
+    webUrl = 'https://product.bizsquad.net/auth?token=';
 
     // for notice component.
     onNotifications = new BehaviorSubject<INotification[]>(null);
@@ -56,6 +58,7 @@ export class NotificationService {
         private bizFire: BizFireService,
         private tokenService : TokenProvider,
         private cacheService : CacheService,
+        private http: HttpClient,
         public electron: Electron,
         ) {
             this.ipc = this.electron.ipc;
@@ -374,6 +377,168 @@ export class NotificationService {
         });
     
     }
+
+    acceptInvitation(notificationData: INotificationData): Promise<any> {
+
+
+        return new Promise<any>( resolve => {
+          // get type
+          let path;
+          if(notificationData.info.type !== 'squad'){
+            // this is a group invitation
+            path = Commons.groupPath(notificationData.gid);
+    
+          } else if(notificationData.info.type === 'squad'){
+            // squad
+            path = Commons.squadDocPath(notificationData.gid, notificationData.info.sid);
+          }
+    
+          // get group data
+          this.cacheService.groupValueObserver(notificationData.gid)
+            .pipe(take(1))
+            .subscribe((g: IBizGroup)=>{
+    
+              const data = g.data;
+    
+              // set me
+              data.members[this.bizFire.currentUID] = true;
+    
+              // is ths user a manager?
+              if(notificationData.info.auth === STRINGS.FIELD.MANAGER){
+                // yes.
+                // add to partner
+                data[STRINGS.FIELD.MANAGER][this.bizFire.currentUID] = true;
+              }
+    
+              // is ths user a partner?
+              if(notificationData.info.auth === STRINGS.FIELD.PARTNER){
+                // yes.
+                // add to partner
+                data[STRINGS.FIELD.PARTNER][this.bizFire.currentUID] = true;
+              }
+    
+              // update group member
+              this.bizFire.afStore.doc(path).update(data);
+    
+              // send someone joined alarm
+              const membersId = Object.keys(data.members).filter(uid=> uid !== this.bizFire.currentUID && data.members[uid] === true);
+    
+              const notifyData = this.buildData();
+    
+              notifyData.gid = notificationData.gid;
+              notifyData.groupInOut = true;
+              notifyData.info.join = this.bizFire.currentUID;
+              notifyData.info.auth = notificationData.info.auth;
+    
+              this.sendTo(membersId, notifyData);
+    
+              resolve(true);
+    
+            });
+        });
+    }
+
+
+    buildData():INotificationData {
+    
+        if(this.bizFire.currentUserValue == null){
+          throw new Error('어라라. 로그인안한건가?');
+        }
+        
+        const data = {
+          
+          groupInvite: false,
+          bbs: false,
+          post: false,
+        
+          gid: null,
+        
+          to: null,
+        
+          from: this.bizFire.currentUID,
+          created: null, // biz-server set date.
+          info: {},
+          statusInfo:{ done: false }
+          
+        } as INotificationData;
+        return data;
+    }
+
+    async sendTo(uids: string[], notificationConfig: INotificationData) {
+
+      //console.log('sentTo', uids, notificationConfig);
+
+      try {
+        const works = uids.map(async uid => {
+
+          console.log('adding notify ', Commons.notificationPath(uid), notificationConfig);
+
+          notificationConfig.to = uid;
+
+          return this.postNotificationToServer(notificationConfig);
+        });
+
+        const results = works.map(async w => {
+          return await w;
+        });
+
+        return results;
+
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+
+    }
+
+  private postNotificationToServer(notifyData: INotificationData) {
+
+      return new Promise( resolve => {
+
+        if(this.bizFire.currentBizGroup == null){
+          throw new Error('this.bizFire.currentBizGroup is null. Cannot send notification');
+        }
+
+        //** notifyData must have 'to' field.
+        if(notifyData.to == null){
+          throw new Error('to field must be set.');
+        }
+
+        if(notifyData.version == null){
+          notifyData.version = this.bizFire.buildNo;
+        }
+
+        let bizserverUrl = environment.bizServerUri;
+        //bizserverUrl = 'http://localhost:9010';
+
+        const headers = {
+          headers: new HttpHeaders({
+            'authorization': this.bizFire.currentUID
+          })
+        };
+
+        const notifyUri = `${bizserverUrl}/v1/notification`;
+        this.http.post(notifyUri, {notification: notifyData}, headers)
+          .subscribe((result: any) => {
+
+            console.log(result);
+
+            resolve(result);
+
+            if(result.ok){
+
+            } else {
+
+            }
+
+          });
+      });
+  }
+
+  deleteNotification(msg: INotification){
+    return this.bizFire.afStore.collection(Commons.notificationPath(this.bizFire.currentUID)).doc(msg.mid)
+      .delete();
+  }
   
 
 }

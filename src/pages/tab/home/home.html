@@ -10,7 +10,7 @@
         <span class="displayName">{{ displayName }}</span>
         <ion-badge id="statusBadge" (click)="showStatus()" [style.background-color]="myStatus">V</ion-badge>
     </ion-avatar>
-    <ion-badge *ngIf="badgeCount" class="notifiBadge" (click)="showNotify()">{{ badgeCount }}</ion-badge>
+    <ion-badge *ngIf="badgeCount" class="notifiBadge" (click)="showNotify()">&nbsp;</ion-badge>
     <h2 class="user-name" *ngIf="currentUser.displayName != null">{{ fullName }}
         <button end ion-button icon-only clear color="dark" style="float: right" (click)="showMenu()">
             <ion-icon name="more"></ion-icon>

@@ -69,12 +69,11 @@ export class NotifyPage {
     return this.noticeService.makeHtml(notification);
   }
 
-  clickNotify(msg){
-    console.log(msg)
-  }
 
-  onClickNotifyContents(msg){
-    this.noticeService.onClickNotifyContents(msg);
+  onClickNotifyContents(msg : INotificationItem){
+    if(msg.data.groupInvite !== true) {
+      this.noticeService.onClickNotifyContents(msg);
+    }
   }
 
   ngOnDestroy(): void {

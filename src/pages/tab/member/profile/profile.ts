@@ -132,7 +132,7 @@ export class ProfilePage {
                   photoURL: url
               }).then(()=>{
                   this.closePopover().then(()=>{
-                    this.alertCtrl.showAlert();
+                    this.alertCtrl.showAlert('Success','Your profile photo has been changed.');
                   })
                   // clear old value
                   this.attachFile = null;
