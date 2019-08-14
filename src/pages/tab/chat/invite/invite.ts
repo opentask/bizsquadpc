@@ -31,6 +31,7 @@ export class InvitePage {
   isChecked : IUser[] = [];
   selectedNum :number = 0;
   groupMainColor: string;
+  groupButtonColor: string;
 
   constructor(
     public navCtrl: NavController, 
@@ -53,7 +54,8 @@ export class InvitePage {
         //console.log('onBizGroupSelected', group.gid);
         // set selected group to
         this.currentGroup = group;
-        this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
+        this.groupMainColor = group.data.team_color;
+        this.groupButtonColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
         this.gid = this.currentGroup.gid;
     });
 

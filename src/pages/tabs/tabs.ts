@@ -15,6 +15,7 @@ import { SquadService, ISquad } from '../../providers/squad.service';
 import { DataCache } from '../../classes/cache-data';
 import { TokenProvider } from '../../providers/token/token';
 import {STRINGS} from "../../biz-common/commons";
+import { LangService } from '../../providers/lang-service';
 
 @IonicPage({  
   name: 'page-tabs',
@@ -67,6 +68,8 @@ export class TabsPage {
   tab4Root = 'page-notify';
   tab5Root = 'page-member';
 
+  langPack: any;
+
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
@@ -80,7 +83,8 @@ export class TabsPage {
     public accountService : AccountService,
     public alertCtrl: AlertProvider,
     public groupColorProvider : GroupColorProvider,
-    private tokenService: TokenProvider
+    private tokenService: TokenProvider,
+    private langService: LangService,
     ) {
       // test notification count   
       this._unsubscribeAll = new Subject<any>();
@@ -94,17 +98,40 @@ export class TabsPage {
   }
 
   ngOnInit() {
+    this.langService.onLangMap
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((l: any) => {
+        this.langPack = l;
+    });
 
     this.bizFire.onBizGroupSelected
-        .pipe(filter(g=>g!=null))
-        .subscribe((group) => {
-            //console.log('onBizGroupSelected', group.gid);
+    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),
+        switchMap(group => {
+            //* have group changed?
+            let reloadGroup = true;
+            if(this.group != null){
+                reloadGroup = this.group.gid !== group.gid;
+            }
+            this.group = group;
+            this.groupMainColor = this.groupColorProvider.makeGroupColor(this.group.data.team_color);
+            this.isPartner = this.bizFire.isPartner(group);
 
-            // set selected group to
-            this.currentGroup = group;
-            this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
+            if(reloadGroup === true){
+                // group squads reloading...
+                return this.squadService.getMySquadLisObserver(this.group.gid);
+            } else {
+                // gid not changed.
+                return of(null);
+            }
+        }),
+        takeUntil(this._unsubscribeAll),
+      filter(l => l != null) // prevent same group reloading.
+    ).subscribe(list => {
+      this.squadService.onSquadListChanged.next(list);
 
-        });
+      this.squadNewMessage = list.filter(c => this.chatService.checkIfHasNewMessageNotify(c)).length;
+      this.electron.setAppBadge(this.squadNewMessage + this.memberNewMessage);
+    });
 
     this.noticeService.onNotifications
     .pipe(
@@ -112,7 +139,6 @@ export class TabsPage {
     .subscribe((msgs: INotification[]) => {
       if(msgs){
         // get unfinished notification count.
-        console.log("msgsmsgsmsgsmsgs",msgs);
         this.badgeCount = msgs.filter(m => m.data.statusInfo.done !== true).length;
 
         if(this.badgeCount > 99){ this.badgeCount = 99; }
@@ -122,7 +148,7 @@ export class TabsPage {
     });
 
 
-    this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.currentGroup.gid}/chat`,ref =>{
+    this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.group.gid}/chat`,ref =>{
         return ref.where('status', '==' ,true).where(`members.${this.bizFire.currentUID}`, '==', true);
     })
     .snapshotChanges()
@@ -150,34 +176,6 @@ export class TabsPage {
                 this.chatService.onSelectChatRoom.next(newChat);
             }
         }
-    });
-
-    this.bizFire.onBizGroupSelected
-    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),
-        switchMap(group => {
-            //* have group changed?
-            let reloadGroup = true;
-            if(this.group != null){
-                reloadGroup = this.group.gid !== group.gid;
-            }
-            this.group = group;
-            this.isPartner = this.bizFire.isPartner(group);
-
-            if(reloadGroup === true){
-                // group squads reloading...
-                return this.squadService.getMySquadLisObserver(this.group.gid);
-            } else {
-                // gid not changed.
-                return of(null);
-            }
-        }),
-        takeUntil(this._unsubscribeAll),
-      filter(l => l != null) // prevent same group reloading.
-    ).subscribe(list => {
-      this.squadService.onSquadListChanged.next(list);
-
-      this.squadNewMessage = list.filter(c => this.chatService.checkIfHasNewMessageNotify(c)).length;
-      this.electron.setAppBadge(this.squadNewMessage + this.memberNewMessage);
     });
   }
 

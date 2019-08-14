@@ -1,8 +1,8 @@
 <ion-header>
   <!-- 선택된 멤버가 없으면 텍스트 출력 -->
-  <p *ngIf="isChecked.length == 0" class="title" [style.background-color]="currentGroup.data.team_color" no-margin>Select the member<br> you want to chat with in the list.</p>
+  <p *ngIf="isChecked.length == 0" class="title" [style.background-color]="groupMainColor" no-margin>Select the member<br> you want to chat with in the list.</p>
   <ion-scroll class="scrollable" scrollY="true">
-    <div *ngIf="isChecked && isChecked.length > 0" class="badge-memberCon" [style.background-color]="currentGroup.data.team_color">
+    <div *ngIf="isChecked && isChecked.length > 0" class="badge-memberCon" [style.background-color]="groupMainColor">
       <ng-container *ngFor="let member of allCollectedUsers;">
         <button *ngIf="member.data.isChecked" class="memberList-button" ion-button icon-end round color="light" (click)="badgeMember(member)">
             {{ member.data.displayName }}
@@ -11,7 +11,7 @@
       </ng-container>
     </div>
   </ion-scroll>
-  <ion-searchbar [style.background-color]="currentGroup.data.team_color" [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
+  <ion-searchbar [style.background-color]="groupMainColor" [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
 </ion-header>
 
 <ion-content no-padding> 
@@ -22,7 +22,7 @@
                 <img class="photoURL" src="{{ member.data.photoURL }}">
                 <ion-badge id="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
             </ion-avatar>
-            <ion-avatar [style.background-color]="currentGroup.data.team_color" class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
+            <ion-avatar [style.background-color]="groupMainColor" class="notPhoto" item-start *ngIf="member && member.data.photoURL == null">
                 <span class="displayName">{{ member.data.user_icon }}</span>
                 <ion-badge id="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
             </ion-avatar>
@@ -37,5 +37,5 @@
 </ion-content>
 <ion-footer>
     <button class="footer-button" ion-button round small color="light" (click)="closePopup()">cencel</button>
-    <button ion-button round small [color]="groupMainColor" (click)="invite()">invite</button>
+    <button ion-button round small [color]="groupButtonColor" (click)="invite()">invite</button>
 </ion-footer>

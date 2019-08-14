@@ -87,10 +87,9 @@ export class SquadPage {
     this.bizFire.onBizGroupSelected
     .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
     .subscribe(group => {
-        this.groupMainColor =this.groupColorProvider.makeGroupColor(group.data.team_color);
-
 
         this.generalMembers = Object.keys(group.data.members).length;
+        this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
         if(group.data.partners != null){
             this.generalMembers = Object.keys(group.data.members).length - Object.keys(group.data.partners).length;
         }

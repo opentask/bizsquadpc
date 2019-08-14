@@ -6,6 +6,8 @@ import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { FireData } from '../../classes/fire-data';
 import {STRINGS} from "../../biz-common/commons";
+import { IChatRoomData } from '../../providers/chat.service';
+import firebase from 'firebase';
 
 @IonicPage({  
   name: 'page-group-list',

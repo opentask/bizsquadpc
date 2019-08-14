@@ -1,7 +1,5 @@
 import { CacheService } from './../../../../providers/cache/cache';
-import { STRINGS } from './../../../../biz-common/commons';
 import { GroupColorProvider } from './../../../../providers/group-color';
-import { IUserData } from './../../../../_models/message';
 import { AccountService } from './../../../../providers/account/account';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
@@ -9,9 +7,9 @@ import { Electron } from './../../../../providers/electron/electron';
 import {
   ChatService,
   IChatRoom,
-  IRoomMessages,
+  IMessage,
   IChatRoomData,
-  IRoomMessagesData
+  IMessageData
 } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
@@ -53,7 +51,7 @@ export class MemberChatPage {
   opacity = 100;
   message : string;
   messages = [];
-  readMessages : IRoomMessages[];
+  readMessages : IMessage[];
   chatroom : IChatRoom;
   room_type : string = "chatRoom";
   ipc : any;
@@ -180,9 +178,9 @@ export class MemberChatPage {
   }
 
   // return Observer of senderId
-  getUserObserver(msg: IRoomMessagesData): Observable<IUser>{
-    if(!msg.notice) {
-      return this.cacheService.userGetObserver(msg.senderId);
+  getUserObserver(msg: IMessageData): Observable<IUser>{
+    if(!msg.isNotice) {
+      return this.cacheService.userGetObserver(msg.sender);
     }
   }
 
@@ -210,10 +208,13 @@ export class MemberChatPage {
       const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
       const roomPath = Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid);
 
-      const message = {
+      const message : IMessageData = {
         created : new Date(),
-        message : value,
-        senderId : this.bizFire.currentUserValue.uid,
+        message : {
+          text : `<p>${value}</p>`,
+        },
+        sender : this.bizFire.currentUserValue.uid,
+        type: 'chat'
       };
 
       this.chatService.addMsg(msgPath,message,roomPath);
@@ -233,10 +234,10 @@ export class MemberChatPage {
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
     .get().subscribe((snapshots) => {
-
-      this.start = snapshots.docs[snapshots.docs.length - 1];
-
-      this.getNewMessages(msgPath,this.start)
+      if(snapshots && snapshots.docs) {
+        this.start = snapshots.docs[snapshots.docs.length - 1];
+        this.getNewMessages(msgPath,this.start)
+      }
     })
   }
 
@@ -244,15 +245,26 @@ export class MemberChatPage {
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
     .startAt(start))
-    .stateChanges().subscribe((messages) => {
+    .stateChanges().subscribe((changes: any[]) => {
+      changes.forEach((change: any) => {
+          
+          if(change.type === 'added') {
+            const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data(), ref: change.payload.doc.ref} as IMessage;
+            this.messages.push(msgData);
+          }
 
-      messages.forEach((message) => {
-        const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
-        this.messages.push(msgData);
-      });
+          if(change.type === 'modified') {
+            
+            const msg = this.messages.find(m => m.mid === change.payload.doc.id);
+            if(msg){
+              msg.data = change.payload.doc.data();
+              msg.ref = change.payload.doc.ref;
+            }
+          }
 
-      this.scrollToBottom(500);
-      this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.data.group_id,this.chatroom.cid);
+          this.scrollToBottom(500);
+          this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.data.group_id,this.chatroom.cid);
+        });
 
     });
 
@@ -273,7 +285,7 @@ export class MemberChatPage {
       .stateChanges().subscribe((messages) => {
 
         messages.reverse().forEach((message) => {
-          const msgData = {rid: message.payload.doc.id, data:message.payload.doc.data()} as IRoomMessages;
+          const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
           this.messages.unshift(msgData);
         })
       });
@@ -296,6 +308,9 @@ export class MemberChatPage {
 
   file(file){
 
+    const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
+    const roomPath = Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid);
+
     if(file.target.files.length === 0 ){
       return;
     }
@@ -304,24 +319,33 @@ export class MemberChatPage {
     } else {
       const attachedFile  = file.target.files[0];
 
-      const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
-      const roomPath = Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid);
-      const filePath = Commons.chatImgPath(this.chatroom.data.group_id,this.chatroom.cid) + attachedFile.name;
+      const message : IMessageData = {
+        created : new Date(),
+        message : {
+          text : `<p>${attachedFile.name}</p>`,
+        },
+        sender : this.bizFire.currentUserValue.uid,
+        type: 'chat'
+      };
 
-      this.chatService.uploadFilesToChat(filePath,attachedFile).then((url) => {
-        let upLoadFileMsg = {
-          created : new Date(),
-          message : attachedFile.name,
-          senderId : this.bizFire.currentUserValue.uid,
-          files :{
-            storagePath:filePath,
-            url : url,
-            size : attachedFile.size,
-            type : attachedFile.type,
-          }
-        };
-        this.chatService.addMsg(msgPath,upLoadFileMsg,roomPath);
-      })
+      this.chatService.addMsg(msgPath,message,roomPath).then(mid => {
+        const filePath = Commons.chatImgPath(this.chatroom.data.group_id,this.chatroom.cid,mid) + attachedFile.name;
+        const chatMsgDocPath = Commons.chatMsgDocPath(this.chatroom.data.group_id,this.chatroom.cid,mid);
+        this.chatService.uploadFilesToChat(filePath,attachedFile).then((url) => {
+          let updateFileMsg = {
+            message : {
+              files : [{
+                name: attachedFile.name,
+                storagePath: filePath,
+                url : url,
+                size : attachedFile.size,
+                type : attachedFile.type,
+              }]
+            }
+          };
+          this.chatService.setMsg(chatMsgDocPath,updateFileMsg);
+        })
+      });
 
     }
   }

@@ -9,8 +9,9 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IUser } from '../../../_models/message';
 import { SquadService, ISquad } from '../../../providers/squad.service';
+import firebase from 'firebase';
 
-@IonicPage({  
+@IonicPage({
   name: 'page-chat',
   segment: 'chat',
   priority: 'high'
@@ -34,7 +35,6 @@ export class ChatPage {
   allMembers: IUser[];
   memberNewMessage = 0;
   squadNewMessage = 0;
-  icon_mail = true;
 
   constructor(
     public navCtrl: NavController, 
@@ -48,14 +48,6 @@ export class ChatPage {
     public groupColorProvider: GroupColorProvider
     ) {
       this._unsubscribeAll = new Subject<any>();
-
-      setInterval(() => {
-        if(this.icon_mail){
-          this.icon_mail = false;
-        } else {
-          this.icon_mail = true;
-        }
-      },800)
   }
 
   ngOnInit() {
@@ -105,6 +97,7 @@ export class ChatPage {
         if(room.data.lastMessageTime == null) {
           newData["lastMessageTime"] = 1;
         }
+
         if(this.allMembers != null) {
           room.data.title = '';
           room.data.member_data = this.allMembers.filter(d => room.data.members[d.uid] == true);
@@ -115,7 +108,9 @@ export class ChatPage {
         }
       })
       this.chatRooms = rooms.sort((a,b): number => {
-        return b.data.lastMessageTime - a.data.lastMessageTime;
+
+        return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
+        
       });
       this.memberNewMessage = this.chatRooms.filter(c => this.chatService.checkIfHasNewMessage(c)).length
     });
@@ -133,12 +128,31 @@ export class ChatPage {
           }
         })
         this.squadChatRooms = squad.sort((a,b): number => {
-          return b.data.lastMessageTime - a.data.lastMessageTime;
+          
+            return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
+
         });
         // console.log("스쿼드채팅방목록 : ",this.squadChatRooms)
         this.squadNewMessage = this.squadChatRooms.filter(c => this.chatService.checkIfHasNewMessage(c)).length
     })
 
+  }
+
+  TimestampToDate(value) {
+    //console.log(value, typeof value);
+    if(value){
+      if(typeof value === 'number'){
+        // this is old date number
+        return new Date(value * 1000);
+      } else if(value.seconds != null &&  value.nanoseconds != null){
+        const timestamp = new firebase.firestore.Timestamp(value.seconds, value.nanoseconds);
+        return timestamp.toDate();
+      } else {
+        return value;
+      }
+    } else {
+      return value;
+    }
   }
 
 

@@ -75,7 +75,7 @@ export class LangService {
     * - load all keys from lang.ts
     * - override old key with new one.
     * */
-    loadLanguage(language = 'en'){
+    loadLanguage(language = 'en') {
         
         //console.log(`loadLanguage(${language}) called.`);
         

@@ -15,8 +15,11 @@ export interface ISquad {
         type?: string,
         status?: number,
         member_count?:any,
-        lastMessage?:string,
-        lastMessageTime?:number,
+        lastMessage?: {
+            text: string,
+            files?: any[]
+        },
+        lastMessageTime?: number,
         read?:any,
         color?: string,
         photoURL?: string

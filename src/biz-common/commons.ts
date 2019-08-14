@@ -119,13 +119,16 @@ export class Commons {
       static chatMsgPath(gid: string, cid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}/chat`;
       }
+      static chatMsgDocPath(gid:string,cid:string,mid:string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat/${cid}/chat/${mid}`;
+      }
 
-      static chatImgPath(gid: string, cid: string): string {
-        return `${gid}/chat/${cid}/`;
+      static chatImgPath(gid: string, cid: string,mid: string): string {
+        return `${gid}/chat/${cid}/${mid}/`;
       }
     
-      static squadChatImgPath(gid: string, sid: string): string {
-        return `${gid}/${sid}/chat/`;
+      static squadChatImgPath(gid: string, sid: string, mid :string): string {
+        return `${gid}/${sid}/chat/${mid}/`;
       }
       
       // 스쿼드 채팅방 정보 (스쿼드 정보)
@@ -135,6 +138,9 @@ export class Commons {
       // 스쿼드채팅 메세지 작성 경로.
       static chatSquadMsgPath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat`;
+      }
+      static chatSquadMsgDocPath(gid:string,sid:string,mid:string): string {
+        return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat/${mid}`;
       }
   
 }

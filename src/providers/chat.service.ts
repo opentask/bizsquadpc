@@ -19,10 +19,11 @@ export interface IChatRoomData {
     created: any,
     group_id?: string,
     type?: string,
-    lastMessage?: string,
-    lastMessageTo?: string,
-    lastMessageUid?: string,
-    lastMessageTime?: number,
+    lastMessage? : {
+        text: string,
+        files?: any[]
+    },
+    lastMessageTime?: any,
     lastRead?: any,
     members?: any,
     manager?: any,
@@ -34,20 +35,25 @@ export interface IChatRoomData {
     status: boolean
 }
 
-export interface IRoomMessages {
-    rid: string,
-    data: IRoomMessagesData,
-    
+export interface IMessage {
+    mid: string,
+    data: IMessageData,
+    type?: any
 }
 
-export interface IRoomMessagesData {
-    created: any,
-    files?: IFiles,
-    message: string,
-    senderId?: string,
-    notice?: boolean,
-    senderName?: string,
-    photoURL?: string,
+export interface IMessageData {
+    created?: any,
+    isNotice?: boolean,
+    message?: {
+      text?: string,
+      files?: IFiles[]
+    };
+    sender?: any,
+    status?: boolean,
+    title?: string,
+    updated?:any,
+    type?: string,
+    read?:{ [uid: string]: { unread: boolean, read?: any}}
 }
 export interface IFiles {
     name:string,
@@ -77,7 +83,7 @@ export class ChatService {
 
     onSelectChatRoom = new BehaviorSubject<IChatRoom>(null);
 
-    onRoomMessagesListChanged = new BehaviorSubject<IRoomMessages[]>([]);
+    onRoomMessagesListChanged = new BehaviorSubject<IMessageData[]>([]);
 
     fileUploadProgress = new BehaviorSubject<number>(null);
 
@@ -113,6 +119,7 @@ export class ChatService {
 
         this.createRoom(newRoom);
     }
+
     createRoomByFabs(users:IUser[]) {
 
         const now = new Date();
@@ -156,6 +163,7 @@ export class ChatService {
             });
         }
     }
+
     getMessagePath(type,gid,id){
         switch(type){
             case 'member-chat':
@@ -192,68 +200,41 @@ export class ChatService {
         })
     }
 
-    addMsg(path : string, msg : any,roomPath : string) {
-
-        this.bizFire.afStore.firestore.collection(path).add(msg).then(() => {
-            if(roomPath) {
-            this.bizFire.afStore.firestore.doc(roomPath).set({
-                lastMessage : msg.message,
-                lastMessageTime : new Date().getTime() / 1000 | 0,
-                lastRead : {
-                [this.bizFire.currentUID] : new Date().getTime() / 1000 | 0
+    addMsg(path : string, msg : IMessageData,roomPath : string) {
+        return new Promise<string>( (resolve, reject) => {
+            this.bizFire.afStore.firestore.collection(path).add(msg).then((ref) => {
+                if(roomPath) {
+                    this.bizFire.afStore.firestore.doc(roomPath).set({
+                        lastMessage : msg.message,
+                        lastMessageTime : new Date(),
+                    },{merge : true}).catch(err => console.error("chat : last Data err =>",err))
+                    resolve(ref.id);
                 }
-            },{merge : true}).catch(err => console.error("chat : last Data err =>",err))
-            }
-        }).catch(err => console.error("chat : add Msg err =>",err));
-    }
-
-    sendMessage(room_type,txt_message,gid,id) {
-
-            let checkFileText = txt_message;
-
-            const newMessage: IRoomMessagesData = {
-                message: checkFileText,
-                created: new Date(),
-                senderId: this.bizFire.currentUID
-            }
-
-            this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,id)).add(newMessage).then(message =>{
-                const uid = this.bizFire.currentUID;
-                this.bizFire.afStore.firestore.doc(this.getMessagePath(room_type+'-room',gid,id)).set({
-                    lastMessage : txt_message,
-                    lastMessageTime : new Date().getTime() / 1000 | 0,
-                    lastRead : {
-                      [uid] : new Date().getTime() / 1000 | 0
-                    }
-                },{merge : true}).then(() => {
-
-                }).catch(error => console.log("라스트 메세지 작성에러",error))
-
-            }).catch(error => console.error("메세지작성에러",error));
-    }
     
-    writeTodayAndSendMsg(room_type,txt_message,id,gid?,file?:File) {
-
-        const now = new Date();
-        const newMessage: IRoomMessagesData = {
-            message: '',
-            created: now.getTime() / 1000 - 1 | 0,
-            senderId: 'Dev',
-            senderName: 'Notice',
-            notice: true,
-        }
-        
-        this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,id,gid)).add(newMessage).then(() => {
-
+            })
+            .catch(err => {
+                reject(err);
+                console.error("chat : add Msg err =>",err);
+            });
         })
     }
+    setMsg(path : string, msg : IMessageData) {
+        this.bizFire.afStore.firestore.doc(path).set(msg,{merge: true});
+    }
+
+    
+
+    
 
     makeRoomNoticeMessage(room_type,txt_message,gid,cid) {
 
-        const newMessage: IRoomMessagesData = {
-            message: txt_message,
+        const newMessage: IMessageData = {
+            message: {
+                text : txt_message
+            },
             created: new Date(),
-            notice : true
+            isNotice : true,
+            type: 'chat'
         };
 
         return this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,cid)).add(newMessage)

@@ -1,4 +1,3 @@
-import { TokenProvider } from './../token/token';
 import {App} from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import {INoticeItem, INotificationData, IUserData, INotificationItem} from './../../_models/message';
@@ -9,13 +8,13 @@ import { filter, takeUntil, map } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { InitProcess } from './init-process';
 import firebase from 'firebase';
-import { LangService } from '../../biz-common/lang-service';
 import { STRINGS, Commons } from '../../biz-common/commons';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { FireDataKey } from '../../classes/fire-data-key';
 import { FireData } from '../../classes/fire-data';
 import { environment } from '../../environments/environments';
+import { LangService } from '../lang-service';
 
 export interface IUserState {
   status:'init'|'signIn'|'signOut',
@@ -134,7 +133,6 @@ export class BizFireService {
     return this.userCustomToken.getValue();
   }
 
-
   // * Biz Groups
   get currentBizGroup(): IBizGroup {
     return this.onBizGroupSelected.getValue();
@@ -149,22 +147,7 @@ export class BizFireService {
 
   public bizGroupSub;
   public userState: IUserState = {status:'init', user: null, autoSignIn: true};
-
-  //-----------------------------------------------------------------------------//
-  // LangService:
-  // Usage: bizFire.onLang().subscribe(l => l.pack('squad'))
-  //-----------------------------------------------------------------------------//
-  private _lang = new LangService();
   
-
-  _onLang = new BehaviorSubject<LangService>(null);
-  get lang(): LangService {
-      return this._lang;
-  }
-  get onLang(): Observable<LangService>{
-      return this._onLang.asObservable().pipe(filter(g => g!=null));
-  }
-
   readonly fireData = new FireData();
 
 
@@ -173,17 +156,14 @@ export class BizFireService {
     public afStore: AngularFirestore,
     public afStorage: AngularFireStorage,
     private http: HttpClient,
+    private _lang: LangService,
     public _app : App
     ) {
         
         this.onUserSignOut = new Subject<boolean>();
 
-        this._lang.setLanguage('en'); // load default language.
-        this._onLang.next(this._lang);
-
         // one and only
         this._authState = new BehaviorSubject<any>(this.userState);
-
 
         // *
         this.afAuth.authState.subscribe(async (user: firebase.User | null) => {
@@ -198,6 +178,7 @@ export class BizFireService {
 
                 if(this._userCustomToken == null) {
                     this.getToken(user.uid);
+                    console.log("_userCustomToken :",this._userCustomToken);
                 }
 
                 if(this.bizGroupSub){
@@ -221,6 +202,10 @@ export class BizFireService {
                                 
                     const userData = snapshot.payload.data();
                     //console.log('currentUser data', userData, 'loaded');
+
+                    // load language file with current user's code
+                    console.log("userDatauserDatauserData",userData);
+                    this._lang.loadLanguage(userData.language); // resolve onLangMap()
                     
                     // multicast current user.
                     this._currentUser.next(userData as IUserData);
@@ -433,6 +418,7 @@ export class BizFireService {
 
         if(group.data.members[this.currentUID] === true && group.data.status === true) {
           this.onBizGroupSelected.next(group);
+
           resolve(true);
         } else {
           resolve(false);

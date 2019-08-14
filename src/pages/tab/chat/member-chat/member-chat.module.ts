@@ -12,7 +12,7 @@ import {ComponentsModule} from "../../../../components/components.module";
   imports: [
     IonicPageModule.forChild(MemberChatPage),
     PipesModule,
-    ComponentsModule
+    ComponentsModule,
   ],
   providers: [
     AccountService

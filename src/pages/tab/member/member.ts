@@ -78,7 +78,8 @@ export class MemberPage {
         // set selected group to
         this.currentGroup = group;
         this.gid = this.currentGroup.gid;
-        this.groupMainColor =this.groupColorProvider.makeGroupColor(group.data.team_color);
+        this.groupMainColor = group.data.team_color;
+        console.log("",this.groupMainColor)
     });
 
     // get selected group info.

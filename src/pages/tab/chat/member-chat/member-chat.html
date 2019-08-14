@@ -41,17 +41,17 @@
         </ion-infinite-scroll>
         <div *ngFor="let msg of messages"
             class="message"
-            [class.left]="msg.data.senderId != chatroom.uid"
-            [class.right]="msg.data.senderId === chatroom.uid">
+            [class.left]="msg.data.sender != chatroom.uid"
+            [class.right]="msg.data.sender === chatroom.uid">
 
-          <div class="notice_content" *ngIf="msg.data.notice">
+          <div class="notice_content" *ngIf="msg.data.isNotice">
             <ion-grid>
               <ion-row>
                 <ion-col col-1>
                   <hr>
                 </ion-col>
                 <ion-col col-10 class="time_notice">
-                  <div>{{ msg.data.message }}</div>
+                  <div>{{ msg.data.message.text }}</div>
                 </ion-col>
                 <ion-col col-1>
                   <hr>
@@ -60,71 +60,42 @@
             </ion-grid>
           </div>
 
-<!--          <div class="notice_content" *ngIf="msg.data.notice">-->
-<!--            <ion-grid>-->
-<!--              <ion-row>-->
-<!--                <ion-col col-4>-->
-<!--                  <hr>-->
-<!--                </ion-col>-->
-<!--                <ion-col col-4 class="time_notice">-->
-<!--                  <div>{{ msg.data.created | timestampToDate | date: 'MMMM d'}}th, {{ msg.data.created | timestampToDate | date: 'yyyy' }}</div>-->
-<!--                </ion-col>-->
-<!--                <ion-col col-4>-->
-<!--                  <hr>-->
-<!--                </ion-col>-->
-<!--              </ion-row>-->
-<!--            </ion-grid>-->
-<!--          </div>-->
-
           <ng-container *ngIf="getUserObserver(msg.data) | async; let user">
             <ion-avatar class="notPhoto" [style.background-color]="groupMainColor"
-            item-start *ngIf="user.data.photoURL == null && msg.data.senderId != chatroom.uid && !msg.data.notice">
+            item-start *ngIf="user.data.photoURL == null && msg.data.sender != chatroom.uid && !msg.data.isNotice">
               <span class="senderName">{{ user.data.displayName | slice:0:2 }}</span>
             </ion-avatar>
-            <ion-avatar *ngIf="user.data.photoURL != null && msg.data.senderId != chatroom.uid">
+            <ion-avatar *ngIf="user.data.photoURL != null && msg.data.sender != chatroom.uid">
               <img class="user-img" src="{{user.data.photoURL}}">
             </ion-avatar>
 
-            <div class="msg-detail" *ngIf="!msg.data.notice">
-              <div class="msg-info" *ngIf="msg.data.senderId != chatroom.uid">
+            <div class="msg-detail" *ngIf="!msg.data.isNotice">
+              <div class="msg-info" *ngIf="msg.data.sender != chatroom.uid">
                 <p>{{user.data.displayName}}</p>
               </div>
 
-              <div class="msg-content" *ngIf="msg.data.files == null">
-                <span class="triangle" *ngIf="msg.data.senderId == chatroom.uid"></span>
-                <p class="line-breaker textdrag">{{msg.data.message}}</p>
-                <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
+              <div class="msg-content" *ngIf="msg.data.message.files == null">
+                <span class="triangle" *ngIf="msg.data.sender == chatroom.uid"></span>
+                <p class="line-breaker textdrag" [innerHtml]="msg.data.message.text | sanitizingHtml"></p>
+                <div class="msg-time-content" *ngIf="msg.data.sender == chatroom.uid">
                   <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
                 </div>
               </div>
 
-              <ng-container *ngIf="msg.data.files != null">
-                <div class="msg-content-file" *ngIf="msg.data.files.type == '' || msg.data.files.type.substring(0,3) == 'app' || msg.data.files.type.substring(0,4) == 'text'">
-                  <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
+              <ng-container *ngIf="msg.data.message.files != null">
+                <div class="msg-content-img" *ngIf="msg.data.message.files[0]">
+                  <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.message.files[0].url)">
                     <ion-icon name="download"></ion-icon>
                   </button>
-                  <p class="line-breaker textdrag">{{msg.data.files.name}}</p>
-                  <p class="line-breaker file-volume">Size: {{ msg.data.files.size / 1000 | number: '1.0-1' }}KB</p>
-                  <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
+                  <img class="msg-img" [src]="msg.data.message.files[0].url">
+
+                  <span class="triangle" *ngIf="!msg.data.message.files[0] && msg.data.sender == chatroom.uid"></span>
+                  <div class="msg-time-content" *ngIf="msg.data.sender == chatroom.uid">
                     <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
                   </div>
                 </div>
               </ng-container>
-
-              <ng-container *ngIf="msg.data.files != null">
-                <div class="msg-content-img" *ngIf="msg.data.files.type.substring(0,5)=='image'">
-                  <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.files.url)">
-                    <ion-icon name="download"></ion-icon>
-                  </button>
-                  <img class="msg-img" [src]="msg.data.files.url">
-
-                  <span class="triangle" *ngIf="!msg.data.files && msg.data.senderId == chatroom.uid"></span>
-                  <div class="msg-time-content" *ngIf="msg.data.senderId == chatroom.uid">
-                    <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
-                  </div>
-                </div>
-              </ng-container>
-              <div class="msg-time-content" *ngIf="msg.data.senderId != chatroom.uid">
+              <div class="msg-time-content" *ngIf="msg.data.sender != chatroom.uid">
                 <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
               </div>
             </div>
