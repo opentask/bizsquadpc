@@ -40,7 +40,7 @@
                         <span class="room_title">{{ room.data.name }}</span>
                         <div class="msg-badge-chat" *ngIf="getUnreadCount(room)">{{ getUnreadCount(room) }}</div>
                         <ion-icon class="chat-count" name="person">
-                          <span *ngIf="room.data.type === 'private'">{{ room.data.member_count }}</span>
+                          <span *ngIf="room.data.type === 'private'">{{ room.data['member_count'] }}</span>
                           <span *ngIf="room.data.type === 'public'"> - </span>
                         </ion-icon>
                     </h2>

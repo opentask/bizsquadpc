@@ -153,8 +153,9 @@ export class TabsPage {
           //console.log('unread datas:', map);
           this.chatCount = map.length;
           this.electron.setAppBadge(this.chatCount);
-        }
-      });
+          console.log("tabs unread field");
+      }
+    });
 
     this.noticeService.onNotifications
     .pipe(

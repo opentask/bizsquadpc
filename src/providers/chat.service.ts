@@ -2,7 +2,7 @@ import { Electron } from './electron/electron';
 import { Injectable } from '@angular/core';
 import {BizFireService, IBizGroup} from './biz-fire/biz-fire';
 import {SquadService, ISquad, ISquadData} from './squad.service';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import { IUser } from '../_models/message';
 import { LoadingProvider } from './loading/loading';
 import * as firebase from 'firebase';
@@ -11,6 +11,7 @@ import {UnreadCounter} from "../classes/unread-counter";
 import {LangService} from "./lang-service";
 import {takeUntil} from "rxjs/operators";
 import {take} from "rxjs-compat/operator/take";
+import {CacheService} from "./cache/cache";
 
 export interface IFirestoreDoc {
   ref?: firebase.firestore.DocumentReference;
@@ -33,25 +34,30 @@ export interface IChatData extends ISquadData{
     status: boolean
 }
 
-export interface IMessage {
+export interface IMessage extends IFirestoreDoc{
     mid: string,
     data: IMessageData,
     type?: any
 }
 
 export interface IMessageData {
-    created?: any,
-    isNotice?: boolean,
-    message?: {
-      text?: string,
-      files?: IFiles[]
-    };
-    sender?: any,
-    status?: boolean,
-    title?: string,
-    updated?:any,
-    type?: string,
-    read?:{ [uid: string]: { unread: boolean, read?: any}}
+  created?: any,
+  type?: string,
+  message: {
+    text?: string,
+    files?: any[],
+    notice?: {
+      langKey?: string,
+      uid?: any,
+      type?: string
+    }
+  };
+  isNotice?: boolean,
+  sender?: any,
+  status?: boolean,
+  title?: string,
+  updated?:any,
+  read?:{ [uid: string]: { unread: boolean, read?: any}}
 }
 export interface IFiles {
     name:string,
@@ -160,7 +166,7 @@ export class ChatService {
                     data: snap.data(),
                   } as IChat;
 
-                  this.makeRoomNoticeMessage('member-chat','The chat room has been created.',newRoom.gid,snap.id)
+                  this.makeRoomNoticeMessage('member-chat','init',newRoom.gid,snap.id)
                     .then(() => {
                       this.onSelectChatRoom.next(this.var_chatRooms);
                       this.electron.openChatRoom(this.var_chatRooms);
@@ -232,19 +238,22 @@ export class ChatService {
         this.bizFire.afStore.firestore.doc(path).set(msg,{merge: true});
     }
 
-    makeRoomNoticeMessage(room_type,txt_message,gid,cid) {
+    makeRoomNoticeMessage(room_type,type,gid,cid) {
 
-        const newMessage: IMessageData = {
-            message: {
-                text : txt_message
-            },
-            created: new Date(),
-            isNotice : true,
-            type: 'chat'
-        };
+      const newMessage = {
+        message: {
+          notice: {
+            type: type
+          }
+        },
+        created: new Date(),
+        isNotice: true,
+        sender: this.bizFire.uid,
+        type: 'chat'
+
+      } as IMessageData;
 
         return this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,cid)).add(newMessage)
-
     }
 
     removeMember(uid,gid,cid) {
@@ -254,19 +263,9 @@ export class ChatService {
             }).then(()=>{
               // insert exit room message
               const text = this.langPack['chat_exit_user_notice'].replace('$DISPLAYNAME', this.bizFire.currentUserValue.displayName);
-              const message: IMessageData = {
-                created: new Date(),
-                isNotice: true,
-                sender: this.bizFire.uid,
-                message:{
-                  text: text
-                },
-                type: 'chat'
-              };
-              this.bizFire.afStore.firestore.collection(this.getMessagePath("member-chat",gid,cid)).add(message)
-                .then(() => this.electron.windowClose());
+              this.makeRoomNoticeMessage('member-chat','exit',gid,cid).then(() => this.electron.windowClose());
 
-                resolve();
+              resolve();
             }).catch(error=>{
                 reject(error);
             });

@@ -1,10 +1,10 @@
 page-member-chat {
     .progress-Header{
-        background-color:#f4f4f4; 
+        background-color:#f4f4f4;
         position: relative !important;
         top: 80px;
     }
-    hr{ 
+    hr{
         border-color: #222;
     }
     ion-avatar{
@@ -12,6 +12,12 @@ page-member-chat {
         float: left;
         position: relative;
         bottom: 5px;
+    }
+    .notice-frame{
+      text-align: center;
+      padding: 5px;
+      font-size: 13px;
+      color: #6E6E6E;
     }
     .drag{
         -webkit-app-region: drag;
@@ -76,7 +82,7 @@ page-member-chat {
     ion-label{
         margin-right: 0 !important;
     }
-    
+
     // 프로필 사진이 없을 때.
     .notPhoto{
         text-align: center;
@@ -104,7 +110,7 @@ page-member-chat {
         font-size: 14px;
         resize: none;
         border: none;
-    }   
+    }
     .sendButton{
         height: auto;
         opacity: 0.8;
@@ -121,7 +127,7 @@ page-member-chat {
     }
     .chat-message {
         padding: 20px;
-        border-radius: 5px; 
+        border-radius: 5px;
         background-color: #fff;
         white-space: normal;
     }
@@ -167,17 +173,17 @@ page-member-chat {
 
         $userBackgroundColor: #FCEC4C;
         $toUserBackgroundColor: #fff;
-      
+
         ion-content .scroll-content {
         //   background-color: #f5f5f5;
             background-color: #C9DBE5;
         }
-      
+
         ion-footer {
           box-shadow: 0 0 4px rgba(0, 0, 0, 0.11);
           background-color: #fff;
         }
-      
+
         .line-breaker {
           white-space: pre-line;        }
 
@@ -199,7 +205,7 @@ page-member-chat {
             background-color: #f4f4f4;
             border-bottom: 1px solid #e0e0e0;
         }
-      
+
         .message-wrap {
           padding: 0 10px;
           .message {
@@ -220,7 +226,7 @@ page-member-chat {
                     color:white;
                     line-height: 3;
                 }
-                
+
                 margin-left: 0 !important;
             }
 
@@ -245,7 +251,7 @@ page-member-chat {
                     padding: 5px 0;
                 }
               }
-      
+
             .msg-detail {
               width: 100%;
               display: inline-block;
@@ -258,7 +264,7 @@ page-member-chat {
                   color: #333;
                 }
               }
-      
+
               .msg-content {
                 position: relative;
                 margin-top: 5px;
@@ -339,7 +345,7 @@ page-member-chat {
               }
             }
           }
-      
+
           .message.left {
             .msg-content {
               background-color: $toUserBackgroundColor;
@@ -397,7 +403,7 @@ page-member-chat {
               }
             }
           }
-      
+
           .message.right {
             .msg-detail {
               .msg-info {
@@ -456,9 +462,9 @@ page-member-chat {
             .msg-content-img {
                 float: right;
               }
-      
+
           }
-      
+
         }
 
 

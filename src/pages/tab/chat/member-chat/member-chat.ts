@@ -14,13 +14,14 @@ import {
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { IUser } from '../../../../_models/message';
+import {IUser, IUserData} from '../../../../_models/message';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { AlertProvider } from '../../../../providers/alert/alert';
 import { IonContent } from '@ionic/angular';
 import { Observable, timer } from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import { IBizGroupData } from '../../../../providers/biz-fire/biz-fire';
+import {LangService} from "../../../../providers/lang-service";
 
 @IonicPage({
   name: 'page-member-chat',
@@ -64,6 +65,8 @@ export class MemberChatPage {
 
   public loadProgress : number = 0;
 
+  langPack : any;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -76,7 +79,8 @@ export class MemberChatPage {
     public alertCtrl: AlertProvider,
     public groupColorProvider: GroupColorProvider,
     private loading: LoadingProvider,
-    private cacheService : CacheService
+    private cacheService : CacheService,
+    private langService : LangService
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -89,6 +93,20 @@ export class MemberChatPage {
           this.electron.windowClose();
         }
       });
+
+       this.bizFire.currentUser.subscribe((user : IUserData) => {
+        console.log("useruseruseruser",user);
+        if(user) {
+          this.langService.onLangMap
+            .pipe(takeUntil(this.bizFire.onUserSignOut))
+            .subscribe((l: any) => {
+              this.langPack = l;
+          });
+        }
+      });
+
+
+
       this.ipc = electron.ipc;
     }
 
@@ -115,6 +133,7 @@ export class MemberChatPage {
     this.chatroom = this.navParams.get('roomData');
 
     if(this.chatroom != null) {
+
       // get group color;
 
       // // * get USERS DATA !
@@ -173,6 +192,9 @@ export class MemberChatPage {
     if(!msg.isNotice) {
       return this.cacheService.userGetObserver(msg.sender);
     }
+  }
+  userGetObserver(uid : string): Observable<IUser> {
+    return this.cacheService.userGetObserver(uid);
   }
 
   keydown(e : any){

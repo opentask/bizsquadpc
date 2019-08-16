@@ -31,7 +31,7 @@
         </ion-avatar>
         <h2 class="groupName">{{ group.data.team_name }}</h2>
       </ion-item>
-      <ion-grid class="groupInfo">
+      <ion-grid class="groupInfo" *ngIf="langPack">
         <ion-row>
           <ion-col>
               <div class="InfoTitle">{{langPack['members']}}</div>

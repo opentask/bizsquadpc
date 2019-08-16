@@ -11,6 +11,7 @@ import { IUser } from '../../../_models/message';
 import { SquadService, ISquad } from '../../../providers/squad.service';
 import firebase from 'firebase';
 import {LangService} from "../../../providers/lang-service";
+import {TakeUntil} from "../../../biz-common/take-until";
 
 @IonicPage({
   name: 'page-chat',
@@ -21,9 +22,8 @@ import {LangService} from "../../../providers/lang-service";
   selector: 'page-chat',
   templateUrl: 'chat.html',
 })
-export class ChatPage {
+export class ChatPage extends TakeUntil{
 
-  private _unsubscribeAll;
   defaultSegment : string = "chatRoom";
   chatRooms : IChat[];
   squadChatRooms: ISquad[];
@@ -50,108 +50,64 @@ export class ChatPage {
     public groupColorProvider: GroupColorProvider,
     private langService: LangService
     ) {
-      this._unsubscribeAll = new Subject<any>();
+      super();
   }
 
   ngOnInit() {
 
     this.bizFire.onLang
-      .pipe(takeUntil(this._unsubscribeAll))
+      .pipe(this.takeUntil)
       .subscribe((l: any) => {
         this.langPack = l.pack();
     });
 
     // unread count map
     this.chatService.unreadCountMap$
-      .pipe(takeUntil(this._unsubscribeAll))
+      .pipe(this.takeUntil)
       .subscribe((list: any[]) => {
         //console.log('unread', list);
         this.unreadList = list;
-        console.log("unreadListunreadList",this.unreadList);
-      });
+    });
 
     this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
     this.group = this.bizFire.onBizGroupSelected.getValue();
 
-    // 그룹 유저정보 가져오기.
-    this.members = this.bizFire.onBizGroupSelected.getValue().data.members;
-    this.members = Object.keys(this.members)
-    .filter(uid => this.members[uid] === true)
-    .filter(uid => uid != this.bizFire.currentUID)
-    .map(uid => uid);
-    console.log("this.members :",this.members);
-
-
-    if(this.members != null && this.members.length > 0){
-      this.accountService.getAllUserInfos(this.members)
-      .pipe(filter(l => {
-        let ret;
-        ret = l.filter(ll => ll != null).length === this.members.length;
-        return ret;
-        })
-        ,takeUntil(this._unsubscribeAll))
-      .subscribe(members => {
-        this.allMembers = members;
-        if(this.chatRooms != null){
-          this.chatRooms.forEach(room => {
-            room.data['member_data'] = this.allMembers.filter(d => room.data.members[d.uid] == true);
-            room.data['title'] = '';
-            room.data['member_data'].forEach(m => {
-                room.data['title'] += m.data.displayName + ',';
-            })
-            room.data['title'] = room.data['title'].slice(0,room.data['title'].length-1);
-          })
-        }
-      })
-    }
 
     // 멤버 채팅방
     this.chatService.onChatRoomListChanged
-    .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
-    .subscribe((rooms) => {
-      rooms.forEach(room =>{
-        const newData = room.data;
-        newData["member_count"] = Object.keys(room.data.members).filter(uid => room.data.members[uid] === true).length;
-        // newData["members"] = Object.keys(room.data.members).filter(uid => room.data.members[uid] === true);
+    .pipe(filter(d=>d!=null),this.takeUntil)
+    .subscribe((rooms : IChat[]) => {
+      console.log("이게 호출되어야함.");
 
-        if(room.data.lastMessageTime == null) {
-          newData["lastMessageTime"] = 0;
-        }
-
-        if(this.allMembers != null) {
-          room.data['title'] = '';
-          room.data['member_data'] = this.allMembers.filter(d => room.data.members[d.uid] == true);
-          room.data['member_data'].forEach(m => {
-            room.data['title'] += m.data.displayName + ',';
-          });
-          room.data['title'] = room.data['title'].slice(0,room.data['title'].length-1);
-        }
-      });
       this.chatRooms = rooms.sort((a,b): number => {
-
-        return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
-
+        if(a.data.lastMessageTime && b.data.lastMessageTime) {
+          return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
+        } else {
+          return 0;
+        }
       });
+
     });
 
-          // 스쿼드 채팅방
-          this.squadService.onSquadListChanged
-            .pipe(filter(d=>d != null),takeUntil(this._unsubscribeAll))
-            .subscribe(squad => {
-              squad.forEach(squad =>{
-                const newData = squad.data;
-                newData['member_count'] = Object.keys(squad.data.members).filter(uid => squad.data.members[uid] === true).length;
+    // 스쿼드 채팅방
+    this.squadService.onSquadListChanged
+      .pipe(filter(d=>d != null),this.takeUntil)
+      .subscribe((squad : ISquad[]) => {
 
-                if(squad.data.lastMessageTime == null){
-                  newData["lastMessageTime"] = 0;
-                }
-              });
-              this.squadChatRooms = squad.sort((a,b): number => {
-
-                return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
-
+        squad.forEach(squad =>{
+          const newData = squad.data;
+          newData['member_count'] = Object.keys(squad.data.members).filter(uid => squad.data.members[uid] === true).length;
         });
-    })
+
+        this.squadChatRooms = squad.sort((a,b): number => {
+          if(a.data.lastMessageTime && b.data.lastMessageTime) {
+            return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
+          } else {
+            return 0;
+          }
+        });
+
+      });
 
   }
 
@@ -173,19 +129,13 @@ export class ChatPage {
   }
 
   getUnreadCount(chat): number {
-    let ret = 0;
     let rid;
     if(chat.cid) {
       rid = chat.cid;
     } else {
       rid = chat.sid;
     }
-    if(this.unreadList) {
-      ret = this.unreadList.filter(d => d.cid === rid).length;
-      return ret;
-    } else {
-      return ret;
-    }
+    return this.unreadList.filter(d => d.cid === rid).length;
   }
 
   makeSquadColor(squad : ISquad) {
@@ -206,10 +156,4 @@ export class ChatPage {
     let popover = this.popoverCtrl.create('page-invite',{}, {cssClass: 'page-invite'});
     popover.present({ev: ev});
   }
-
-  ngOnDestroy(): void {
-    this._unsubscribeAll.next();
-    this._unsubscribeAll.complete();
-  }
-
 }
