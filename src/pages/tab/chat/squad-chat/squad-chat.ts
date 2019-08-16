@@ -9,7 +9,6 @@ import { BizFireService, LoadingProvider } from '../../../../providers';
 import { STRINGS, Commons } from '../../../../biz-common/commons';
 import { IUser } from '../../../../_models/message';
 import { ChatService, IMessage, IMessageData } from '../../../../providers/chat.service';
-import { IchatMember } from '../member-chat/member-chat';
 import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IonContent } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
@@ -17,7 +16,7 @@ import { GroupColorProvider } from '../../../../providers/group-color';
 import { Observable, timer } from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
 
-@IonicPage({  
+@IonicPage({
   name: 'page-squad-chat',
   segment: 'squad-chat',
   priority: 'high'
@@ -34,7 +33,6 @@ export class SquadChatPage {
   message : string;
   messages = [];
   readMessages: IMessage[];
-  roomMembers : IchatMember[] = [];
   roomCount : number;
   roomName = "";
   currentGroup : IBizGroup;
@@ -50,7 +48,7 @@ export class SquadChatPage {
   editorMsg = '';
   ipc : any;
 
-  maxFileSize = 10000000; // max file size = 10mb;
+  maxFileSize = 5000000; // max file size = 5mb;
 
   start : any;
   end : any;
@@ -111,17 +109,17 @@ export class SquadChatPage {
 
       //메세지 30개 가져오기
       this.getMessages();
-      
+
       // 스쿼드 데이터 경로
       const path = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
-      
+
       // 스쿼드 데이터 갱신
       this.bizFire.afStore.doc(path).snapshotChanges().subscribe(snap => {
         if(snap.payload.exists) {
           this.selectSquad = ({sid: snap.payload.id, data: snap.payload.data()} as ISquad);
           this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
           this.roomCount = Object.keys(this.selectSquad.data.members).length;
-          
+
           // 스쿼드 권한 검사 후 팅기기 추가에정
         }
       })
@@ -161,11 +159,11 @@ export class SquadChatPage {
     .stateChanges().subscribe((changes: any[]) => {
 
       changes.forEach((change) => {
-        if(change.type === 'added') { 
+        if(change.type === 'added') {
           const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
           this.messages.push(msgData);
         }
-        if(change.type === 'modified') { 
+        if(change.type === 'modified') {
           const msg = this.messages.find(m => m.mid === change.payload.doc.id);
           if(msg){
             msg.data = change.payload.doc.data();
@@ -175,7 +173,6 @@ export class SquadChatPage {
       });
 
       this.scrollToBottom(500);
-      this.chatService.updateLastRead("squad-chat-room",this.bizFire.currentUID,this.selectSquad.data.gid,this.selectSquad.sid);
 
     });
 
@@ -186,7 +183,7 @@ export class SquadChatPage {
     const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc')
-    .startAt(this.start).limit(10)).get()
+    .startAt(this.start).limit(30)).get()
     .subscribe((snapshots) => {
       this.end = this.start;
       this.start = snapshots.docs[snapshots.docs.length - 1];
@@ -233,12 +230,14 @@ export class SquadChatPage {
       }
     }
   }
-  
+
 
   sendMsg(value) {
     this.editorMsg = '';
 
-    if(value.length > 0){
+    const converterText = Commons.chatInputConverter(value);
+
+    if(converterText){
 
       const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
       const roomPath = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
@@ -246,13 +245,13 @@ export class SquadChatPage {
       const message = {
         created : new Date(),
         message : {
-          text : `<p>${value}</p>`,
+          text : converterText,
         },
         sender : this.bizFire.currentUserValue.uid,
         type: 'chat'
       };
-
-      this.chatService.addMsg(msgPath,message,roomPath);
+      console.log("selectSquadselectSquad",this.selectSquad);
+      this.chatService.addMsg(msgPath,message,roomPath,this.selectSquad);
       // if(value != '' && now.getDay() <= lastmessage.getDay()){
       //   this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
       // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null) {
@@ -266,7 +265,7 @@ export class SquadChatPage {
     if(file.target.files.length === 0 ){
       return;
     }
-    if(file.target.files[0].size > this.maxFileSize){ 
+    if(file.target.files[0].size > this.maxFileSize){
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
     } else {
       const attachedFile  = file.target.files[0];
@@ -340,7 +339,7 @@ export class SquadChatPage {
   //     this.chatService.sendMessage("squad-chat",file.name,this.selectSquad.sid,this.selectSquad.data.gid,file);
   //   }
   // }
-  
+
   getUserObserver(msg: IMessageData): Observable<IUser>{
     if(!msg.isNotice) {
       return this.cacheService.userGetObserver(msg.sender);

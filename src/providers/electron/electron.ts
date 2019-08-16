@@ -10,9 +10,9 @@ export class Electron {
   onlineStatus : boolean = true;
   opacity = 0;
   ses = electron.remote.session;
-  
+
   constructor(public bizFire : BizFireService,) {
-    
+
     this.ipc = electron.ipcRenderer;
   }
 
@@ -63,7 +63,7 @@ export class Electron {
     let hour = expiration.getHours();
     hour = hour + 6;
     expiration.setHours(hour * 365);
-    const cookie = { url: url, expirationDate: expiration.getTime(), name : name, value : value }
+    const cookie = { url: url, expirationDate: expiration.getTime(), name : name, value : value };
     this.ses.defaultSession.cookies.set(cookie , (error) => {
       if(error) console.log(error);
     })
@@ -81,7 +81,7 @@ export class Electron {
     // 그리고 현재 디렉터리의 html을 로드합니다.
     // win.loadURL(url);
   }
-  
+
   resetValue(){
     // signOut할 경우 정상적으로 로그인페이지가 표시되도록 하기 위함.
     electron.ipcRenderer.send('resetValue');

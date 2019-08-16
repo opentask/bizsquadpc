@@ -31,7 +31,7 @@ export interface userLinks {
         url : string,
     }
 }
- 
+
 export interface IBizGroup {
     gid: string,
     data: IBizGroupData
@@ -126,7 +126,7 @@ export class BizFireService {
   }
 
   userCustomLinks = new BehaviorSubject<userLinks[]>(null);
-  
+
   userCustomToken = new BehaviorSubject<string>(null);
 
   get _userCustomToken(): string {
@@ -136,6 +136,9 @@ export class BizFireService {
   // * Biz Groups
   get currentBizGroup(): IBizGroup {
     return this.onBizGroupSelected.getValue();
+  }
+  get uid(): string | null {
+    return this.currentUID;
   }
 
   onBizGroupSelected = new BehaviorSubject<IBizGroup>(null);
@@ -147,8 +150,15 @@ export class BizFireService {
 
   public bizGroupSub;
   public userState: IUserState = {status:'init', user: null, autoSignIn: true};
-  
+
   readonly fireData = new FireData();
+
+  _onLang = new BehaviorSubject<LangService>(null);
+  get onLang(): Observable<LangService>{
+    return this._onLang.asObservable().pipe(
+      filter(g => g!=null )
+    );
+  }
 
 
   constructor(
@@ -159,11 +169,16 @@ export class BizFireService {
     private _lang: LangService,
     public _app : App
     ) {
-        
+
         this.onUserSignOut = new Subject<boolean>();
 
         // one and only
         this._authState = new BehaviorSubject<any>(this.userState);
+
+        this._lang.onLangMap.subscribe( (totalLanguageMap: any) => {
+          // resolved when load lang.ts finished.
+          this._onLang.next(this._lang);
+        });
 
         // *
         this.afAuth.authState.subscribe(async (user: firebase.User | null) => {
@@ -186,7 +201,7 @@ export class BizFireService {
                     this.bizGroupSub = null;
                 }
                 this.startBizGroupMonitor(user);
-                
+
                 // ------------------------------------------------------------------
                 // * update user info.
                 // ------------------------------------------------------------------
@@ -199,18 +214,18 @@ export class BizFireService {
                 .snapshotChanges()
                 .pipe(takeUntil(this.onUserSignOut))
                 .subscribe((snapshot: any) => {
-                                
+
                     const userData = snapshot.payload.data();
                     //console.log('currentUser data', userData, 'loaded');
 
                     // load language file with current user's code
                     console.log("userDatauserDatauserData",userData);
                     this._lang.loadLanguage(userData.language); // resolve onLangMap()
-                    
+
                     // multicast current user.
                     this._currentUser.next(userData as IUserData);
                 });
-                
+
             } else {
                 // clear current users' data
                 if(this._currentUser.getValue() != null){
@@ -254,7 +269,7 @@ export class BizFireService {
         const path = `${environment.bizServerUri}/customToken`;
         const header = await this.idTokenHeader();
         const body = {
-            uid: uid 
+            uid: uid
         }
         if(uid != null) {
             this.http.post(path,body,{headers: header}).subscribe((res: any) => {
@@ -303,7 +318,7 @@ export class BizFireService {
     // * start load bizGroups
     let ref: firebase.firestore.CollectionReference | firebase.firestore.Query;
     ref = this.afStore.firestore.collection(STRINGS.STRING_BIZGROUPS);
-    
+
     let superUser = false;
     if(user && user.type != null) {
         superUser = user.type['super'] === true;
@@ -369,7 +384,7 @@ export class BizFireService {
 
         console.log('BizFireService.signOut()');
         console.log(this.userState.status);
-        
+
         // yes.
         if(this.bizGroupSub){
             this.bizGroupSub();
@@ -448,7 +463,7 @@ export class BizFireService {
     })
   }
 
-  
+
 
   editUserProfile(editData) {
     if(editData){
@@ -494,6 +509,6 @@ export class BizFireService {
   deleteLink(link){
       return this.afStore.collection(`users/${this.currentUID}/customlinks`).doc(link.mid).delete();
   }
-  
-  
+
+
 }

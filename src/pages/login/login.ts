@@ -8,7 +8,7 @@ import { Subject } from 'rxjs';
 import { takeUntil,take } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
-import { IChatRoom } from '../../providers/chat.service';
+import { IChat } from '../../providers/chat.service';
 import {IUserData} from "../../_models/message";
 
 @IonicPage({  
@@ -64,7 +64,7 @@ export class LoginPage implements OnInit {
   ionViewCanEnter(){
     this.hideForm = true;
     electron.ipcRenderer.send('giveMeRoomValue', 'ping');
-    electron.ipcRenderer.on('selectRoom', (event, roomData : IChatRoom) => {
+    electron.ipcRenderer.on('selectRoom', (event, roomData : IChat) => {
       if(roomData != null) {
         this.hideForm = false;
         this.loading.show();

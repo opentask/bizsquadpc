@@ -2,8 +2,8 @@
   <ion-item class="drag listBorder" no-margin no-padding no-lines>
       <div class="electron-menu">
         <ion-item class="opacity">
-          <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="opacityChanges(opacity)"></ion-range> 
-        </ion-item> 
+          <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="opacityChanges(opacity)"></ion-range>
+        </ion-item>
         <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
           <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
         </button>
@@ -41,20 +41,14 @@
         </ion-infinite-scroll>
         <div *ngFor="let msg of messages"
             class="message"
-            [class.left]="msg.data.sender != chatroom.uid"
-            [class.right]="msg.data.sender === chatroom.uid">
+            [class.left]="msg.data.sender != this.bizFire.uid"
+            [class.right]="msg.data.sender === this.bizFire.uid">
 
           <div class="notice_content" *ngIf="msg.data.isNotice">
             <ion-grid>
               <ion-row>
-                <ion-col col-1>
-                  <hr>
-                </ion-col>
                 <ion-col col-10 class="time_notice">
                   <div>{{ msg.data.message.text }}</div>
-                </ion-col>
-                <ion-col col-1>
-                  <hr>
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -62,22 +56,22 @@
 
           <ng-container *ngIf="getUserObserver(msg.data) | async; let user">
             <ion-avatar class="notPhoto" [style.background-color]="groupMainColor"
-            item-start *ngIf="user.data.photoURL == null && msg.data.sender != chatroom.uid && !msg.data.isNotice">
+            item-start *ngIf="user.data.photoURL == null && msg.data.sender != this.bizFire.uid && !msg.data.isNotice">
               <span class="senderName">{{ user.data.displayName | slice:0:2 }}</span>
             </ion-avatar>
-            <ion-avatar *ngIf="user.data.photoURL != null && msg.data.sender != chatroom.uid">
+            <ion-avatar *ngIf="user.data.photoURL != null && msg.data.sender != this.bizFire.uid">
               <img class="user-img" src="{{user.data.photoURL}}">
             </ion-avatar>
 
             <div class="msg-detail" *ngIf="!msg.data.isNotice">
-              <div class="msg-info" *ngIf="msg.data.sender != chatroom.uid">
+              <div class="msg-info" *ngIf="msg.data.sender != this.bizFire.uid">
                 <p>{{user.data.displayName}}</p>
               </div>
 
               <div class="msg-content" *ngIf="msg.data.message.files == null">
-                <span class="triangle" *ngIf="msg.data.sender == chatroom.uid"></span>
+                <span class="triangle" *ngIf="msg.data.sender == this.bizFire.uid"></span>
                 <p class="line-breaker textdrag" [innerHtml]="msg.data.message.text | sanitizingHtml"></p>
-                <div class="msg-time-content" *ngIf="msg.data.sender == chatroom.uid">
+                <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">
                   <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
                 </div>
               </div>
@@ -89,13 +83,13 @@
                   </button>
                   <img class="msg-img" [src]="msg.data.message.files[0].url">
 
-                  <span class="triangle" *ngIf="!msg.data.message.files[0] && msg.data.sender == chatroom.uid"></span>
-                  <div class="msg-time-content" *ngIf="msg.data.sender == chatroom.uid">
+                  <span class="triangle" *ngIf="!msg.data.message.files[0] && msg.data.sender == this.bizFire.uid"></span>
+                  <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">
                     <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
                   </div>
                 </div>
               </ng-container>
-              <div class="msg-time-content" *ngIf="msg.data.sender != chatroom.uid">
+              <div class="msg-time-content" *ngIf="msg.data.sender != this.bizFire.uid">
                 <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
               </div>
             </div>
@@ -109,7 +103,7 @@
         <ion-icon name="attach"></ion-icon>
       </button>
       <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)" accept="image/jpeg,image/gif,image/png">
-      <button ion-button clear icon-only small color="dark" (click)="getMoreMessages()">
+      <button ion-button clear icon-only small color="dark">
         <ion-icon name="happy"></ion-icon>
       </button>
       <!-- <button *ngIf="roomCount === 2" ion-button clear icon-only small color="dark" style="position: absolute; right:5px">
@@ -119,7 +113,7 @@
     <div class="input-wrap">
       <textarea id="drag-file"
                 #chat_input
-                [(ngModel)]="editorMsg" 
+                [(ngModel)]="editorMsg"
                 (keydown)="keydown($event)">
       </textarea>
       <button color="dark" class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)" [disabled]="!editorMsg">

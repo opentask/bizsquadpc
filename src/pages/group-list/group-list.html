@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="skyblue" style="min-height: 30px;">
-    <ion-buttons left class="login-top-menu"> 
+    <ion-buttons left class="login-top-menu">
       <button ion-button clear small color="light" class="titleButton">
         Bizgroup List
       </button>
@@ -8,7 +8,7 @@
           <ion-icon name="settings" style="font-size: 18px;"></ion-icon>
       </button> -->
     </ion-buttons>
-    <ion-buttons end class="login-top-menu"> 
+    <ion-buttons end class="login-top-menu">
       <button ion-button icon-only clear small color="light" (click)="windowMimimize()">
         <ion-icon name="md-remove" style="font-size: 20px;padding-top: 8px;"></ion-icon>
       </button>
@@ -25,7 +25,7 @@
       <ion-item class="groupListItem" no-lines>
         <ion-avatar *ngIf="!group.data.photoURL" item-start [style.background-color]="group.data.team_color">
           {{ group.data.team_icon }}
-        </ion-avatar> 
+        </ion-avatar>
         <ion-avatar *ngIf="group.data.photoURL" item-start>
           <img style="border-radius: 15%;" src="{{ group.data.photoURL }}">
         </ion-avatar>
@@ -34,15 +34,15 @@
       <ion-grid class="groupInfo">
         <ion-row>
           <ion-col>
-              <div class="InfoTitle">Members</div>
+              <div class="InfoTitle">{{langPack['members']}}</div>
               {{ group.data.group_members }}
           </ion-col>
           <ion-col>
-              <div class="InfoTitle">Agile</div>
+              <div class="InfoTitle">{{langPack['agile']}}</div>
               {{ group.data.agile_squad_count }}
           </ion-col>
           <ion-col>
-              <div class="InfoTitle">General</div>
+              <div class="InfoTitle">{{langPack['general']}}</div>
               {{ group.data.general_squad_count }}
           </ion-col>
         </ion-row>

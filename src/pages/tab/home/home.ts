@@ -11,12 +11,13 @@ import { STRINGS } from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
 import { NotificationService } from '../../../providers/notification.service';
 import { DataCache } from '../../../classes/cache-data';
+import {LangService} from "../../../providers/lang-service";
 
 interface IBbsItem {
   bbsId: string,
   data: {
       title: string,
-      sender?: { 
+      sender?: {
         displayName?: string,
         email?: string,
       },
@@ -50,7 +51,7 @@ export class HomePage implements OnInit {
 
   // no bbs message value;
   noBbs : boolean = false;
-  // disable setting value. icon 
+  // disable setting value. icon
   manager: boolean = false;
 
   // logout,quit toggle bar
@@ -74,10 +75,12 @@ export class HomePage implements OnInit {
 
   private _unsubscribeAll;
 
+  langPack: any;
+
   webUrl = 'https://product.bizsquad.net//auth?token=';
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public electron: Electron,
     public bizFire : BizFireService,
@@ -86,10 +89,17 @@ export class HomePage implements OnInit {
     public http: HttpClient,
     private tokenService : TokenProvider,
     public popoverCtrl :PopoverController,
+    private langService : LangService,
     public _app : App) {
 
       this._unsubscribeAll = new Subject<any>();
       this.ipc = electron.ipc;
+
+    this.langService.onLangMap
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((l: any) => {
+        this.langPack = l;
+      });
   }
 
   ngOnInit(): void {
@@ -159,7 +169,7 @@ export class HomePage implements OnInit {
     //       if(m.data.invitation.type === 'group') {
     //         return true;
     //       } else {
-    //         ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid; 
+    //         ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid;
     //       }
     //     }
     //     if(m.data.type === 'notify'){
@@ -178,7 +188,7 @@ export class HomePage implements OnInit {
     .pipe(
       filter(n=>n != null),takeUntil(this._unsubscribeAll))
     .subscribe((msgs: INotification[]) => {
-      
+
       if(msgs){
         // get unfinished notification count.
         this.badgeCount = msgs.filter(m => {
@@ -190,10 +200,10 @@ export class HomePage implements OnInit {
           }
           return ret;
         }).length;
-  
+
         if(this.badgeCount > 99){ this.badgeCount = 99; }
       }
-      
+
     });
 }
 
@@ -241,7 +251,7 @@ export class HomePage implements OnInit {
       this.bizFire.signOut();
     });
   }
- 
+
   showNotify(){
     this.navCtrl.setRoot('page-notify');
   }

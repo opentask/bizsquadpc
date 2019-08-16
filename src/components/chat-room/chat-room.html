@@ -1,4 +1,41 @@
-<!-- Generated template for the ChatRoomComponent component -->
-<div>
-  {{text}}
+<div class="chat-room-frame d-flex flex-column p-4" (click)="onSelectRoom()">
+
+  <div class="d-flex align-items-center mb-2 justify-content-between">
+
+    <div class=" flex-column" style="width: 80%">
+      <!--   채팅 제목   -->
+      <div class="chat-title ">
+        <span *ngIf="chatTitle">{{ chatTitle }}</span>
+      </div>
+
+    </div>
+
+    <div class="d-flex flex-row align-items-center  ">
+      <!--   안읽은 메세지 뱃지 / 방 멤버수   -->
+      <div class="msg-badge d-flex text-white mr-2 align-items-center justify-content-center" *ngIf="unreadCount">
+        {{ unreadCount }}
+      </div>
+
+      <div class="member-count d-flex align-items-center justify-content-between" style="width: 20px">
+        <ion-icon class="chat-count" name="person"></ion-icon>
+        <div>
+          {{ userCount }}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <!--   라스트메세지    -->
+  <div class="d-flex align-items-center ">
+
+    <div class="flex-grow-1">
+      <div *ngIf="room.data.lastMessage"  class="chat-message " [innerHtml]="room.data.lastMessage.text | sanitizingHtml"></div>
+      <div *ngIf="!room.data.lastMessage"  class="chat-message ">No message</div>
+    </div>
+    <!--   라스트메세지 시간    -->
+    <div class="chat-time flex-shrink-0">
+      <span *ngIf="room.data.lastMessageTime">{{ room.data.lastMessageTime | timestampToDate | date: 'MM/dd HH:mm'}}</span>
+    </div>
+  </div>
 </div>

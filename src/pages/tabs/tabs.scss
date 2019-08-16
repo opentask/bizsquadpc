@@ -32,6 +32,11 @@ page-tabs {
     background-image: none;
     }
 
+    //부투스트랩과 충돌.
+    a:hover, a:focus{
+      text-decoration: none;
+    }
+
     // custom tabs icon
     .ion-md-customHome {
         background: url(../../www/imgs/md-home.svg) 50% 50% no-repeat;

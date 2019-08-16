@@ -7,10 +7,10 @@ import { BizFireService, LoadingProvider } from '../../../../providers';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
 import { IUser } from '../../../../_models/message';
-import { ChatService, IChatRoom } from '../../../../providers/chat.service';
+import { ChatService, IChat } from '../../../../providers/chat.service';
 
 
-@IonicPage({ 
+@IonicPage({
   name: 'page-profile',
   segment: 'profile',
   priority: 'high'
@@ -50,9 +50,9 @@ export class ProfilePage {
   private phoneNumberValidator: ValidatorFn = Validators.compose([
     Validators.maxLength(20)
   ]);
-  
+
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public viewCtrl: ViewController,
     public bizFire : BizFireService,
@@ -145,7 +145,7 @@ export class ProfilePage {
   uploadProfile(): Promise<string>{
     return new Promise<string>( (resolve, reject) => {
         if(this.attachFile){
-            const ref = this.bizFire.afStorage.storage.ref(`users/${this.bizFire.currentUID}/${this.attachFile.name}`);
+            const ref = this.bizFire.afStorage.storage.ref(`users/${this.bizFire.currentUID}/profile.jpeg`);
             ref.put(this.attachFile).then(fileSnapshot => {
                 // upload finished.
                 this.attachFile = null;
@@ -181,7 +181,7 @@ export class ProfilePage {
           console.log("바뀐값이 없어도 실행됨.");
           this.loading.hide();
           this.viewCtrl.dismiss();
-        }).catch(err => { 
+        }).catch(err => {
           this.loading.hide();
           console.log(err)
         })
@@ -215,7 +215,7 @@ export class ProfilePage {
   gotoChat(){
     let chatRooms = this.chatService.getChatRooms();
     console.log("chatRooms",chatRooms);
-    let selectedRoom: IChatRoom;
+    let selectedRoom: IChat;
     for(let room of chatRooms) {
       const member_list = room.data.members;
       const member_count = Object.keys(member_list).length;
@@ -223,12 +223,12 @@ export class ProfilePage {
       if(Object.keys(member_list).length == 2) {
         if(member_list.hasOwnProperty(this.targetValue.uid)) {
           console.log("조건에 맞는 채팅방이 있습니다.",room);
-          selectedRoom = room;
+          selectedRoom = {cid: room.cid,data : room.data} as IChat;
           break;
         }
       }
     }
-    
+
     if(selectedRoom == null){
       this.chatService.createRoomByProfile(this.targetValue);
     } else {

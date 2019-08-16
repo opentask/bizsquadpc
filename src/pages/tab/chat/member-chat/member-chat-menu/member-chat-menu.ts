@@ -11,7 +11,7 @@ import { IroomData } from '../../../../../providers/chat.service';
  * Ionic pages and navigation.
  */
 
-@IonicPage({  
+@IonicPage({
   name: 'page-member-chat-menu',
   segment: 'member-chat-menu',
   priority: 'high'
@@ -25,7 +25,7 @@ export class MemberChatMenuPage {
   roomData : IroomData;
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public viewCtrl: ViewController,
     public electron: Electron,
@@ -47,9 +47,9 @@ export class MemberChatMenuPage {
 
   leaveChatRoom(){
     this.viewCtrl.dismiss();
-    this.alertCtrl.leaveRoomAlert(this.roomData.uid,this.roomData.data.group_id,this.roomData.cid)
+    this.alertCtrl.leaveRoomAlert(this.roomData.uid,this.roomData.data.gid,this.roomData.cid)
   }
   close(){
-    this.viewCtrl.dismiss(); 
+    this.viewCtrl.dismiss();
   }
 }

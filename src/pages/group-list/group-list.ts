@@ -6,10 +6,9 @@ import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { FireData } from '../../classes/fire-data';
 import {STRINGS} from "../../biz-common/commons";
-import { IChatRoomData } from '../../providers/chat.service';
-import firebase from 'firebase';
+import {LangService} from "../../providers/lang-service";
 
-@IonicPage({  
+@IonicPage({
   name: 'page-group-list',
   segment: 'groupList',
   priority: 'high'
@@ -29,18 +28,27 @@ export class GroupListPage {
 
   private fireData = new FireData();
 
+  langPack: any;
+
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public electron : Electron,
     private bizFire: BizFireService,
+    private langService : LangService
     ) {
 
       this._unsubscribeAll = new Subject<any>();
   }
 
   ngOnInit() {
-    
+
+    this.bizFire.onLang
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((l: any) => {
+        this.langPack = l.pack();
+    });
+
     // get user's bizgroup.
     this.bizFire.onBizGroups
         .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
@@ -52,7 +60,7 @@ export class GroupListPage {
                   newData['group_squads'] = 0;
                   newData['group_members'] = Object.keys(group.data.members).length;
                   newData['team_color'] = group.data.team_color || this.team_color;
-                  
+
                   if(group.data.team_name == null || group.data.team_name.length === 0 ) {
                     newData['team_icon'] = 'BG';
                   } else {

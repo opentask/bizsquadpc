@@ -6,9 +6,9 @@ import { IonicPage, NavController, NavParams, Content, PopoverController } from 
 import { Electron } from './../../../../providers/electron/electron';
 import {
   ChatService,
-  IChatRoom,
+  IChat,
   IMessage,
-  IChatRoomData,
+  IChatData,
   IMessageData
 } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
@@ -18,21 +18,11 @@ import { IUser } from '../../../../_models/message';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { AlertProvider } from '../../../../providers/alert/alert';
 import { IonContent } from '@ionic/angular';
-import { InfiniteScroll } from 'ionic-angular';
 import { Observable, timer } from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
-import { IBizGroup, IBizGroupData } from '../../../../providers/biz-fire/biz-fire';
+import { IBizGroupData } from '../../../../providers/biz-fire/biz-fire';
 
-
-export interface Ichats {
-  message: string,
-}
-export interface IchatMember{
-  name: string,
-  photoURL: string,
-}
- 
-@IonicPage({  
+@IonicPage({
   name: 'page-member-chat',
   segment: 'member-chat',
   priority: 'high'
@@ -52,10 +42,10 @@ export class MemberChatPage {
   message : string;
   messages = [];
   readMessages : IMessage[];
-  chatroom : IChatRoom;
+  chatroom : IChat;
   room_type : string = "chatRoom";
   ipc : any;
-  roomData : IChatRoomData;
+  roomData : IChatData;
   chatMembers = [];
   groupMainColor: string;
 
@@ -70,12 +60,12 @@ export class MemberChatPage {
   logout : any;
   fileSpinner = false;
 
-  maxFileSize = 10000000; // max file size = 10mb;
+  maxFileSize = 5000000; // max file size = 5mb;
 
   public loadProgress : number = 0;
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public chatService : ChatService,
     public bizFire : BizFireService,
@@ -100,7 +90,7 @@ export class MemberChatPage {
         }
       });
       this.ipc = electron.ipc;
-    }  
+    }
 
   ngOnInit(): void {
 
@@ -119,7 +109,7 @@ export class MemberChatPage {
         this.loadProgress = per;
       }
       console.log(per);
-    })
+    });
 
     console.log(this.chatroom);
     this.chatroom = this.navParams.get('roomData');
@@ -129,18 +119,19 @@ export class MemberChatPage {
 
       // // * get USERS DATA !
       const c_members = this.chatroom.data.members;
-      this.chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.chatroom.uid);
+      this.chatMembers = Object.keys(c_members).filter(uid => c_members[uid] === true && uid != this.bizFire.uid);
 
       //메세지 30개 가져오기
       this.getMessages();
 
       // 채팅방 정보 갱신. (초대,나가기)
-      this.bizFire.afStore.doc(Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid))
-      .valueChanges().subscribe((roomData : IChatRoomData) => {
-        console.log('aaaaaa');
-        console.log(roomData.members);
-        this.chatMembers = Object.keys(roomData.members).filter(uid => roomData.members[uid] === true && uid != this.chatroom.uid);
-        console.log(this.chatMembers);
+      this.bizFire.afStore.doc(Commons.chatDocPath(this.chatroom.data.gid,this.chatroom.cid))
+      .valueChanges().subscribe((roomData : IChatData) => {
+
+        this.chatroom = {uid: this.bizFire.uid,cid : this.chatroom.cid, data : roomData} as IChat;
+
+        this.chatMembers = Object.keys(roomData.members).filter(uid => roomData.members[uid] === true && uid != this.bizFire.uid);
+
         this.roomCount = Object.keys(this.chatMembers).length + 1;
 
         this.accountService.getAllUserInfos(this.chatMembers).pipe(filter(m => m != null))
@@ -153,7 +144,7 @@ export class MemberChatPage {
         })
       });
 
-      this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.group_id)).valueChanges().subscribe((data : IBizGroupData) => {
+      this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.gid)).valueChanges().subscribe((data : IBizGroupData) => {
         this.groupMainColor = this.groupColorProvider.makeGroupColor(data.team_color);
         console.log("this.groupMainColorthis.groupMainColor",this.groupMainColor);
         // 그룹 탈퇴 당할시 채팅방을 닫는다.
@@ -202,41 +193,40 @@ export class MemberChatPage {
   sendMsg(value) {
 
     this.editorMsg = '';
+    const converterText = Commons.chatInputConverter(value);
 
-    if(value.length > 0){
-
-      const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
-      const roomPath = Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid);
+    if(converterText) {
+      const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
+      const roomPath = Commons.chatDocPath(this.chatroom.data.gid,this.chatroom.cid);
 
       const message : IMessageData = {
         created : new Date(),
         message : {
-          text : `<p>${value}</p>`,
+          text : converterText,
         },
         sender : this.bizFire.currentUserValue.uid,
         type: 'chat'
       };
 
-      this.chatService.addMsg(msgPath,message,roomPath);
-
+      this.chatService.addMsg(msgPath,message,roomPath,this.chatroom);
+    }
       // if(value != '' && now.getDay() <= lastmessage.getDay()) {
       //   this.chatService.sendMessage("member-chat",value,this.chatroom.cid);
       // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.roomData.lastMessageTime == null) {
       //   this.chatService.writeTodayAndSendMsg("member-chat",value,this.chatroom.cid);
       // }
-    }
   }
 
   // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
   getMessages() {
 
-    const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
+    const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
     .get().subscribe((snapshots) => {
       if(snapshots && snapshots.docs) {
         this.start = snapshots.docs[snapshots.docs.length - 1];
-        this.getNewMessages(msgPath,this.start)
+        this.getNewMessages(msgPath, this.start);
       }
     })
   }
@@ -246,25 +236,33 @@ export class MemberChatPage {
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
     .startAt(start))
     .stateChanges().subscribe((changes: any[]) => {
+
+      const batch = this.bizFire.afStore.firestore.batch();
+
       changes.forEach((change: any) => {
-          
-          if(change.type === 'added') {
-            const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data(), ref: change.payload.doc.ref} as IMessage;
-            this.messages.push(msgData);
-          }
+        if(change.type === 'added') {
 
-          if(change.type === 'modified') {
-            
-            const msg = this.messages.find(m => m.mid === change.payload.doc.id);
-            if(msg){
-              msg.data = change.payload.doc.data();
-              msg.ref = change.payload.doc.ref;
-            }
-          }
+          const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
 
-          this.scrollToBottom(500);
-          this.chatService.updateLastRead("member-chat-room",this.chatroom.uid,this.chatroom.data.group_id,this.chatroom.cid);
-        });
+          this.messages.push(msgData);
+
+          this.chatService.setToReadStatus(change.payload.doc, batch);
+        }
+
+        if(change.type === 'modified') {
+
+          const msg = this.messages.find(m => m.mid === change.payload.doc.id);
+          if(msg){
+            msg.data = change.payload.doc.data();
+            msg.ref = change.payload.doc.ref;
+          }
+        }
+
+        this.scrollToBottom(500);
+      });
+
+      batch.commit();
+
 
     });
 
@@ -272,10 +270,10 @@ export class MemberChatPage {
 
   getMoreMessages() {
 
-    const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
+    const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc')
-    .startAt(this.start).limit(10)).get()
+    .startAt(this.start).limit(30)).get()
     .subscribe((snapshots) => {
       this.end = this.start;
       this.start = snapshots.docs[snapshots.docs.length - 1];
@@ -284,10 +282,15 @@ export class MemberChatPage {
       .startAt(this.start).endBefore(this.end))
       .stateChanges().subscribe((messages) => {
 
+        const batch = this.bizFire.afStore.firestore.batch();
+
         messages.reverse().forEach((message) => {
           const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
           this.messages.unshift(msgData);
-        })
+          this.chatService.setToReadStatus(message.payload.doc, batch);
+        });
+
+        batch.commit();
       });
 
       console.log("more_messages",this.messages);
@@ -308,13 +311,13 @@ export class MemberChatPage {
 
   file(file){
 
-    const msgPath = Commons.chatMsgPath(this.chatroom.data.group_id,this.chatroom.cid);
-    const roomPath = Commons.chatDocPath(this.chatroom.data.group_id,this.chatroom.cid);
+    const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
+    const roomPath = Commons.chatDocPath(this.chatroom.data.gid,this.chatroom.cid);
 
     if(file.target.files.length === 0 ){
       return;
     }
-    if(file.target.files[0].size > this.maxFileSize){ 
+    if(file.target.files[0].size > this.maxFileSize){
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
     } else {
       const attachedFile  = file.target.files[0];
@@ -329,8 +332,8 @@ export class MemberChatPage {
       };
 
       this.chatService.addMsg(msgPath,message,roomPath).then(mid => {
-        const filePath = Commons.chatImgPath(this.chatroom.data.group_id,this.chatroom.cid,mid) + attachedFile.name;
-        const chatMsgDocPath = Commons.chatMsgDocPath(this.chatroom.data.group_id,this.chatroom.cid,mid);
+        const filePath = Commons.chatImgPath(this.chatroom.data.gid,this.chatroom.cid,mid) + attachedFile.name;
+        const chatMsgDocPath = Commons.chatMsgDocPath(this.chatroom.data.gid,this.chatroom.cid,mid);
         this.chatService.uploadFilesToChat(filePath,attachedFile).then((url) => {
           let updateFileMsg = {
             message : {
@@ -360,7 +363,7 @@ export class MemberChatPage {
   //     this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
   //     return;
   //   } else {
-  //     this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.group_id,file);
+  //     this.chatService.sendMessage("member-chat",file.name,this.chatroom.cid,this.chatroom.data.gid,file);
   //   }
   // }
 

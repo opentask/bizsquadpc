@@ -9,6 +9,7 @@ import { IFolderItem } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import {Commons, STRINGS} from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
+import {LangService} from "../../../providers/lang-service";
 
 export interface ISquadListData {
   generalSquads?: ISquad[];
@@ -18,7 +19,7 @@ export interface ISquadListData {
 }
 
 
-@IonicPage({  
+@IonicPage({
   name: 'page-squad',
   segment: 'squad',
   priority: 'high'
@@ -39,7 +40,7 @@ export class SquadPage {
   ipc: any;
 
   isPartner = false;
-  
+
   customToken: any;
 
   userCustomData: any;
@@ -52,37 +53,48 @@ export class SquadPage {
   publicSquads: ISquad[] = [];
   privateSquads: ISquad[] = [];
   bookmark : ISquad[] = [];
- 
+
   public_shownGroup = null;
   private_shownGroup = null;
 
   private userDataChanged = new Subject<any>() ; // userData monitor.
   private userDataMargin: Subscription;
 
+  langPack : any;
+
   webUrl = 'https://product.bizsquad.net/auth?token=';
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public bizFire : BizFireService,
     public electron : Electron,
     private squadService: SquadService,
     public platform : Platform,
     private tokenService : TokenProvider,
+    private langService: LangService,
     public groupColorProvider : GroupColorProvider) {
     this._unsubscribeAll = new Subject<any>();
     this.ipc = electron.ipc;
-    
+
     this.isAndroid = platform.is('ios');
+
+    this.langService.onLangMap
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((l: any) => {
+        this.langPack = l;
+    });
   }
 
   ngOnInit() {
+
+
 
     this.bizFire.userCustomToken
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((token) => {
       this.customToken = token;
-    })
+    });
 
     this.bizFire.onBizGroupSelected
     .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))
@@ -101,7 +113,7 @@ export class SquadPage {
                 // get ne userDataChanged monitor
                 this.isPartner = this.bizFire.isPartner(group);
                 this.startMonitorUserData(group);
-                
+
                 // set MySquad
                 // this.squadService.onSelectSquad.next({sid: STRINGS.MY_SQUAD_STRING, data: null});
             } else {
@@ -177,7 +189,7 @@ export class SquadPage {
     this.publicSquads = publicSquads;
     this.privateSquads = privateSquads;
     this.bookmark = bookmark;
-    
+
   }
 
   toggleGroup(group) {

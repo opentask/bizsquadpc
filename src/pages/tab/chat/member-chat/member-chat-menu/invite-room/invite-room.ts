@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { IUser } from '../../../../../../_models/message';
-import { IroomData, IChatRoomData, IChatRoom } from '../../../../../../providers/chat.service';
+import { IroomData, IChatData, IChat } from '../../../../../../providers/chat.service';
 import { BizFireService } from '../../../../../../providers';
 import {Commons, STRINGS} from '../../../../../../biz-common/commons';
 import { IBizGroup, Igroup } from '../../../../../../providers/biz-fire/biz-fire';
@@ -10,7 +10,7 @@ import { filter, takeUntil, map } from 'rxjs/operators';
 import { AccountService } from '../../../../../../providers/account/account';
 import { GroupColorProvider } from '../../../../../../providers/group-color';
 
-@IonicPage({  
+@IonicPage({
   name: 'page-invite-room',
   segment: 'invite-room',
   priority: 'high'
@@ -30,11 +30,11 @@ export class InviteRoomPage {
   groupMainColor: string;
 
   roomData : IroomData;
-  observableRoom : IChatRoomData;
+  observableRoom : IChatData;
   members = [];
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public viewCtrl: ViewController,
     public bizFire : BizFireService,
@@ -49,12 +49,12 @@ export class InviteRoomPage {
     this.roomData = this.navParams.get('roomData');
     console.log(this.roomData);
 
-    this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.group_id,this.roomData.cid)).valueChanges()
-    .pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRoom : IChatRoomData) => {
+    this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.gid,this.roomData.cid)).valueChanges()
+    .pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRoom : IChatData) => {
       this.observableRoom = chatRoom;
     })
 
-    this.bizFire.afStore.doc(Commons.groupPath(this.roomData.data.group_id)).valueChanges().pipe(takeUntil(this._unsubscribeAll))
+    this.bizFire.afStore.doc(Commons.groupPath(this.roomData.data.gid)).valueChanges().pipe(takeUntil(this._unsubscribeAll))
     .subscribe((group : Igroup) => {
       this.currentGroup = group;
       if(this.currentGroup){
@@ -118,11 +118,11 @@ export class InviteRoomPage {
 
   invite(){
     let members = {};
-    
+
     this.isChecked.forEach(d => {
       members[d.data.uid] = true;
     })
-    this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.group_id,this.roomData.cid)).set({
+    this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.gid,this.roomData.cid)).set({
       members : members
     },{merge : true}).then(() =>{
       this.viewCtrl.dismiss();

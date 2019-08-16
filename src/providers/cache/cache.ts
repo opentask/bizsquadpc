@@ -26,15 +26,14 @@ interface ICacheDataItem {
 @Injectable({
   providedIn: 'root'
 })
-
 export class CacheService {
-  
+
   // default expire time is 1hour.
   private defaultExpireMin: number = 60;
-  
+
   private observerMap: ICacheDataItem[] = [];
   private listObserverMap: ICacheDataItem[] = [];
-  
+
   constructor(
     @Optional() @SkipSelf() otherMe: CacheService,
     private bizFire: BizFireService) {
@@ -47,6 +46,11 @@ export class CacheService {
     this.bizFire.onUserSignOut.subscribe(()=>{
       this.clear();
     });
+
+    /*
+    * 그룹이 바뀌면 캐쉬를 지운다.
+    * */
+    this.bizFire.onBizGroupSelected.subscribe(()=> this.clear());
   }
 
   clear(){
@@ -72,31 +76,31 @@ export class CacheService {
     });
     this.listObserverMap = [];
   }
-  
+
   private findWithPath(path: ICachePath): ICacheDataItem {
     return this.observerMap.find(d => d.path.isSamePath(path));
   }
   private findListWithPath(path: ICachePath): ICacheDataItem {
     return this.listObserverMap.find(d => d.path.isSamePath(path));
   }
-  
+
   /*
   * @angular/fire
   * default: doc.get()
   * default expire: this.defaultExpireMin
   * whenNotFound: default null return.
   * */
-  getObserver(path: string | ICachePath, option?: ICacheOption | CacheOptionBuilderFn, stateChange?: boolean): Observable<any>{
-    
+  getObserver(path: string | ICachePath, option?: ICacheOption | CacheOptionBuilderFn, stateChange = false): Observable<any>{
+
     let retObserver;
-    
+
     let cacheOption: ICacheOption;
     // determine option
     if(typeof option === 'function'){
       const builderFn:CacheOptionBuilderFn = option;
       const builder:ICacheOptionBuilder = CacheOptionBuilder.Build();
       cacheOption = builderFn(builder).finalize();
-      
+
     } else {
       if(option){
         cacheOption = option;
@@ -104,14 +108,14 @@ export class CacheService {
         cacheOption = {}; // set to default option;
       }
     }
-    
+
     let internalPath: ICachePath;
     if(typeof path === 'string'){
       internalPath = new Path(path);
     } else {
       internalPath = path;
     }
-    
+
     let cacheData: ICacheDataItem = this.findWithPath(internalPath);
     if(cacheData == null){
       // no old data.
@@ -122,48 +126,46 @@ export class CacheService {
         createAt: new Date(),
         sub: null
       };
-      
+
       this.observerMap.push(cacheData);
-      
+
     } else {
-      
-      if(cacheOption.refresh === true){
-        
-        // do nothing.
-        
-      }  else {
-        
-        // check expire min
-        if(cacheData.createAt != null){
+
+      let useSaved = true;
+
+      // is valueChange ?
+      if(stateChange === false){
+
+        // check expired
+        if(cacheOption.refresh !== true && cacheData.createAt != null){
           //
           const expireMin = cacheOption.expireMin || this.defaultExpireMin;
-          
-          if(this.checkExpire(cacheData.createAt, expireMin)){
-            
-            // time check ok.
-            // return saved data.
-            // just return
-            retObserver = cacheData.subject.asObservable().pipe(filter(d=>d !== 'init'));
-            
-          } else {
-            // re gain new data.
-            // clear old subscription
-            console.error('cache time expired. Clear subscription.', path);
-            if(cacheData.sub){
-              cacheData.sub.unsubscribe();
-              cacheData.sub = null;
-            }
-          }
+
+          useSaved = this.checkExpire(cacheData.createAt, expireMin);
+        }
+      }
+
+      if(useSaved){
+        // just return
+        retObserver = cacheData.subject.asObservable().pipe(filter(d=>d !== 'init'));
+
+      } else {
+        // delete old sub if exist.
+        if(cacheData.sub != null){
+          // clear old subscription
+          console.error('cache time expired. Clear subscription.', path);
+          cacheData.sub.unsubscribe();
+          cacheData.sub = null;
         }
       }
     }
-    
+
     if(retObserver == null){
       //console.log('getObserver', internalPath.path, `stateChange(${stateChange})`);
       const ref = stateChange === true ?
         this.bizFire.afStore.doc(internalPath.path).valueChanges()
         : this.bizFire.afStore.doc(internalPath.path).get();
-      
+
       // start subscription
       cacheData.sub = ref.subscribe((snap: any)=>{
         //console.log('new data received:', path);
@@ -175,7 +177,7 @@ export class CacheService {
             data = snap.data();
           }
         }
-        
+
         if(data){
           if(cacheOption.map != null){
             // converter
@@ -192,32 +194,23 @@ export class CacheService {
           }
         }
       });
-      
+
       retObserver = cacheData.subject.asObservable().pipe(filter(d=>d !== 'init'));
     }
-    
+
     // return observable
     return retObserver;
   }
-  
-  
+
+
   valueChangeObserver(path: string | ICachePath, option?: ICacheOption | CacheOptionBuilderFn): Observable<any>{
     return this.getObserver(path, option, true);
   }
-  
-  
-  // squadValueChangeObserver(gid: string, sid: string): Observable<ISquad>{
-  //   const path = Commons.squadDocPath(gid, sid);
-  //   return this.getObserver(new Path(path, 'valueChange_ISquad'),
-  //     ref=>ref.map(data => SquadBuilder.buildFromData(sid, data, this.bizFire.uid, gid)),
-  //     true);
-  // }
-  
-  
+
   private checkExpire(from: Date, expireMin: number): boolean {
     let ok = true;
     // saved date
-    const expire = new Date(from);
+    /*const expire = new Date(from);
     // make expired time
     expire.setMinutes(expire.getMinutes() + expireMin);
     // current
@@ -226,39 +219,39 @@ export class CacheService {
       // 기록된 시각 + 허용시간 < 현재 이므로, 이 캐쉬는 오래된 데이터.
       // OUT!
       ok = false;
-    }
+    }*/
     return ok;
   }
-  
-  
+
+
   userGetObserver(uid: string): Observable<IUser> {
-    const path = new Path(Commons.userPath(uid), 'get_IUser');
+    const path = new Path(Commons.userPath(uid), 'userGet_IUser');
     return this.getObserver(path, ref => ref.map(data=> ({uid: uid, data: data})), false);
   }
-  
-  
+
+
   userGetObserverList(members: any): Observable<IUser>[] {
-    
+
     if(members == null){
       throw new Error('members must have value');
     }
     return Object.keys(members)
       .filter(uid => members[uid] === true)
       .map(uid => this.userGetObserver(uid));
-    
+
   }
-  
+
   collection(path: ICachePath, option?: ICacheOption | CacheOptionBuilderFn): Observable<any[]> {
-    
+
     let retObserver;
-  
+
     let cacheOption: ICacheOption;
     // determine option
     if(typeof option === 'function'){
       const builderFn:CacheOptionBuilderFn = option;
       const builder:ICacheOptionBuilder = CacheOptionBuilder.Build();
       cacheOption = builderFn(builder).finalize();
-    
+
     } else {
       if(option){
         cacheOption = option;
@@ -266,7 +259,7 @@ export class CacheService {
         cacheOption = {}; // set to default option;
       }
     }
-  
+
     let cacheMap = this.findListWithPath(path);
     if(cacheMap == null){
       // no old data.
@@ -279,41 +272,41 @@ export class CacheService {
         lastIndex: null
       };
       this.listObserverMap.push(cacheMap);
-      
+
     } else {
-  
+
       retObserver = cacheMap.subject.asObservable().pipe(filter(d=>d !== null));
     }
-  
+
     if(retObserver == null){
-    
+
       let ref;
       ref = this.bizFire.afStore.collection(path.path, ref=>{
 
         let query: firebase.firestore.CollectionReference | firebase.firestore.Query = ref;
-        
+
         if(cacheOption.wheres){
           cacheOption.wheres.forEach(where => query = query.where(where.key, <firebase.firestore.WhereFilterOp>where.match || '==', where.value || true));
         }
         if(cacheOption.orderBy){
           cacheOption.orderBy.forEach(o => query = query.orderBy(o.key, <firebase.firestore.OrderByDirection>o.value || 'asc'));
         }
-        
+
         if(cacheOption.members){
           cacheOption.members.forEach(m =>
-          query = query.where(new firebase.firestore.FieldPath(m.type || 'members', m.uid), '==', m.value || true));
+            query = query.where(new firebase.firestore.FieldPath(m.type || 'members', m.uid), '==', m.value || true));
         }
         if(cacheOption.limit != null){
           query = query.limit(cacheOption.limit);
         }
-        
+
         return query;
       }).snapshotChanges();
-      
+
       // start subscription
       cacheMap.sub = ref.subscribe((snaps: any[])=>{
 
-        console.log('new collection values received:', path);
+        // console.log('new collection values received:', path);
 
         if(cacheOption.map != null){
           // converter exist.
@@ -322,31 +315,32 @@ export class CacheService {
             let data = snap.payload.doc.data();
             return cacheOption.map(id, data);
           });
-  
+
           cacheMap.subject.next(datas);
-      } else {
+
+        } else {
           cacheMap.subject.next(snaps);
         }
       });
-    
+
       retObserver = cacheMap.subject.asObservable().pipe(filter(d=>d !== null));
     }
-  
+
     // return observable
     return retObserver;
   }
-  
-  
-  
+
+
+
   /*User list for sorting*/
   resolvedUserList(userIdList: string[], sorter?: any){
-    
+
     return new Observable<IUser[]>( observer => {
       const datas = [];
       if(userIdList){
-        
+
         let totalTargetCount = userIdList.length;
-        
+
         userIdList.forEach(uid => {
           this.userGetObserver(uid)
             .pipe(take(1))
@@ -354,7 +348,7 @@ export class CacheService {
               if(user){
                 datas.push(user);
                 //console.log(datas);
-  
+
                 if(datas.length === totalTargetCount){
                   // all userdata received.
                   if(sorter){
@@ -378,9 +372,9 @@ export class CacheService {
     });
   }
 
+
   groupValueObserver(gid: string): Observable<IBizGroup> {
     const path = new Path(Commons.groupPath(gid), 'valueChange');
     return this.getObserver(path, ref => ref.map(data => ({gid: gid, data: data} as IBizGroup)), true);
   }
-  
 }

@@ -80,7 +80,7 @@ function historyWindow() {
         frame: true,
         titleBarStyle: 'hidden-inset',
     });
-    
+
 
     history.loadURL(url.format({
         pathname: path.join(__dirname, '../www/history.html'),
@@ -119,7 +119,7 @@ function createWindow() {
         maxHeight:750,
         titleBarStyle: 'hidden-inset',
     });
-    
+
 
     win.loadURL(url.format({
         pathname: path.join(__dirname, '../www/index.html'),
@@ -234,7 +234,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             defaultWidth: 350,
             defaultHeight: 600,
         });
-    
+
         testRooms[chatRoomId] = new BrowserWindow({
             'x': chatWindowState.x,
             'y': chatWindowState.y,
@@ -248,7 +248,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             titleBarStyle: 'hidden-inset',
             opacity: 1,
         });
-    
+
         testRooms[chatRoomId].loadURL(url.format({
             pathname: path.join(__dirname,'../www/index.html'),
             protocol: 'file:',
@@ -267,7 +267,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     });
 
 });
- 
+
 ipcMain.on('resetValue',(e) =>{
     selectChatRoom = null;
 });
@@ -314,7 +314,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
     // git의 버전을 담습니다.
     let releaseNameG = "";
     if(releaseName){
-        releaseNameG = 'The new version is installed. '+releaseName+'.'; 
+        releaseNameG = 'The new version is installed. '+releaseName+'.';
     } else {
         releaseNameG = 'The new version is installed.';
     }

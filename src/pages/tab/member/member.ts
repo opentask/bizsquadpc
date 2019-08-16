@@ -7,8 +7,9 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { IBizGroup } from '../../../providers/biz-fire/biz-fire';
 import { AccountService } from '../../../providers/account/account';
 import { GroupColorProvider } from '../../../providers/group-color';
+import {LangService} from "../../../providers/lang-service";
 
-@IonicPage({  
+@IonicPage({
   name: 'page-member',
   segment: 'member',
   priority: 'high'
@@ -35,7 +36,7 @@ export class MemberPage {
   // online 녹색 = #32db64 ;
 
   currentUser: IUserData;
-  
+
   // display user info
   displayName;
   fullName;
@@ -57,15 +58,24 @@ export class MemberPage {
 
   groupMainColor : string;
 
+  langPack : any;
+
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public bizFire : BizFireService,
     private accountService: AccountService,
     private groupColorProvider: GroupColorProvider,
-    public popoverCtrl :PopoverController,) {
+    private langService : LangService,
+    public popoverCtrl :PopoverController) {
 
     this._unsubscribeAll = new Subject<any>();
+
+    this.langService.onLangMap
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((l: any) => {
+        this.langPack = l;
+      });
   }
 
   ngOnInit(): void {
@@ -97,7 +107,7 @@ export class MemberPage {
                 // is me a manager?
                 this.manager = this.currentGroup.data.manager != null &&
                     this.currentGroup.data.manager[this.bizFire.currentUID] === true;
-                    
+
                 let allUsers;
 
                 const members = this.currentGroup.data.members;
@@ -113,7 +123,7 @@ export class MemberPage {
                 // * get ALL USERS DATA !
                 if (allUsers && allUsers.length > 0) {
                     this.accountService.getAllUserInfos(allUsers)
-                        .pipe(filter(l => 
+                        .pipe(filter(l =>
                             {
                             let ret;
                             ret = l.filter(ll => ll != null).length === allUsers.length;
@@ -138,7 +148,7 @@ export class MemberPage {
 
                             console.log(this.allCollectedUsers);
                             console.log(this.managerAuthUser);
-                          
+
                             all.forEach(user => {
                               const newData = user.data;
                               if(user.data.displayName == null || user.data.displayName.length == 0){
@@ -165,7 +175,7 @@ export class MemberPage {
                                   newData['user_onlineColor'] = '#f53d3d';
                                   break;
                               }
-                            }) 
+                            })
                         });
                 }
             }
@@ -180,7 +190,7 @@ export class MemberPage {
 
     }
   }
-  
+
   ngOnDestroy(): void {
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
@@ -191,7 +201,7 @@ export class MemberPage {
     // 이벤트 버블링 중지
     ev.stopPropagation();
     console.log("show my profile");
-    
+
     let popover = this.popoverCtrl.create('page-profile',{target : target,groupColor : this.groupMainColor}, {cssClass: 'page-profile'});
     popover.present({
       animate: false,

@@ -1,6 +1,6 @@
 import { GroupColorProvider } from './../../../../providers/group-color';
 import { Electron } from './../../../../providers/electron/electron';
-import { ChatService, IChatRoom } from './../../../../providers/chat.service';
+import { ChatService, IChat } from './../../../../providers/chat.service';
 import { AccountService } from './../../../../providers/account/account';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
@@ -10,8 +10,9 @@ import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
 import { IUser } from '../../../../_models/message';
 import { Subject } from 'rxjs';
 import deepEqual from 'deep-equal';
+import {LangService} from "../../../../providers/lang-service";
 
-@IonicPage({  
+@IonicPage({
   name: 'page-invite',
   segment: 'invite',
   priority: 'high'
@@ -33,16 +34,25 @@ export class InvitePage {
   groupMainColor: string;
   groupButtonColor: string;
 
+  langPack: any;
+
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public bizFire: BizFireService,
     public viewCtrl: ViewController,
     public chatService: ChatService,
     public electron : Electron,
     public accountService: AccountService,
+    private langService : LangService,
     public groupColorProvider: GroupColorProvider) {
       this._unsubscribeAll = new Subject<any>();
+
+      this.bizFire.onLang
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((l: any) => {
+          this.langPack = l.pack();
+      });
   }
 
   ngOnInit(): void {
@@ -95,7 +105,7 @@ export class InvitePage {
                     this.allCollectedUsers.filter(u => u.uid == this.bizFire.currentUID)
                     .forEach(user =>{
                       this.mydata = user;
-                    });      
+                    });
                     all.forEach(user => {
                       const newData = user.data;
                       newData['isChecked'] = user.data.isChecked = false;
@@ -124,7 +134,7 @@ export class InvitePage {
                           newData['user_onlineColor'] = '#f53d3d';
                           break;
                       }
-                    }) 
+                    })
                 });
           }
         }
@@ -135,7 +145,7 @@ export class InvitePage {
   invite(){
     let chatRooms = this.chatService.getChatRooms();
     console.log("chatRooms",chatRooms);
-    let selectedRoom: IChatRoom;
+    let selectedRoom: IChat;
     let members = {
       [this.bizFire.currentUID] : true
     };
@@ -146,7 +156,6 @@ export class InvitePage {
     }
     for(let room of chatRooms) {
       const member_list = room.data.members;
-      console.log("member_list",member_list);
       // 유저 키값이 false가 되면 리스트에서 제외하고 같은방이있는지 검사해야함.
 
       if(deepEqual(members,member_list)) {
@@ -154,14 +163,13 @@ export class InvitePage {
         break;
       }
     }
-    console.log("체크포인트",selectedRoom);
     if(this.isChecked.length > 0){
       if(selectedRoom == null){
         this.chatService.createRoomByFabs(this.isChecked);
         this.viewCtrl.dismiss();
       } else {
         this.chatService.onSelectChatRoom.next(selectedRoom);
-        this.electron.openChatRoom(selectedRoom);
+        this.electron.openChatRoom({cid: selectedRoom.cid, data: selectedRoom.data});
         this.viewCtrl.dismiss();
       }
     }

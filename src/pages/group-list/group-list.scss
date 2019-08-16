@@ -21,8 +21,8 @@ page-group-list {
     }
     ion-list:hover {
         // background-color: #f6f6f6;
-        -webkit-animation: animationColor 2s infinite; /* Chrome, Safari, Opera */
-        animation: animationColor 2s infinite;
+        -webkit-animation: animationColor 1s infinite; /* Chrome, Safari, Opera */
+        animation: animationColor 1s infinite;
         cursor: pointer;
     }
 
@@ -39,7 +39,7 @@ page-group-list {
             padding-bottom: 5px;
         }
     }
-    
+
     // scroll bar
     .scrollable{
         height: 100%;
@@ -80,5 +80,5 @@ page-group-list {
         from {background-color: #f6f6f6;}
         to {background-color: #D2E1F3;}
     }
-    
+
 }

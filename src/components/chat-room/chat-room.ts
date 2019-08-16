@@ -1,53 +1,92 @@
-import {Component, Input} from '@angular/core';
-import {Observable} from "rxjs";
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Observable, Subject} from "rxjs";
 import {IUser} from "../../_models/message";
 import { CacheService } from "../../providers/cache/cache";
 import {Commons} from "../../biz-common/commons";
-import {IChatRoom} from "../../providers/chat.service";
+import {IChat} from "../../providers/chat.service";
+import {BizFireService} from "../../providers";
+import {ISquad} from "../../providers/squad.service";
+import {takeUntil} from "rxjs/operators";
 
-/**
- * Generated class for the ChatRoomComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
   selector: 'chat-room',
   templateUrl: 'chat-room.html'
 })
+
 export class ChatRoomComponent {
 
-  text: string;
-  _chat : IChatRoom;
+  myId : string;
 
-  @Input()
-  set groupColor(color : string) {
-    if(color){
-      this._groupColor = color;
-    }
-  }
-
-  @Input()
-  set room(room : IChatRoom) {
-    if(room) {
-      this._chat = room;
-      this.userList$ = this.cacheService.resolvedUserList(Object.keys(room.data.members),Commons.userInfoSorter);
-    }
-  }
-
-
-
-  get groupColor(): string {
-    return this._groupColor;
-  }
-
-  private _groupColor = '#3f51b5';  //default
+  _room : IChat | ISquad;
 
   userList$: Observable<IUser[]>;
 
-  constructor(private cacheService: CacheService,) {
-    console.log('Hello ChatRoomComponent Component');
-    this.text = 'Hello World';
+  userCount: number = 0;
+  unreadCount: number = 0;
+  chatTitle: string = '';
+
+  private _unsubscribeAll;
+
+  _squadChat: boolean;
+
+  @Input()
+  set squadChat(type : boolean) {
+    this._squadChat = type;
+  }
+  get squadChat(): boolean {
+    return this._squadChat;
   }
 
+  @Input()
+  set chat(room : IChat | ISquad) {
+    if(room) {
+      this._room = room;
+      if(room.data.type === 'member') {
+        this.userList$ = this.cacheService.resolvedUserList(Object.keys(room.data.members),Commons.userInfoSorter);
+        this.userCount = Object.keys(room.data.members).filter(uid => room.data.members[uid] === true).length;
+        this.userList$.pipe(takeUntil(this._unsubscribeAll)).subscribe((users :IUser[]) => {
+          console.log("usersusers",users);
+          users.forEach(u => {
+            this.chatTitle += u.data.displayName  + ',';
+          });
+          this.chatTitle = this.chatTitle.slice(0,this.chatTitle.length -1);
+        });
+      } else {
+        //스쿼드채팅
+
+      }
+    }
+  }
+
+  @Input()
+  set unread(count : number) {
+    this.unreadCount = count;
+  }
+
+  @Output()
+  onClick = new EventEmitter<any>();
+
+  get room(): IChat | ISquad {
+    return this._room;
+  }
+
+  constructor(private cacheService: CacheService,
+              private bizFire : BizFireService) {
+    this._unsubscribeAll = new Subject<any>();
+  }
+
+
+  ngOnInit() {
+    this.myId = this.bizFire.uid;
+
+  }
+
+  onSelectRoom(){
+    this.onClick.emit(this._room);
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  }
 }

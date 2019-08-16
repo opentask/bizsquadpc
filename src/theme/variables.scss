@@ -11,9 +11,7 @@ $font-path: "../assets/fonts";
 // http://ionicframework.com/docs/theming/rtl-support/
 $app-direction: ltr;
 
-
 @import "ionic.globals";
-
 
 // Shared Variables
 // --------------------------------------------------
@@ -52,7 +50,7 @@ $colors: (
   lightskyblue: lightskyblue,
   brown: brown,
   darkolivegreen: darkolivegreen,
-  warn: #f44336, 
+  warn: #f44336,
   accent: #ff4081,
   default: #5b9ced,
 );
@@ -105,7 +103,7 @@ $colors: (
 @import "noto-sans";
 
 
-//checkbox 
+//checkbox
 
 $checkbox-md-item-start-margin-end: 5px;
 $checkbox-md-icon-size: 15px;
@@ -113,7 +111,7 @@ $checkbox-md-item-start-margin-top: 0;
 
 
 
-// loading 
+// loading
 $loading-md-box-shadow: none;
 $loading-ios-background: transparent;
 $loading-md-background: $loading-ios-background;

@@ -1,6 +1,16 @@
 export const language = {
-  
+
     "common": {
+      "agile": {
+        "ko": "에자일",
+        "en": "Agile",
+        "ja": "アジャイル"
+      },
+      "general": {
+        "ko": "제네럴",
+        "en": "General",
+        "ja": "ジェネラル"
+      },
       "home": {
         "ko": "홈",
         "en": "Home",
@@ -126,7 +136,57 @@ export const language = {
         "en": "Property",
         "ja": "詳細情報"
       }
-      ,"squad": {
+      ,"taskbox": {
+        "ko": "테스크박스",
+        "en": "Taskbox",
+        "ja": "タスクボックス"
+      },
+      "apps": {
+        "ko": "앱스",
+        "en": "Apps",
+        "ja": "アップス"
+      },
+      "myaccount": {
+        "ko": "내 계정",
+        "en": "My Account",
+        "ja": "マイアカウント"
+      },
+      "logout": {
+        "ko": "로그아웃",
+        "en": "Logout",
+        "ja": "ログアウト"
+      },
+      "shutdown": {
+        "ko": "종료",
+        "en": "Shutdown",
+        "ja": "終了"
+      },
+      "bookmark": {
+        "ko": "즐겨찾기",
+        "en": "bookmark",
+        "ja": "お気に入り"
+      },
+      "online": {
+        "ko": "온라인",
+        "en": "online",
+        "ja": "終了"
+      },
+      "wait": {
+        "ko": "자리비움",
+        "en": "wait",
+        "ja": "退席中"
+      },
+      "busy": {
+        "ko": "바쁨",
+        "en": "busy",
+        "ja": "忙し"
+      },
+      "members": {
+        "ko": "멤버",
+        "en": "Members",
+        "ja": "メンバー"
+      },
+      "squad": {
         "ko": "스쿼드",
         "en": "Squad",
         "ja": "スクワッド"
@@ -151,11 +211,6 @@ export const language = {
         "en": "Partner",
         "ja": "パートナー"
       }
-      ,"members": {
-        "ko": "멤버",
-        "en": "Members",
-        "ja": "メンバー"
-      }
       ,"create_chat_room": {
         "ko": "채팅방을 개설하였습니다.",
         "en": "The chat room has been created.",
@@ -166,10 +221,25 @@ export const language = {
         "en": "Chat",
         "ja": "チャット"
       }
+      ,"chatroom": {
+        "ko": "채팅 룸",
+        "en": "Chat Room",
+        "ja": "チャットルーム"
+      }
+      ,"squad_chatroom": {
+        "ko": "스쿼드 채팅 룸",
+        "en": "Squad ChatRoom",
+        "ja": "スクワッドチャットルーム"
+      }
       ,"auth": {
         "ko": "권한",
         "en": "Auth",
         "ja": "権限"
+      }
+      ,"select_member_invite": {
+        "ko": "초대 하고싶은<br> 멤버를 선택해 주세요",
+        "en": "Select the member<br> you want to chat with in the list.",
+        "ja": "招待したいメンバーを<br> 選択してください"
       }
       ,"password": {
         "ko": "패스워드",
@@ -232,7 +302,7 @@ export const language = {
         "ja": "改行"
       }
     },
-    
+
     "bbs": {
       "table_title": {
         "ko": "타이틀",
@@ -275,7 +345,7 @@ export const language = {
         "ja": '未読'
       }
     },
-    
+
     "squad": {
       "send": {
         "ko": "전송",
@@ -723,7 +793,7 @@ export const language = {
         "en": "Billing Status",
         "ja": "プラン"
       }
-  
+
       ,"create_bizgroup_small_title": {
         "ko": "새로운 비즈그룹의 설명을 입력해주세요.",
         "en": "Please input the information for the new BizGroup.",
@@ -763,11 +833,6 @@ export const language = {
         "ko": "저장",
         "en": "Save",
         "ja": "保存"
-      }
-      ,"members": {
-        "ko": "멤버",
-        "en": "Members",
-        "ja": "メンバー"
       }
       ,"member": {
         "ko": "멤버",
@@ -884,7 +949,7 @@ export const language = {
         "en": "Input color code: (ex: #000000, lightyellow)",
         "ja": "カラーコードを直接入力する事が出来ます。：(例: #000000, lightyellow)"
       }
-      
+
     },
     "userInfo": {
       "email_title": {
@@ -1012,7 +1077,7 @@ export const language = {
         "en": "Update finished successfully",
         "ja": "更新されました。"
       }
-      
+
     },
     "notification": {
       "invitation": {
@@ -1030,7 +1095,7 @@ export const language = {
         "en": "Received invitation to BizGroup [$GROUPNAME]",
         "ja": "「ビズグループ[$GROUPNAME]へ招待されました。"
       }
-      
+
       ,"notify": {
         "ko": "통지",
         "en": "Notify",
@@ -1116,7 +1181,7 @@ export const language = {
         "en": "Are you sure to delete?",
         "ja": "通知を削除しますか？"
       }
-      
+
     },
     "no-category":{
       "alarm_user_created_squad": {
@@ -1135,8 +1200,8 @@ export const language = {
         "en": "hide",
       "ja": "非表示"
     },
-  
-  
+
+
     "sign-up":{
       "name": {
         "ko": "이름",
@@ -1183,7 +1248,7 @@ export const language = {
         "en": "Cancel",
         "ja": "キャンセル"
       }
-  
+
       ,"step2_title": {
         "ko": "그룹선택",
         "en": "Group Select",
@@ -1225,5 +1290,41 @@ export const language = {
       "en": "The chat room has been created.",
       "ja": "チャットが開設されました。"
     }
+  ,"chat_exit_confirm": {
+    "ko": "채팅에서 나기시겠습니까?",
+    "en": "Are you sure to exit from this chat?",
+    "ja": "チャットから出ますか？"
+  }
+  ,"chat_exit": {
+    "ko": "채팅방 탈퇴",
+    "en": "Exit chat",
+    "ja": "退室"
+  }
+  ,"chat_create": {
+    "ko": "채팅방 생성",
+    "en": "Create",
+    "ja": "チャット作成"
+  }
+  ,"image_upload_confirm": {
+    "ko": "선택한 이미지를 전송하시겠습니까?",
+    "en": "Are you sure you want to send the selected image?",
+    "ja": "選択した画像を転送しますか？"
+  },
+  "exceed_size_image":{
+    "ko": "이미지 파일의 용량은 5MB를 넘을 수 없습니다.",
+    "en": "The file size can't exceed 5MB",
+    "ja": "ファイルの容量は5MBまでです。"
+  }
+  ,"chat_exit_user_notice": {
+    "ko": "$DISPLAYNAME씨가 채팅방에서 나갔습니다",
+    "en": "$DISPLAYNAME exit from chat",
+    "ja": "$DISPLAYNAMEさんがチャットから出ました。"
+  }
+  ,"logout_confirm": {
+    "ko": "로그아웃 하시겠습니까?",
+    "en": "Sign out from BizSquad?",
+    "ja": "ログアウトしますか？"
+  }
+
+
   };
-  

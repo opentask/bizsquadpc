@@ -3,28 +3,29 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { BizFireService } from './biz-fire/biz-fire';
 import {Commons, STRINGS} from '../biz-common/commons';
 import { takeUntil, map } from 'rxjs/operators';
+import * as firebase from "firebase";
+import {IChatData, IFirestoreDoc} from "./chat.service";
 
-export interface ISquad {
+export interface ISquad extends IFirestoreDoc{
     sid: string,
-    data?: {
-        members?: any,
-        name?: string,
-        created?: number,
-        manager?: any,
-        gid?: string,
-        type?: string,
-        status?: number,
-        member_count?:any,
-        lastMessage?: {
-            text: string,
-            files?: any[]
-        },
-        lastMessageTime?: number,
-        read?:any,
-        color?: string,
-        photoURL?: string
-    },
-    members?: any,
+    data?: IChatData
+}
+
+export interface ISquadData {
+
+  members: any,
+  created: any,
+  type: string,
+  name?: string,
+
+  manager?: any,
+  subType?: string,
+  status?: boolean,
+  description?: string,
+  color?:string,
+  photoURL?: string,
+  photoPath?: string
+
 }
 
 export interface IUserDataDoc {
@@ -91,7 +92,7 @@ export class SquadService {
                         }
                         return ret;
 
-                    }).map(d => ({sid: d.payload.doc.id, data: d.payload.doc.data()} as ISquad))
+                    }).map(d => ({sid: d.payload.doc.id, data: d.payload.doc.data(), ref : d.payload.doc.ref} as ISquad))
                 )
             );
     }

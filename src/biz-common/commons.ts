@@ -21,81 +21,81 @@ export const STRINGS = {
 
 
 export class Commons {
-    
+
     static noWhitespaceValidator(control: FormControl): any {
         const isWhitespace = (control.value || '').trim().length === 0;
         const isValid = !isWhitespace;
         return isValid ? null : { 'whitespace': true };
       }
-      
+
       static squadPath(gid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads`
       }
       static squadDocPath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}`;
       }
-      
+
       static messagePath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/messages`;
       }
       static messageDocPath(gid: string, sid: string, mid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/messages/${mid}`;
       }
-      
+
       static notificationPath(uid: string): string {
         return `users/${uid}/notifications`;
       }
-      
+
       static commentPath(gid: string, sid: string, mid: string): string {
         const path = Commons.messagePath(gid, sid);
         return `${path}/${mid}/comments`;
       }
-      
+
       static groupPath(gid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}`;
       }
-      
+
       static bbsPath(gid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/bbs`;
       }
-      
+
       static bbsDocPath(gid: string, bid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/bbs/${bid}`;
       }
-      
+
       static schedulePath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/calendar`;
       }
-      
+
       static initialChars(userData: IUserData, count = 2): string {
-        
+
         let ret;
         ret = userData['displayName'] || userData.email;
-        
+
         if(ret && ret.length === 0){
           ret = 'U';
         }
-        
+
         if(ret && ret.length > count -1){
           ret = ret.substr(0, count);
         }
-        
+
         if(ret === null){
           ret = 'U';
         }
-        
+
         return ret;
       }
-      
+
       static userDataPath(gid: string, uid: string): string {
         const path = `${STRINGS.STRING_BIZGROUPS}/${gid}/userData/${uid}`;
         return path;
       }
-      
+
       static userPath(uid: string): string {
         return `${STRINGS.USERS}/${uid}`;
       }
-      
+
       // /works : some invite actions
       static userInfoSorter(a: IUser, b: IUser): number {
         let index = 0;
@@ -106,7 +106,7 @@ export class Commons {
         }
         return index;
       }
-    
+
       // 채팅방 리스트 불러오기
       static  chatPath(gid: string, type = 'group'): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/chat`;
@@ -126,11 +126,11 @@ export class Commons {
       static chatImgPath(gid: string, cid: string,mid: string): string {
         return `${gid}/chat/${cid}/${mid}/`;
       }
-    
+
       static squadChatImgPath(gid: string, sid: string, mid :string): string {
         return `${gid}/${sid}/chat/${mid}/`;
       }
-      
+
       // 스쿼드 채팅방 정보 (스쿼드 정보)
       static  chatSquadPath(gid: string, sid: string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}`;
@@ -142,5 +142,43 @@ export class Commons {
       static chatSquadMsgDocPath(gid:string,sid:string,mid:string): string {
         return `${STRINGS.STRING_BIZGROUPS}/${gid}/squads/${sid}/chat/${mid}`;
       }
-  
+
+      static chatInputConverter(test: string): string | null {
+
+        let comment = String(test.trim());
+        let checkSuccess = comment.length > 0;
+
+        //check empty
+        if(checkSuccess) {
+          const index = comment.indexOf('\n');
+          if (index !== -1) {
+            let temp = comment.replace('\n', '');
+            checkSuccess = temp.trim().length > 0;
+          }
+        }
+
+        //convert
+        if(checkSuccess){
+          comment = comment.replace(/\n/gi, '<br>');
+        }
+
+        return checkSuccess ? `<p>${comment}</p>` : null;
+      }
+
+
+      static makeReadFrom(members: any, myUid: string): any {
+        //const members = currentChat.data.members;
+        const read = {};
+        if(members == null){
+          throw new Error('empty members param');
+        }
+        Object.keys(members)
+          .filter(uid => uid !== myUid) // everyone except me
+          .forEach(uid => {
+            // ser unread false except me.
+            read[uid] = {unread: uid !== myUid, read: uid === myUid ? new Date(): null};
+          });
+        return read;
+      }
+
 }
