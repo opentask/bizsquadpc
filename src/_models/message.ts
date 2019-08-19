@@ -31,7 +31,7 @@ export interface IMessageData {
   type?: string,
   message: {
     text?: string,
-    files?: any[],
+    files?: IFiles[],
     notice?: {
       langKey?: string,
       uid?: any,

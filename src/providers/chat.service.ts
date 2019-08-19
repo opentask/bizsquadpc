@@ -9,7 +9,7 @@ import {Commons, STRINGS} from '../biz-common/commons';
 
 import {LangService} from "./lang-service";
 import {takeUntil} from "rxjs/operators";
-import {IChat, IChatData, IMessageData} from "../_models/message";
+import {IChat, IChatData, IFiles, IMessageData} from "../_models/message";
 import {IUser} from "../_models";
 
 @Injectable({
@@ -173,6 +173,70 @@ export class ChatService {
             });
         })
     }
+
+    async addMessage(text: string,parentRef: any,unreadMembers : any,
+                    files?: any[],saveLastMessage = true) {
+      try{
+        if(parentRef == null) {
+          throw new Error('parentRef has no data.');
+        }
+
+        const now = new Date();
+        const msg: IMessageData = {
+          message: {
+            text : text
+          },
+          sender: this.bizFire.uid,
+          created: now,
+          isNotice : false,
+          read : null,
+          type : 'chat',
+          file: false
+        };
+
+        if(unreadMembers) {
+          msg.read = Commons.makeReadFrom(unreadMembers, this.bizFire.uid);
+        }
+        const newChatRef = parentRef.collection('chat').doc();
+
+        if(files && files.length > 0) {
+          msg.file = true;
+          const storageChatPath = parentRef.path;
+          const mid = newChatRef.id;
+          msg.message.files = [];
+          const loads = files.map(async file => {
+            const storagePath = `${storageChatPath}/${mid}/${file.name}`;
+            const storageRef = this.bizFire.afStorage.storage.ref(storagePath);
+            const fileSnapshot = await storageRef.put(file);
+
+            // get download url
+            const downloadUrl = await fileSnapshot.ref.getDownloadURL();
+
+            msg.message.files.push({
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              url : downloadUrl,
+              storagePath: storagePath
+            } as IFiles)
+          });
+          await Promise.all(loads);
+        }
+        await newChatRef.set(msg);
+
+        if(saveLastMessage === true) {
+          await parentRef.set({
+            lastMessage: msg.message,
+            lastMessageTime: new Date(),
+          }, {merge: true});
+        }
+        return newChatRef.id;
+      } catch (e) {
+        console.log('addMessage',e,text);
+        return null;
+      }
+    }
+
     setMsg(path : string, msg : IMessageData) {
         this.bizFire.afStore.firestore.doc(path).set(msg,{merge: true});
     }

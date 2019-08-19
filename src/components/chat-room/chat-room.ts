@@ -49,13 +49,7 @@ export class ChatRoomComponent extends TakeUntil{
       this._room = room;
 
       if(reload){
-
-        if(this.room.isPublic()) {
-          // General 스쿼드 채팅
-          this.chatTitle = this.room.data.name;
-          this.userCount = this.room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : this.room.getMemberCount();
-        } else {
-
+        if(this.room.data.type === 'member') {
           this.chatTitle = '';
           this.cacheService.resolvedUserList(this.room.getMemberIds(false), Commons.userInfoSorter)
             .subscribe((users :IUser[]) => {
@@ -67,6 +61,10 @@ export class ChatRoomComponent extends TakeUntil{
               });
             });
           this.userCount = this.room.getMemberCount();
+        } else {
+          // 스쿼드 채팅
+          this.chatTitle = this.room.data.name;
+          this.userCount = this.room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : this.room.getMemberCount();
         }
 
       }

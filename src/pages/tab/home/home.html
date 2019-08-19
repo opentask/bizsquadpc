@@ -37,9 +37,9 @@
   </div>
   <div class="statusMenu popup" *ngIf="statusMenu">
     <ul>
-        <ion-badge class="selectBadge" color="secondary"></ion-badge><li (click)="changedStatus($event)">{{ langPack['online'] }}</li>
-        <ion-badge class="selectBadge" color="yellow"></ion-badge><li (click)="changedStatus($event)">{{ langPack['wait'] }}</li>
-        <ion-badge class="selectBadge" color="danger"></ion-badge><li (click)="changedStatus($event)">{{ langPack['busy'] }}</li>
+        <ion-badge class="selectBadge" color="secondary"></ion-badge><li (click)="changedStatus('online')">{{ langPack['online'] }}</li>
+        <ion-badge class="selectBadge" color="yellow"></ion-badge><li (click)="changedStatus('wait')">{{ langPack['wait'] }}</li>
+        <ion-badge class="selectBadge" color="danger"></ion-badge><li (click)="changedStatus('busy')">{{ langPack['busy'] }}</li>
     </ul>
   </div>
   <div class="appSelectArea">

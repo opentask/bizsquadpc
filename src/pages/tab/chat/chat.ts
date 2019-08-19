@@ -26,7 +26,7 @@ export class ChatPage extends TakeUntil{
 
   defaultSegment : string = "chatRoom";
   chatRooms : IChat[];
-  squadChatRooms: ISquad[];
+  squadChatRooms: IChat[];
   members = [];
   groupMainColor: string;
   group: IBizGroup;
@@ -75,8 +75,6 @@ export class ChatPage extends TakeUntil{
     .pipe(filter(d=>d!=null),this.takeUntil)
     .subscribe((rooms : IChat[]) => {
 
-      console.log("멤버채팅방",rooms);
-
       this.chatRooms = rooms.sort((a,b): number => {
         if(a.data.lastMessageTime && b.data.lastMessageTime) {
           return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
@@ -91,8 +89,6 @@ export class ChatPage extends TakeUntil{
     this.squadService.onSquadListChanged
       .pipe(filter(d=>d != null),this.takeUntil)
       .subscribe((squad : IChat[]) => {
-
-        console.log("멤버채팅방",squad);
 
         squad.forEach(squad =>{
           const newData = squad.data;
@@ -129,27 +125,14 @@ export class ChatPage extends TakeUntil{
     }
   }
 
-  getUnreadCount(chat): number {
-    let rid;
-    if(chat.cid) {
-      rid = chat.cid;
-    } else {
-      rid = chat.sid;
-    }
-    return this.unreadList.filter(d => d.cid === rid).length;
-  }
-
-  makeSquadColor(squad : ISquad) {
-    return this.groupColorProvider.makeSquadColor(squad.data);
-  }
-
   gotoRoom(value:IChat){
     const cutRefValue = {cid: value.cid, data: value.data};
     this.chatService.onSelectChatRoom.next(value);
     this.electron.openChatRoom(cutRefValue);
   }
-  gotoSquadRoom(value : ISquad){
-    const cutRefValue = {sid: value.sid, data: value.data};
+  gotoSquadRoom(value : IChat){
+    const cutRefValue = {sid: value.cid, data: value.data};
+    console.log(cutRefValue);
     this.electron.openChatRoom(cutRefValue);
   }
 

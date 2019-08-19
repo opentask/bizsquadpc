@@ -223,15 +223,14 @@ export class HomePage implements OnInit {
     }
   }
 
-  changedStatus(e){
+  changedStatus(value){
     if(this.statusMenu){
       this.statusMenu = false;
     } else {
       this.statusMenu = true;
     }
-    console.log(e.target.innerText);
-    if(e.target.innerText != this.myStatus && e.target.innerText)
-    this.bizFire.statusChanged(e.target.innerText);
+    if(value != this.myStatus)
+    this.bizFire.statusChanged(value);
   }
 
   ngOnDestroy(): void {

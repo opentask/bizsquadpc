@@ -44,16 +44,6 @@
             [class.left]="msg.data.sender != this.bizFire.uid"
             [class.right]="msg.data.sender === this.bizFire.uid">
 
-<!--          <div class="notice_content" *ngIf="msg.data.isNotice">-->
-<!--            <ion-grid>-->
-<!--              <ion-row>-->
-<!--                <ion-col col-10 class="time_notice">-->
-<!--                  <div>{{ msg.data.message.text }}</div>-->
-<!--                </ion-col>-->
-<!--              </ion-row>-->
-<!--            </ion-grid>-->
-<!--          </div>-->
-
           <ng-container *ngIf="msg.data.message.notice">
             <!--notice.type 으로 판명-->
             <ng-container *ngIf="msg.data.message.notice.type != null">

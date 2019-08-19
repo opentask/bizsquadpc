@@ -14,7 +14,9 @@ import { GroupColorProvider } from '../../../../providers/group-color';
 import { Observable, timer } from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
 import {IMessage, IMessageData} from "../../../../_models/message";
-import {IUser} from "../../../../_models";
+import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../_models";
+import {takeUntil} from "rxjs/operators";
+import {LangService} from "../../../../providers/lang-service";
 
 @IonicPage({
   name: 'page-squad-chat',
@@ -31,7 +33,7 @@ export class SquadChatPage {
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
   message : string;
-  messages = [];
+  messages : IMessage[] = [];
   roomCount : number;
   opacity = 100;
   squadMainColor: any;
@@ -47,34 +49,100 @@ export class SquadChatPage {
   start : any;
   end : any;
 
-  public loadProgress : number = 0;
+  loadProgress : number = 0;
+
+  langPack : any;
 
   constructor(
      public navCtrl: NavController,
      public navParams: NavParams,
      public afAuth: AngularFireAuth,
      public bizFire : BizFireService,
-     public accountService : AccountService,
      public chatService : ChatService,
      public groupColorProvider: GroupColorProvider,
      private cacheService : CacheService,
-     private loading: LoadingProvider,
-     public electron: Electron) {
+     private langService : LangService,
+     public electron: Electron
+     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
           this.windowClose();
         }
-      })
+      });
       // esc 버튼 클릭시 채팅창 닫기.
       document.addEventListener('keydown', event => {
         if(event.key === 'Escape' || event.keyCode === 27){
           this.electron.windowClose();
         }
-      })
+      });
+
+      this.bizFire.currentUser.subscribe((user : IUserData) => {
+        console.log("useruseruseruser",user);
+        if(user) {
+          this.langService.onLangMap
+            .pipe(takeUntil(this.bizFire.onUserSignOut))
+            .subscribe((l: any) => {
+              this.langPack = l;
+            });
+        }
+      });
+
       this.ipc = electron.ipc;
+
+  }
+
+  keydown(e : any){
+    if (e.keyCode == 13  ) {
+      if(e.shiftKey === false){
+        // prevent default behavior
+        e.preventDefault();
+        // call submit
+        let value = e.target.value;
+        value = value.trim();
+        if(value.length > 0){
+          this.sendMsg(value);
+        }
+      } else {
+        // shift + enter. Let textarea insert new line.
+      }
+    }
   }
 
   ngOnInit(): void {
+
+    this.selectSquad = this.navParams.get("roomData");
+
+    if(this.selectSquad != null) {
+      this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
+
+      //메세지 30개 가져오기
+      this.getMessages();
+
+      // 그룹 데이터
+      this.bizFire.afStore.doc(Commons.groupPath(this.selectSquad.data.gid))
+        .get().subscribe(group => {
+          const groupData = group.data() as IBizGroupData;
+          if(groupData && this.selectSquad.data.type === 'public') {
+            this.roomCount = Object.keys(groupData.members).length;
+            this.members = groupData.members;
+          }
+      });
+
+      // 스쿼드 데이터 갱신
+      this.bizFire.afStore.doc(Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid))
+      .snapshotChanges().subscribe(snap => {
+        if(snap.payload.exists) {
+          this.selectSquad = ({sid: snap.payload.id, data: snap.payload.data(), ref: snap.payload.ref} as ISquad);
+          this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
+          if(this.selectSquad.data.type === 'private'){
+            this.roomCount = Object.keys(this.selectSquad.data.members).length;
+            this.members = this.selectSquad.data.members;
+          }
+        }
+      })
+    } else {
+      this.electron.windowClose();
+    }
 
     this.chatService.fileUploadProgress.subscribe(per => {
       if(per === 100) {
@@ -91,70 +159,36 @@ export class SquadChatPage {
         this.loadProgress = per;
       }
       console.log(per);
-    })
-
-    this.selectSquad = this.navParams.get("roomData");
-    console.log("this.selectSquadthis.selectSquad",this.selectSquad);
-
-    if(this.selectSquad != null) {
-      this.roomCount = Object.keys(this.selectSquad.data.members).length;
-      this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
-
-
-      //메세지 30개 가져오기
-      this.getMessages();
-
-      // 스쿼드 데이터 경로
-      const path = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
-
-      // 스쿼드 데이터 갱신
-      this.bizFire.afStore.doc(path).snapshotChanges().subscribe(snap => {
-        if(snap.payload.exists) {
-          this.selectSquad = ({sid: snap.payload.id, data: snap.payload.data()} as ISquad);
-          this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
-          this.roomCount = Object.keys(this.selectSquad.data.members).length;
-          // 스쿼드 권한 검사 후 팅기기 추가에정
-        }
-      })
-      // const drag_file = document.getElementById('drag-file');
-      // drag_file.addEventListener('drop',(e) => {
-      //   e.preventDefault();
-      //   e.stopPropagation();
-      //   let data = e.dataTransfer;
-      //   if(data.items){
-      //     for (var i=0; i < data.files.length; i++) {
-      //         console.log(data.files[i]);
-      //         this.dragFile(data.files[i]);
-      //       }
-      //   }
-      // })
-    }
+    });
   }
 
   // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
   getMessages() {
 
     const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
-    console.log("msgPath",msgPath);
+
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
     .get().subscribe((snapshots) => {
       if(snapshots && snapshots.docs) {
         this.start = snapshots.docs[snapshots.docs.length - 1];
-        this.getNewMessages(msgPath,this.start)
+        console.log(this.start);
+        this.getNewMessages(msgPath,this.start);
       }
     })
   }
 
   getNewMessages(msgPath,start) {
-
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
     .startAt(start))
     .stateChanges().subscribe((changes: any[]) => {
 
-      changes.forEach((change) => {
+      const batch = this.bizFire.afStore.firestore.batch();
+
+      changes.forEach((change : any) => {
         if(change.type === 'added') {
           const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
           this.messages.push(msgData);
+          this.chatService.setToReadStatus(change.payload.doc, batch);
         }
         if(change.type === 'modified') {
           const msg = this.messages.find(m => m.mid === change.payload.doc.id);
@@ -164,9 +198,8 @@ export class SquadChatPage {
           }
         }
       });
-
+      batch.commit();
       this.scrollToBottom(500);
-
     });
 
   }
@@ -185,14 +218,32 @@ export class SquadChatPage {
       .startAt(this.start).endBefore(this.end))
       .stateChanges().subscribe((messages) => {
 
+        const batch = this.bizFire.afStore.firestore.batch();
+
         messages.reverse().forEach((message) => {
           const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
           this.messages.unshift(msgData);
-        })
+          this.chatService.setToReadStatus(message.payload.doc, batch);
+        });
+
+        batch.commit();
       });
 
       console.log("more_messages",this.messages);
     })
+  }
+
+
+  sendMsg(value) {
+    this.editorMsg = '';
+
+    const converterText = Commons.chatInputConverter(value);
+
+    if(converterText){
+
+      this.chatService.addMessage(converterText,this.selectSquad.ref,this.members);
+
+    }
   }
 
   doInfinite(infiniteScroll) {
@@ -207,54 +258,7 @@ export class SquadChatPage {
     }, 500);
   }
 
-  keydown(e : any){
-    if (e.keyCode == 13  ) {
-      if(e.shiftKey === false){
-          // prevent default behavior
-          e.preventDefault();
-          // call submit
-          let value = e.target.value;
-          value = value.trim();
-          if(value.length > 0){
-              this.sendMsg(value);
-          }
-      } else {
-          // shift + enter. Let textarea insert new line.
-      }
-    }
-  }
-
-
-  sendMsg(value) {
-    this.editorMsg = '';
-
-    const converterText = Commons.chatInputConverter(value);
-
-    if(converterText){
-
-      const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
-      const roomPath = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
-
-      const message : IMessageData = {
-        created : new Date(),
-        message : {
-          text : converterText,
-        },
-        sender : this.bizFire.currentUserValue.uid,
-        type: 'chat',
-        file: true
-      };
-      this.chatService.addMsg(msgPath,message,roomPath,this.selectSquad);
-      // if(value != '' && now.getDay() <= lastmessage.getDay()){
-      //   this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
-      // } else if(value != '' && now.getDay() > lastmessage.getDay() || this.squad.data.lastMessageTime == null) {
-      //   this.chatService.writeTodayAndSendMsg("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
-      // }
-    }
-  }
-
   file(file){
-
     if(file.target.files.length === 0 ){
       return;
     }
@@ -262,71 +266,13 @@ export class SquadChatPage {
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
     } else {
       const attachedFile  = file.target.files[0];
-      const message : IMessageData = {
-        created : new Date(),
-        message : {
-          text : `<p>${attachedFile.name}</p>`,
-        },
-        sender : this.bizFire.currentUserValue.uid,
-        type: 'chat'
-      };
+      const converterText = Commons.chatInputConverter(attachedFile.name);
 
-      const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
-      const roomPath = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
-      // const filePath = Commons.squadChatImgPath(this.selectSquad.data.gid,this.selectSquad.sid) + attachedFile.name;
-
-      this.chatService.addMsg(msgPath,message,roomPath).then(mid => {
-        const filePath = Commons.squadChatImgPath(this.selectSquad.data.gid,this.selectSquad.sid,mid) + attachedFile.name;
-        const chatMsgDocPath = Commons.chatSquadMsgDocPath(this.selectSquad.data.gid,this.selectSquad.sid,mid);
-        this.chatService.uploadFilesToChat(filePath,attachedFile).then((url) => {
-          let updateFileMsg = {
-            message : {
-              files : [{
-                name: attachedFile.name,
-                storagePath: filePath,
-                url : url,
-                size : attachedFile.size,
-                type : attachedFile.type,
-              }]
-            }
-          };
-          this.chatService.setMsg(chatMsgDocPath,updateFileMsg);
-        })
+      this.chatService.addMessage(converterText,this.selectSquad.ref,this.members,[attachedFile]).then(() => {
+        this.scrollToBottom(1000);
       });
-
-      // this.chatService.uploadFilesToChat(filePath,attachedFile).then((url) => {
-      //   let upLoadFileMsg : IRoomMessagesData = {
-      //     created : new Date(),
-      //     message : {
-      //       text : attachedFile.name,
-      //       files : [{
-      //         name : attachedFile.name,
-      //         storagePath: filePath,
-      //         url : url,
-      //         size : attachedFile.size,
-      //         type : attachedFile.type,
-      //       }]
-      //     },
-      //     sender : this.bizFire.currentUserValue.uid,
-      //   };
-
-      //   this.chatService.addMsg(msgPath,upLoadFileMsg,roomPath);
-      // })
-
     }
   }
-
-  // dragFile(file){
-  //   if(file.length === 0 ) {
-  //     return;
-  //   }
-  //   if(file && file.size > 10000000){
-  //     this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
-  //     return;
-  //   } else {
-  //     this.chatService.sendMessage("squad-chat",file.name,this.selectSquad.sid,this.selectSquad.data.gid,file);
-  //   }
-  // }
 
   userGetObserver(uid : string): Observable<IUser> {
     return this.cacheService.userGetObserver(uid);
