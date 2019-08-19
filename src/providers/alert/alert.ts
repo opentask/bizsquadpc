@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
 import { Electron } from '../electron/electron';
 import {NotificationService} from "../notification.service";
-import { INotificationItem } from '../../_models/message';
+import {INotificationItem} from "../../_models";
 
 @Injectable()
 export class AlertProvider {
@@ -17,7 +17,7 @@ export class AlertProvider {
     public electron : Electron,
     public bizFire : BizFireService,
     private noticeService : NotificationService,
-    ) { 
+    ) {
       this.ipc = this.electron.ipc;
     }
 

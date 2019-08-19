@@ -15,6 +15,9 @@ chat-room {
   }
   .chat-title{
     font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .chat-title, .chat-message{
     white-space: nowrap;
@@ -46,6 +49,12 @@ chat-room {
     color: #999;
     font-weight: 500;
     font-size: 12px;
+
+    width:200px;
+    //overflow:hidden;
+    text-overflow:ellipsis;
+    //white-space:nowrap;
+
   }
 
 }

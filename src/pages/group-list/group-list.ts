@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Electron } from './../../providers/electron/electron';
-import { IBizGroup, BizFireService } from '../../providers/biz-fire/biz-fire';
+import { BizFireService } from '../../providers/biz-fire/biz-fire';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { FireData } from '../../classes/fire-data';
 import {STRINGS} from "../../biz-common/commons";
 import {LangService} from "../../providers/lang-service";
+import {IBizGroup} from "../../_models";
+import {BizGroupBuilder} from "../../biz-common/biz-group";
 
 @IonicPage({
   name: 'page-group-list',
@@ -57,8 +59,6 @@ export class GroupListPage {
                 if(group){
                   const newData = group.data;
                   newData['gid'] = group.gid;
-                  newData['group_squads'] = 0;
-                  newData['group_members'] = Object.keys(group.data.members).length;
                   newData['team_color'] = group.data.team_color || this.team_color;
 
                   if(group.data.team_name == null || group.data.team_name.length === 0 ) {
@@ -70,23 +70,6 @@ export class GroupListPage {
                       }
                       newData['team_icon'] = group.data.team_name.substr(0, count);
                   }
-                  // get group_squads number
-                  this.bizFire.afStore.firestore.collection(`bizgroups/${group.gid}/squads`).get().then(snap => {
-                    let general = 0;
-                    let agile = 0;
-                    snap.forEach(list => {
-                      if(list.data().status === true){
-                        if(list.data().type === 'public'){
-                          general += 1;
-                        } else if(list.data().type === 'private'){
-                          agile += 1;
-                        }
-                      }
-                    })
-                    newData['general_squad_count'] = general;
-                    newData['agile_squad_count'] = agile;
-                    newData['group_squads'] = snap.docs.length;
-                  });
                 }
             });
             this.groups = bizGroups.sort((a,b) => {
@@ -95,8 +78,7 @@ export class GroupListPage {
               } else {
                 return 0;
               }
-            })
-            console.log(this.groups);
+            });
         });
   }
 
@@ -116,7 +98,7 @@ export class GroupListPage {
       await this.bizFire.afStore.collection(STRINGS.USERS).doc(this.bizFire.currentUID).update({
         lastPcGid: group.gid
       });
-      this.bizFire.onBizGroupSelected.next(group);
+      this.bizFire.onBizGroupSelected.next(BizGroupBuilder.buildWithData(group.gid,group.data,this.bizFire.uid));
       this.navCtrl.setRoot('page-tabs');
     })();
   }

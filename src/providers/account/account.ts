@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
-import { IUser } from './../../_models/message';
 import { BizFireService } from './../biz-fire/biz-fire';
 import { takeUntil, filter } from 'rxjs/operators';
+import {IUser} from "../../_models";
 
 @Injectable()
 export class AccountService {
@@ -63,7 +63,7 @@ export class AccountService {
             return combineLatest(push);
         }
     }
-    
+
 
     static userInfoSorter(a: IUser, b: IUser): number {
         let index = 0;

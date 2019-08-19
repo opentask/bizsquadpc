@@ -1,12 +1,5 @@
-import { IUserData } from './../../_models/message';
 import { AngularFirestore } from '@angular/fire/firestore';
-/*
-InitProcess
-: Process initial things.
-- Get /users/<uid> info.
-- Save current users' info.
-- Start/Stop monitor current users' BizGroup
-*/
+
 export class InitProcess {
 
     constructor(private afStore: AngularFirestore) { }

@@ -1,17 +1,17 @@
 import { GroupColorProvider } from './../../../providers/group-color';
 import { Electron } from './../../../providers/electron/electron';
 import { AccountService } from './../../../providers/account/account';
-import { ChatService, IChat } from './../../../providers/chat.service';
-import { BizFireService, IBizGroup } from './../../../providers/biz-fire/biz-fire';
+import { ChatService } from './../../../providers/chat.service';
+import { BizFireService } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
-import { takeUntil, filter } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { IUser } from '../../../_models/message';
+import { filter } from 'rxjs/operators';
+import {IChat} from '../../../_models/message';
 import { SquadService, ISquad } from '../../../providers/squad.service';
 import firebase from 'firebase';
 import {LangService} from "../../../providers/lang-service";
 import {TakeUntil} from "../../../biz-common/take-until";
+import {IBizGroup, IUser} from "../../../_models";
 
 @IonicPage({
   name: 'page-chat',
@@ -27,13 +27,10 @@ export class ChatPage extends TakeUntil{
   defaultSegment : string = "chatRoom";
   chatRooms : IChat[];
   squadChatRooms: ISquad[];
-  squadrooms = [];
-  memberCount : number;
   members = [];
   groupMainColor: string;
   group: IBizGroup;
 
-  allMembers: IUser[];
   unreadList: any[];
 
   langPack: any;
@@ -77,7 +74,8 @@ export class ChatPage extends TakeUntil{
     this.chatService.onChatRoomListChanged
     .pipe(filter(d=>d!=null),this.takeUntil)
     .subscribe((rooms : IChat[]) => {
-      console.log("이게 호출되어야함.");
+
+      console.log("멤버채팅방",rooms);
 
       this.chatRooms = rooms.sort((a,b): number => {
         if(a.data.lastMessageTime && b.data.lastMessageTime) {
@@ -92,10 +90,13 @@ export class ChatPage extends TakeUntil{
     // 스쿼드 채팅방
     this.squadService.onSquadListChanged
       .pipe(filter(d=>d != null),this.takeUntil)
-      .subscribe((squad : ISquad[]) => {
+      .subscribe((squad : IChat[]) => {
+
+        console.log("멤버채팅방",squad);
 
         squad.forEach(squad =>{
           const newData = squad.data;
+
           newData['member_count'] = Object.keys(squad.data.members).filter(uid => squad.data.members[uid] === true).length;
         });
 
@@ -144,7 +145,7 @@ export class ChatPage extends TakeUntil{
 
   gotoRoom(value:IChat){
     const cutRefValue = {cid: value.cid, data: value.data};
-    this.chatService.onSelectChatRoom.next(cutRefValue);
+    this.chatService.onSelectChatRoom.next(value);
     this.electron.openChatRoom(cutRefValue);
   }
   gotoSquadRoom(value : ISquad){

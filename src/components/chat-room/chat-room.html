@@ -1,4 +1,5 @@
-<div class="chat-room-frame d-flex flex-column p-4" (click)="onSelectRoom()">
+
+<div class="chat-room-frame d-flex flex-column p-3" (click)="onSelectRoom()">
 
   <div class="d-flex align-items-center mb-2 justify-content-between">
 
@@ -16,7 +17,7 @@
         {{ unreadCount }}
       </div>
 
-      <div class="member-count d-flex align-items-center justify-content-between" style="width: 20px">
+      <div class="member-count d-flex align-items-center justify-content-between" style="width: 25px">
         <ion-icon class="chat-count" name="person"></ion-icon>
         <div>
           {{ userCount }}
@@ -26,16 +27,8 @@
     </div>
 
   </div>
-  <!--   라스트메세지    -->
-  <div class="d-flex align-items-center ">
 
-    <div class="flex-grow-1">
-      <div *ngIf="room.data.lastMessage"  class="chat-message " [innerHtml]="room.data.lastMessage.text | sanitizingHtml"></div>
-      <div *ngIf="!room.data.lastMessage"  class="chat-message ">No message</div>
-    </div>
-    <!--   라스트메세지 시간    -->
-    <div class="chat-time flex-shrink-0">
-      <span *ngIf="room.data.lastMessageTime">{{ room.data.lastMessageTime | timestampToDate | date: 'MM/dd HH:mm'}}</span>
-    </div>
-  </div>
+  <!--   라스트메세지    -->
+  <biz-last-message [room]="room"></biz-last-message>
+
 </div>

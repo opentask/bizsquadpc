@@ -1,17 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NotificationService } from '../../../providers/notification.service';
-import { Subject, zip, Observable } from 'rxjs';
-import { INoticeItem, INotification, INotificationData, INotificationItem, IUser } from '../../../_models/message';
+import { Subject } from 'rxjs';
 import { BizFireService } from '../../../providers/biz-fire/biz-fire';
 import { Electron } from './../../../providers/electron/electron';
-import { DataCache } from '../../../classes/cache-data';
-import { filter, takeUntil } from 'rxjs/operators';
-import { FireDataKey } from '../../../classes/fire-data-key';
-import { Commons } from '../../../biz-common/commons';
+import { takeUntil } from 'rxjs/operators';
 import { GroupColorProvider } from '../../../providers/group-color';
+import {INotification, INotificationItem} from "../../../_models";
 
-@IonicPage({  
+@IonicPage({
   name: 'page-notify',
   segment: 'notify',
   priority: 'high'
@@ -36,7 +33,7 @@ export class NotifyPage {
   groupMainColor: string;
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public electron : Electron,
     private noticeService: NotificationService,
@@ -58,7 +55,7 @@ export class NotifyPage {
         this.noNotify = msgs.length === 0;
 
         this.messages = msgs.filter(m => m.data.gid === this.bizFire.onBizGroupSelected.getValue().gid);
-  
+
         console.log("messages",this.messages);
       }
     });

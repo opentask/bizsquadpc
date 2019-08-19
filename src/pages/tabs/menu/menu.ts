@@ -1,15 +1,14 @@
 import { GroupColorProvider } from './../../../providers/group-color';
-import { NotifyPage } from './../../tab/notify/notify';
 import { Electron } from './../../../providers/electron/electron';
-import { BizFireService,IBizGroup, Igroup } from './../../../providers/biz-fire/biz-fire';
+import { BizFireService } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject,combineLatest, BehaviorSubject } from 'rxjs';
 import { NotificationService } from '../../../providers/notification.service';
-import { INotification, INoticeItem, INotificationItem } from '../../../_models/message';
 import { AlertProvider } from '../../../providers/alert/alert';
-@IonicPage({  
+import {IBizGroup, INotification, INotificationItem} from "../../../_models";
+@IonicPage({
   name: 'page-menu',
   segment: 'menu',
   priority: 'high'
@@ -35,7 +34,7 @@ export class MenuPage {
   noNotify: boolean = false;
 
   isPartner = false;
-  
+
   ipc: any;
 
 
@@ -47,7 +46,7 @@ export class MenuPage {
   private filterGroup$ = new BehaviorSubject<IBizGroup>(null);
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     private bizFire: BizFireService,
     public electron : Electron,
@@ -55,7 +54,7 @@ export class MenuPage {
     private alertCtrl : AlertProvider,
     private noticeService: NotificationService) {
 
-      this._unsubscribeAll = new Subject<any>(); 
+      this._unsubscribeAll = new Subject<any>();
 
       this.ipc = electron.ipc;
       this.filterGroup$.next(null);
@@ -72,14 +71,14 @@ export class MenuPage {
 
           this.noNotify = this.allMessages.length === 0;
           this.messages = msgs;
-    
+
           if(filterGroup != null) {
             // this.messages = msgs.filter(m => m.data.gid === filterGroup.gid && m.data.statusInfo.done !== true);
             this.messages = msgs.filter(m => m.data.gid === filterGroup.gid);
           }
-  
+
           this.badgeCount = this.allMessages.filter(m => m.data.statusInfo.done !== true).length;
-  
+
         }
 
       });

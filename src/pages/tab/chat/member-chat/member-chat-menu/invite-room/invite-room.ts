@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { IUser } from '../../../../../../_models/message';
-import { IroomData, IChatData, IChat } from '../../../../../../providers/chat.service';
 import { BizFireService } from '../../../../../../providers';
-import {Commons, STRINGS} from '../../../../../../biz-common/commons';
-import { IBizGroup, Igroup } from '../../../../../../providers/biz-fire/biz-fire';
-import { combineLatest, BehaviorSubject, Subject } from 'rxjs';
+import { Commons } from '../../../../../../biz-common/commons';
+import { Subject } from 'rxjs';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { AccountService } from '../../../../../../providers/account/account';
 import { GroupColorProvider } from '../../../../../../providers/group-color';
+import {IBizGroupData, IUser} from "../../../../../../_models";
+import {IChatData, IroomData} from "../../../../../../_models/message";
 
 @IonicPage({
   name: 'page-invite-room',
@@ -26,7 +25,7 @@ export class InviteRoomPage {
   serachValue : string;
   allCollectedUsers: IUser[];
   isChecked : IUser[] = [];
-  currentGroup : Igroup;
+  currentGroup : IBizGroupData;
   groupMainColor: string;
 
   roomData : IroomData;
@@ -55,7 +54,7 @@ export class InviteRoomPage {
     })
 
     this.bizFire.afStore.doc(Commons.groupPath(this.roomData.data.gid)).valueChanges().pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((group : Igroup) => {
+    .subscribe((group : IBizGroupData) => {
       this.currentGroup = group;
       if(this.currentGroup){
         this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.team_color);

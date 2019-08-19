@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
-import { IUser, IUserData } from '../../../_models/message';
 import { Subject, Observable, combineLatest } from 'rxjs';
 import { BizFireService } from '../../../providers';
 import { filter, takeUntil } from 'rxjs/operators';
-import { IBizGroup } from '../../../providers/biz-fire/biz-fire';
 import { AccountService } from '../../../providers/account/account';
 import { GroupColorProvider } from '../../../providers/group-color';
 import {LangService} from "../../../providers/lang-service";
+import {IBizGroup, IUser, IUserData} from "../../../_models";
 
 @IonicPage({
   name: 'page-member',

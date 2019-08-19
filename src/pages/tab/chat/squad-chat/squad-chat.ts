@@ -7,14 +7,14 @@ import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { STRINGS, Commons } from '../../../../biz-common/commons';
-import { IUser } from '../../../../_models/message';
-import { ChatService, IMessage, IMessageData } from '../../../../providers/chat.service';
-import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
+import { ChatService } from '../../../../providers/chat.service';
 import { IonContent } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
 import { GroupColorProvider } from '../../../../providers/group-color';
 import { Observable, timer } from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
+import {IMessage, IMessageData} from "../../../../_models/message";
+import {IUser} from "../../../../_models";
 
 @IonicPage({
   name: 'page-squad-chat',
@@ -32,19 +32,13 @@ export class SquadChatPage {
 
   message : string;
   messages = [];
-  readMessages: IMessage[];
   roomCount : number;
-  roomName = "";
-  currentGroup : IBizGroup;
   opacity = 100;
   squadMainColor: any;
 
   selectSquad : ISquad;
   squad : ISquad;
   members: any;
-  groupMember : IBizGroup;
-  allCollectedUsers: IUser[];
-  mydata: IUser;
   editorMsg = '';
   ipc : any;
 
@@ -119,7 +113,6 @@ export class SquadChatPage {
           this.selectSquad = ({sid: snap.payload.id, data: snap.payload.data()} as ISquad);
           this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
           this.roomCount = Object.keys(this.selectSquad.data.members).length;
-
           // 스쿼드 권한 검사 후 팅기기 추가에정
         }
       })
@@ -242,15 +235,15 @@ export class SquadChatPage {
       const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
       const roomPath = Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid);
 
-      const message = {
+      const message : IMessageData = {
         created : new Date(),
         message : {
           text : converterText,
         },
         sender : this.bizFire.currentUserValue.uid,
-        type: 'chat'
+        type: 'chat',
+        file: true
       };
-      console.log("selectSquadselectSquad",this.selectSquad);
       this.chatService.addMsg(msgPath,message,roomPath,this.selectSquad);
       // if(value != '' && now.getDay() <= lastmessage.getDay()){
       //   this.chatService.sendMessage("squad-chat",value,this.selectSquad.sid,this.selectSquad.data.gid);
@@ -323,11 +316,6 @@ export class SquadChatPage {
     }
   }
 
-
-  userDataConsole(u) {
-    console.log(u);
-  }
-
   // dragFile(file){
   //   if(file.length === 0 ) {
   //     return;
@@ -339,6 +327,10 @@ export class SquadChatPage {
   //     this.chatService.sendMessage("squad-chat",file.name,this.selectSquad.sid,this.selectSquad.data.gid,file);
   //   }
   // }
+
+  userGetObserver(uid : string): Observable<IUser> {
+    return this.cacheService.userGetObserver(uid);
+  }
 
   getUserObserver(msg: IMessageData): Observable<IUser>{
     if(!msg.isNotice) {
@@ -368,19 +360,6 @@ export class SquadChatPage {
 
   windowMimimize() {
     this.electron.windowMimimize();
-  }
-
-  loadData(event) {
-    setTimeout(() => {
-      console.log('Done');
-      event.target.complete();
-
-      // App logic to determine if all data is loaded
-      // and disable the infinite scroll
-      if (this.messages.length == 50) {
-        event.target.disabled = true;
-      }
-    }, 500);
   }
 
 }

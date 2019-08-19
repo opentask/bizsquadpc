@@ -7,16 +7,17 @@ import { Electron } from './../../providers/electron/electron';
 import { BizFireService } from '../../providers';
 import {Subject, of, Subscription, timer} from 'rxjs';
 import { filter, takeUntil, map, switchMap } from 'rxjs/operators';
-import { IBizGroup, userLinks } from '../../providers/biz-fire/biz-fire';
-import { IUserData, INotification } from '../../_models/message';
 import { NotificationService } from '../../providers/notification.service';
-import { ChatService,IChat } from '../../providers/chat.service';
+import { ChatService } from '../../providers/chat.service';
 import { SquadService, ISquad } from '../../providers/squad.service';
 import { DataCache } from '../../classes/cache-data';
 import { TokenProvider } from '../../providers/token/token';
-import {STRINGS} from "../../biz-common/commons";
+import {Commons, STRINGS} from "../../biz-common/commons";
 import { LangService } from '../../providers/lang-service';
 import { UnreadCounter } from "../../classes/unread-counter";
+import {IBizGroup, INotification} from "../../_models";
+import {IChat, IChatData} from "../../_models/message";
+import {Chat} from "../../biz-common/chat";
 
 @IonicPage({
   name: 'page-tabs',
@@ -35,10 +36,7 @@ export class TabsPage {
   private unreadCounter: UnreadCounter;
   private unreadListSubscription: Subscription;
 
-  currentGroup: IBizGroup;
-  currentUser: IUserData;
   groupList; // display Select
-  currentGroupList: IBizGroup[];
   memberNewMessage = 0;
   squadNewMessage = 0;
   squadChatRooms: ISquad[];
@@ -135,8 +133,12 @@ export class TabsPage {
         }),
         takeUntil(this._unsubscribeAll),
       filter(l => l != null) // prevent same group reloading.
-    ).subscribe((list : ISquad[]) => {
-      this.squadService.onSquadListChanged.next(list);
+    ).subscribe((list : IChat[]) => {
+      const newChat = list.map(l => {
+        return new Chat(l.sid , l.data, this.bizFire.uid, l.ref);
+      });
+
+      this.squadService.onSquadListChanged.next(newChat);
 
       list.forEach(s => {
         if(!this.unreadCounter.isRegistered(s.sid)) {
@@ -172,18 +174,18 @@ export class TabsPage {
     });
 
 
-    this.bizFire.afStore.collection(`${STRINGS.STRING_BIZGROUPS}/${this.group.gid}/chat`,ref =>{
+    this.bizFire.afStore.collection(Commons.chatPath(this.group.gid),ref =>{
         return ref.where('status', '==' ,true).where(`members.${this.bizFire.currentUID}`, '==', true);
     })
     .stateChanges()
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((changes) => {
       changes.forEach(change => {
-        const data = change.payload.doc.data();
+        const data:any = change.payload.doc.data();
         const mid = change.payload.doc.id;
 
         if(change.type === 'added') {
-          const item = {cid: mid, data: data,ref: change.payload.doc.ref} as IChat;
+          const item = new Chat(mid, data, this.bizFire.uid, change.payload.doc.ref);
           this.chatRooms.push(item);
           this.unreadCounter.register(mid, change.payload.doc.ref);
 
@@ -191,7 +193,7 @@ export class TabsPage {
           for(let index = 0 ; index < this.chatRooms.length; index ++){
             if(this.chatRooms[index].cid === mid){
               // find replacement
-              const item = {cid: mid, data: data, ref: change.payload.doc.ref} as IChat;
+              const item = new Chat(mid, data, this.bizFire.uid, change.payload.doc.ref);
               //---------- 껌벅임 테스트 -------------//
               this.chatRooms[index].data = item.data; // data 만 경신 한다.
               //-----------------------------------//

@@ -3,13 +3,13 @@ import { Electron } from './../../../providers/electron/electron';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { Subject, Subscription, combineLatest } from 'rxjs';
-import { IBizGroup, BizFireService } from '../../../providers/biz-fire/biz-fire';
+import { BizFireService } from '../../../providers/biz-fire/biz-fire';
 import { ISquad, SquadService } from '../../../providers/squad.service';
-import { IFolderItem } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import {Commons, STRINGS} from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
 import {LangService} from "../../../providers/lang-service";
+import {IBizGroup, IFolderItem} from "../../../_models";
 
 export interface ISquadListData {
   generalSquads?: ISquad[];

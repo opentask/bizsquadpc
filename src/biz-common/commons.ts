@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { IUserData, IUser } from '../_models/message';
+import {IUser, IUserData} from "../_models";
 
 export const STRINGS = {
   STRING_BIZGROUPS: 'bizgroups',

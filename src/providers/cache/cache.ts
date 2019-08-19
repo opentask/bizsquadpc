@@ -1,15 +1,15 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core';
 import { BehaviorSubject, Subscription, Observable, timer } from 'rxjs';
-import {BizFireService, IBizGroup} from '../biz-fire/biz-fire';
+import {BizFireService} from '../biz-fire/biz-fire';
 import {CacheOptionBuilderFn, ICacheOption, ICacheOptionBuilder} from './cache-option';
 import { ICachePath } from './i-cache-path';
 import {CacheOptionBuilder} from './cache-option-builder';
 import {Path} from './path';
 import { filter,map, take } from 'rxjs/operators';
 import { ISquad } from '../squad.service';
-import { IUser } from '../../_models/message';
 import { Commons } from '../../biz-common/commons';
 import firebase from 'firebase';
+import {IBizGroup, IUser} from "../../_models";
 
 export declare type CacheOptionDataBuilder = (data: any)=> any;
 export declare type CacheOptionListBuilder = (id: string, data?: any)=> any;

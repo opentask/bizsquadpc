@@ -1,6 +1,5 @@
 import {App} from 'ionic-angular';
 import { Injectable } from '@angular/core';
-import {INoticeItem, INotificationData, IUserData, INotificationItem} from './../../_models/message';
 import { User } from 'firebase';
 import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -15,6 +14,8 @@ import { FireDataKey } from '../../classes/fire-data-key';
 import { FireData } from '../../classes/fire-data';
 import { environment } from '../../environments/environments';
 import { LangService } from '../lang-service';
+import {IBizGroup, INotificationData, INotificationItem, IUserData} from "../../_models";
+import {BizGroupBuilder} from "../../biz-common/biz-group";
 
 export interface IUserState {
   status:'init'|'signIn'|'signOut',
@@ -30,48 +31,6 @@ export interface userLinks {
         title : string,
         url : string,
     }
-}
-
-export interface IBizGroup {
-    gid: string,
-    data: IBizGroupData
-}
-
-export interface IBizGroupData {
-    manager: any,
-    members: any,
-    partners?: any,
-    status?: any,
-    team_color?: string,
-    team_description?: string,
-    team_name?: string,
-    team_id?: string,
-    manageInfo?: {
-        password: string
-    },
-    created?: number,
-    photoURL?: string,
-    team_icon?: string,
-    group_members?: number,
-    general_squad_count?: number,
-    agile_squad_count?: number,
-    notifyLength?: Number,
-    badgeVisible?: boolean,
-  }
-
-export interface Igroup {
-    created?: number,
-    manageInfo?: {
-        password: string
-    },
-    manager: any,
-    members: any,
-    photoURL?: string,
-    status?: number,
-    team_color?: string,
-    team_description?: string,
-    team_id?: string,
-    team_name?: string,
 }
 
 @Injectable({
@@ -429,7 +388,7 @@ export class BizFireService {
       this.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${gid}`)
       .get().subscribe((doc) => {
 
-        const group = {data:doc.data(), gid:doc.id} as IBizGroup;
+        const group : IBizGroup = BizGroupBuilder.buildWithData(gid,doc.data(),this.uid);
 
         if(group.data.members[this.currentUID] === true && group.data.status === true) {
           this.onBizGroupSelected.next(group);
@@ -473,16 +432,7 @@ export class BizFireService {
         }, {merge: true})
     }
   }
-  videoCallSuccess(){
-    return this.afStore.doc(`users/${this.currentUID}`).set({
-        videoCall : ''
-      }, {merge: true})
-  }
-  getUserOnlineStatus() {
-    return this.afStore.doc(`users/${this.currentUID}`).set({
-      onlineStatus : 'offline'
-    }, {merge: true})
-  }
+
   setUserOnlineStatus() {
       this.afStore.doc(`users/${this.currentUID}`).update({
         onlineStatus : 'online'

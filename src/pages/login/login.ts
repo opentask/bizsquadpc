@@ -8,14 +8,14 @@ import { Subject } from 'rxjs';
 import { takeUntil,take } from 'rxjs/operators';
 import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
-import { IChat } from '../../providers/chat.service';
-import {IUserData} from "../../_models/message";
+import {IChat} from "../../_models/message";
+import {IUserData} from "../../_models";
 
-@IonicPage({  
+@IonicPage({
   name: 'page-login',
   segment: 'login',
   priority: 'high'
-}) 
+})
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
@@ -114,7 +114,7 @@ export class LoginPage implements OnInit {
   }
 
   async onLogin() {
-  
+
     if(this.loginForm.valid) {
 
       this.loading.show();

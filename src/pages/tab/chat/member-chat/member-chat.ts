@@ -4,24 +4,18 @@ import { AccountService } from './../../../../providers/account/account';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
-import {
-  ChatService,
-  IChat,
-  IMessage,
-  IChatData,
-  IMessageData
-} from '../../../../providers/chat.service';
+import { ChatService } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import {IUser, IUserData} from '../../../../_models/message';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { AlertProvider } from '../../../../providers/alert/alert';
 import { IonContent } from '@ionic/angular';
 import { Observable, timer } from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
-import { IBizGroupData } from '../../../../providers/biz-fire/biz-fire';
 import {LangService} from "../../../../providers/lang-service";
+import {IChat, IChatData, IMessage, IMessageData} from "../../../../_models/message";
+import {IBizGroupData, IUser, IUserData} from "../../../../_models";
 
 @IonicPage({
   name: 'page-member-chat',
@@ -37,14 +31,11 @@ export class MemberChatPage {
   @ViewChild('scrollMe') contentArea: IonContent;
   @ViewChild('scrollMe') content: Content;
 
-  private _unsubscribeAll;
   editorMsg = '';
   opacity = 100;
   message : string;
   messages = [];
-  readMessages : IMessage[];
   chatroom : IChat;
-  room_type : string = "chatRoom";
   ipc : any;
   roomData : IChatData;
   chatMembers = [];
@@ -147,7 +138,7 @@ export class MemberChatPage {
       this.bizFire.afStore.doc(Commons.chatDocPath(this.chatroom.data.gid,this.chatroom.cid))
       .valueChanges().subscribe((roomData : IChatData) => {
 
-        this.chatroom = {uid: this.bizFire.uid,cid : this.chatroom.cid, data : roomData} as IChat;
+        this.chatroom = { cid : this.chatroom.cid, data : roomData } as IChat;
 
         this.chatMembers = Object.keys(roomData.members).filter(uid => roomData.members[uid] === true && uid != this.bizFire.uid);
 
@@ -185,16 +176,6 @@ export class MemberChatPage {
       //   }
       // })
     }
-  }
-
-  // return Observer of senderId
-  getUserObserver(msg: IMessageData): Observable<IUser>{
-    if(!msg.isNotice) {
-      return this.cacheService.userGetObserver(msg.sender);
-    }
-  }
-  userGetObserver(uid : string): Observable<IUser> {
-    return this.cacheService.userGetObserver(uid);
   }
 
   keydown(e : any){
@@ -350,7 +331,8 @@ export class MemberChatPage {
           text : `<p>${attachedFile.name}</p>`,
         },
         sender : this.bizFire.currentUserValue.uid,
-        type: 'chat'
+        type: 'chat',
+        file: true
       };
 
       this.chatService.addMsg(msgPath,message,roomPath).then(mid => {
@@ -389,14 +371,22 @@ export class MemberChatPage {
   //   }
   // }
 
-  downloadFile(path) {
-    console.log(path);
-    this.ipc.send('loadGH',path);
-  }
 
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-member-chat-menu',{roomData : this.chatroom}, {cssClass: 'page-member-chat-menu'});
     popover.present({ev: ev});
+  }
+
+
+  userGetObserver(uid : string): Observable<IUser> {
+    return this.cacheService.userGetObserver(uid);
+  }
+
+  // return Observer of senderId
+  getUserObserver(msg: IMessageData): Observable<IUser>{
+    if(!msg.isNotice) {
+      return this.cacheService.userGetObserver(msg.sender);
+    }
   }
 
   scrollToBottom(num : number) {
@@ -407,21 +397,21 @@ export class MemberChatPage {
     }
   }
 
-  windowClose() {
-    this.electron.windowClose();
-  }
-
-  windowMimimize() {
-    this.electron.windowMimimize();
+  downloadFile(path) {
+    console.log(path);
+    this.ipc.send('loadGH',path);
   }
 
   opacityChanges(v) {
     this.electron.setOpacity(v);
   }
 
-  ngOnDestroy(): void {
-    this._unsubscribeAll.next();
-    this._unsubscribeAll.complete();
+  windowClose() {
+    this.electron.windowClose();
+  }
+
+  windowMimimize() {
+    this.electron.windowMimimize();
   }
 
 }

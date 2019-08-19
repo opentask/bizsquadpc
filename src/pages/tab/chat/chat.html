@@ -14,7 +14,7 @@
             <!-- 1:1채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'chatRoom'" scrollY="true">
               <ng-container *ngFor="let room of chatRooms">
-                <chat-room [chat]="room" [squadChat]="false" [unread]="getUnreadCount(room)" (onClick)="gotoRoom(room)"></chat-room>
+                <chat-room [chat]="room" (onClick)="gotoRoom(room)"></chat-room>
               </ng-container>
 <!--                <ion-item class="chat-item listBorder" no-lines *ngFor="let room of chatRooms">-->
 <!--                  <chat-room [chat]="room" [ionicMode]="true" [unread]="getUnreadCount(room)" (onClick)="gotoRoom(room)"></chat-room>-->
@@ -26,33 +26,33 @@
 
             <!-- 스쿼드 채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
-<!--                <ng-container *ngFor="let room of squadChatRooms">-->
-<!--                  <chat-room [chat]="room" [squadChat]="true" [unread]="getUnreadCount(room)" (onClick)="gotoSquadRoom(room)"></chat-room>-->
-<!--                </ng-container>-->
-                <ion-item class="chat-item listBorder" *ngFor="let room of squadChatRooms" (click)="gotoSquadRoom(room)">
-                    <ion-avatar item-start *ngIf="room.data.photoURL">
-                        <img class="photoURL" src="{{room.data.photoURL}}">
-                    </ion-avatar>
-                    <ion-avatar [style.background-color]="makeSquadColor(room)" class="notPhoto" item-start *ngIf="room.data.photoURL == null">
-                        <span class="displayName">{{ room.data.name | slice:0:2 }}</span>
-                    </ion-avatar>
-                    <h2>
-                        <span class="room_title">{{ room.data.name }}</span>
-                        <div class="msg-badge-chat" *ngIf="getUnreadCount(room)">{{ getUnreadCount(room) }}</div>
-                        <ion-icon class="chat-count" name="person">
-                          <span *ngIf="room.data.type === 'private'">{{ room.data['member_count'] }}</span>
-                          <span *ngIf="room.data.type === 'public'"> - </span>
-                        </ion-icon>
-                    </h2>
-                    <ng-container *ngIf="room.data.lastMessage != null">
-                        <p class="chat-message" [innerHtml]="room.data.lastMessage.text | sanitizingHtml"></p>
-                        <p class="chat-time">{{ room.data.lastMessageTime | timestampToDate | date: 'MM/dd HH:mm' }}</p>
-                    </ng-container>
-                    <ng-container *ngIf="room.data.lastMessage == null">
-                            <p class="chat-message">There are no messages.</p>
-                            <p class="chat-time"> - </p>
-                    </ng-container>
-                </ion-item>
+                <ng-container *ngFor="let room of squadChatRooms">
+                  <chat-room [chat]="room"  (onClick)="gotoSquadRoom(room)"></chat-room>
+                </ng-container>
+<!--                <ion-item class="chat-item listBorder" *ngFor="let room of squadChatRooms" (click)="gotoSquadRoom(room)">-->
+<!--                    <ion-avatar item-start *ngIf="room.data.photoURL">-->
+<!--                        <img class="photoURL" src="{{room.data.photoURL}}">-->
+<!--                    </ion-avatar>-->
+<!--                    <ion-avatar [style.background-color]="makeSquadColor(room)" class="notPhoto" item-start *ngIf="room.data.photoURL == null">-->
+<!--                        <span class="displayName">{{ room.data.name | slice:0:2 }}</span>-->
+<!--                    </ion-avatar>-->
+<!--                    <h2>-->
+<!--                        <span class="room_title">{{ room.data.name }}</span>-->
+<!--                        <div class="msg-badge-chat" *ngIf="getUnreadCount(room)">{{ getUnreadCount(room) }}</div>-->
+<!--                        <ion-icon class="chat-count" name="person">-->
+<!--                          <span *ngIf="room.data.type === 'private'">{{ room.data['member_count'] }}</span>-->
+<!--                          <span *ngIf="room.data.type === 'public'"> - </span>-->
+<!--                        </ion-icon>-->
+<!--                    </h2>-->
+<!--                    <ng-container *ngIf="room.data.lastMessage != null">-->
+<!--                        <p class="chat-message" [innerHtml]="room.data.lastMessage.text | sanitizingHtml"></p>-->
+<!--                        <p class="chat-time">{{ room.data.lastMessageTime | timestampToDate | date: 'MM/dd HH:mm' }}</p>-->
+<!--                    </ng-container>-->
+<!--                    <ng-container *ngIf="room.data.lastMessage == null">-->
+<!--                            <p class="chat-message">There are no messages.</p>-->
+<!--                            <p class="chat-time"> - </p>-->
+<!--                    </ng-container>-->
+<!--                </ion-item>-->
             </ion-list>
         </div>
     </ion-scroll>

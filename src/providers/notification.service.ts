@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, combineLatest, zip, Subscription, Observable } from 'rxjs';
-import { INotification, IAlarmConfig, INoticeItem, INotificationData, INotificationItem } from '../_models/message';
-import { BizFireService, IBizGroup, IBizGroupData } from './biz-fire/biz-fire';
+import { BizFireService, } from './biz-fire/biz-fire';
 import { IFireDataKey, IFireMessage } from '../classes/fire-model';
 import { FireData } from '../classes/fire-data';
 import { FireDataKey } from '../classes/fire-data-key';
@@ -14,6 +13,7 @@ import { DocumentChangeAction } from '@angular/fire/firestore';
 import { CacheService } from './cache/cache';
 import {environment} from "../environments/environments";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {IAlarmConfig, IBizGroup, INotification, INotificationData, INotificationItem} from "../_models";
 
 export interface IAlarm {
     all: boolean,
@@ -35,15 +35,15 @@ export class NotificationService {
 
     // for notice component.
     onNotifications = new BehaviorSubject<INotification[]>(null);
-    
+
     // alarm send by SettingComponent
     onAlarmChanged = new BehaviorSubject<IAlarmConfig>(null);
-    
+
     // 알람 리스트
     private notificationData: INotification[];
 
     private notifySub: Subscription;
-    
+
     /*
     * 데이터 일부만 실시간 경신하기 위해 FireData를 사용한다.
     * */
@@ -82,14 +82,14 @@ export class NotificationService {
                     this.notifySub.unsubscribe();
                     this.notifySub = null;
                 }
-            
+
             });
 
             // allTime alarm monitor.
             this.bizFire.currentUser.subscribe(user => {
 
                 console.log("this.notifyKey",this.notifyKey);
-            
+
                 // start register at first time. ONLY first time.
                 if(this.notifyKey == null){
                     this.notifyKey = new FireDataKey('notify', this.bizFire.currentUID);
@@ -116,7 +116,7 @@ export class NotificationService {
                             const mid = change.payload.doc.id;
 
                             if(change.type === 'added') {
-                                
+
                                 // add new message to top
                                 this.notificationData.unshift({mid: mid, data: data} as INotification);
 
@@ -159,7 +159,7 @@ export class NotificationService {
                     // alarm info changed.
                     this.onAlarmChanged.next(alarm);
                 }
-                
+
             });
     }
 
@@ -203,24 +203,24 @@ export class NotificationService {
     private makeHtmlInvite(notification: INotification): Observable<INotificationItem>{
 
         return new Observable<INotificationItem>( resolve => {
-    
+
             const data = notification.data;
             // get user info
             const userObserver = this.cacheService.userGetObserver(data.from);
             // get group info
             const groupObserver = this.cacheService.getObserver(Commons.groupPath(data.gid));
             const info = data.info;
-        
+
             // convert
             const item: INotificationItem = notification;
             item.html = { header: null, content: null, link: null, user:null,groupColor: null };
-        
+
             // to where?
             if (info.type === 'group') {
                 // 누가 어느 그룹에
                 zip(userObserver, groupObserver)
                 .subscribe(([u, g]) => {
-                
+
                   let team_name;
                   let userName;
                   if(u != null ){
@@ -235,7 +235,7 @@ export class NotificationService {
                   } else {
                     team_name = `deleted BizGroup`;
                   }
-        
+
                   // set content
                   item.html.header = [`${userName}`,`invited you to BizGroup ${team_name}`];
                   item.html.content = [`Invitation to ${team_name}`];
@@ -245,7 +245,7 @@ export class NotificationService {
                 });
             }
         });
-        
+
     }
 
     private makeHtmlPost(notification: INotification): Observable<INotificationItem>{
@@ -336,17 +336,17 @@ export class NotificationService {
     private makeHtmlInOutNotify(notification: INotification): Observable<INotificationItem>{
 
         return new Observable<INotificationItem>( resolve => {
-    
+
             const data = notification.data;
             // get user info
             const userObserver = this.cacheService.userGetObserver(data.from);
             // get group info
             const groupObserver = this.cacheService.getObserver(Commons.groupPath(data.gid));
-        
+
             // convert
             const item: INotificationItem = notification;
             item.html = { header: null, content: null, link: null,user : null,groupColor : null};
-        
+
 
             zip(userObserver, groupObserver)
                 .subscribe(([u, g])=>{
@@ -365,7 +365,7 @@ export class NotificationService {
                   } else {
                     team_name = `deleted BizGroup`;
                   }
-        
+
                   // user joined a group.
                   item.html.header = [`${userName}`, `joined ${team_name}`];
                   item.html.content = [`${userName} joined BizGroup ${team_name}`];
@@ -374,9 +374,9 @@ export class NotificationService {
                   resolve.next(item);
 
                   });
-    
+
         });
-    
+
     }
 
     acceptInvitation(notificationData: INotificationData): Promise<any> {
@@ -388,79 +388,79 @@ export class NotificationService {
           if(notificationData.info.type !== 'squad'){
             // this is a group invitation
             path = Commons.groupPath(notificationData.gid);
-    
+
           } else if(notificationData.info.type === 'squad'){
             // squad
             path = Commons.squadDocPath(notificationData.gid, notificationData.info.sid);
           }
-    
+
           // get group data
           this.cacheService.groupValueObserver(notificationData.gid)
             .pipe(take(1))
             .subscribe((g: IBizGroup)=>{
-    
+
               const data = g.data;
-    
+
               // set me
               data.members[this.bizFire.currentUID] = true;
-    
+
               // is ths user a manager?
               if(notificationData.info.auth === STRINGS.FIELD.MANAGER){
                 // yes.
                 // add to partner
                 data[STRINGS.FIELD.MANAGER][this.bizFire.currentUID] = true;
               }
-    
+
               // is ths user a partner?
               if(notificationData.info.auth === STRINGS.FIELD.PARTNER){
                 // yes.
                 // add to partner
                 data[STRINGS.FIELD.PARTNER][this.bizFire.currentUID] = true;
               }
-    
+
               // update group member
               this.bizFire.afStore.doc(path).update(data);
-    
+
               // send someone joined alarm
               const membersId = Object.keys(data.members).filter(uid=> uid !== this.bizFire.currentUID && data.members[uid] === true);
-    
+
               const notifyData = this.buildData();
-    
+
               notifyData.gid = notificationData.gid;
               notifyData.groupInOut = true;
               notifyData.info.join = this.bizFire.currentUID;
               notifyData.info.auth = notificationData.info.auth;
-    
+
               this.sendTo(membersId, notifyData);
-    
+
               resolve(true);
-    
+
             });
         });
     }
 
 
     buildData():INotificationData {
-    
+
         if(this.bizFire.currentUserValue == null){
           throw new Error('어라라. 로그인안한건가?');
         }
-        
+
         const data = {
-          
+
           groupInvite: false,
           bbs: false,
           post: false,
-        
+
           gid: null,
-        
+
           to: null,
-        
+
           from: this.bizFire.currentUID,
           created: null, // biz-server set date.
           info: {},
           statusInfo:{ done: false }
-          
+
         } as INotificationData;
         return data;
     }
@@ -540,6 +540,6 @@ export class NotificationService {
     return this.bizFire.afStore.collection(Commons.notificationPath(this.bizFire.currentUID)).doc(msg.mid)
       .delete();
   }
-  
+
 
 }

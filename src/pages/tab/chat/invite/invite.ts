@@ -1,16 +1,16 @@
 import { GroupColorProvider } from './../../../../providers/group-color';
 import { Electron } from './../../../../providers/electron/electron';
-import { ChatService, IChat } from './../../../../providers/chat.service';
+import { ChatService } from './../../../../providers/chat.service';
 import { AccountService } from './../../../../providers/account/account';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { BizFireService } from '../../../../providers';
 import { filter, takeUntil, map } from 'rxjs/operators';
-import { IBizGroup } from '../../../../providers/biz-fire/biz-fire';
-import { IUser } from '../../../../_models/message';
 import { Subject } from 'rxjs';
 import deepEqual from 'deep-equal';
 import {LangService} from "../../../../providers/lang-service";
+import {IBizGroup, IUser} from "../../../../_models";
+import {IChat} from "../../../../_models/message";
 
 @IonicPage({
   name: 'page-invite',

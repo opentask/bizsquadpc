@@ -1,31 +1,30 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Observable, Subject} from "rxjs";
-import {IUser} from "../../_models/message";
 import { CacheService } from "../../providers/cache/cache";
 import {Commons} from "../../biz-common/commons";
-import {IChat} from "../../providers/chat.service";
 import {BizFireService} from "../../providers";
 import {ISquad} from "../../providers/squad.service";
-import {takeUntil} from "rxjs/operators";
+import {TakeUntil} from "../../biz-common/take-until";
+import {IChat} from "../../_models/message";
+import {IUnreadItem, IUser} from "../../_models";
+import {ChatService} from "../../providers/chat.service";
+import {filter, map} from "rxjs/operators";
 
 @Component({
   selector: 'chat-room',
   templateUrl: 'chat-room.html'
 })
 
-export class ChatRoomComponent {
+export class ChatRoomComponent extends TakeUntil{
 
   myId : string;
 
-  _room : IChat | ISquad;
-
-  userList$: Observable<IUser[]>;
+  private _room : IChat;
 
   userCount: number = 0;
   unreadCount: number = 0;
-  chatTitle: string = '';
 
-  private _unsubscribeAll;
+  chatTitle: string = '';
 
   _squadChat: boolean;
 
@@ -38,23 +37,40 @@ export class ChatRoomComponent {
   }
 
   @Input()
-  set chat(room : IChat | ISquad) {
+  set chat(room : IChat) {
     if(room) {
+      let reload = true;
+      if(this._room ){
+        const oldCount = this._room.isPublic()? this.bizFire.currentBizGroup.getMemberCount() : this._room.getMemberCount();
+        const newCount = room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : room.getMemberCount();
+        // member 수가 다를 때만 리로드.
+        reload = oldCount !== newCount;
+      }
       this._room = room;
-      if(room.data.type === 'member') {
-        this.userList$ = this.cacheService.resolvedUserList(Object.keys(room.data.members),Commons.userInfoSorter);
-        this.userCount = Object.keys(room.data.members).filter(uid => room.data.members[uid] === true).length;
-        this.userList$.pipe(takeUntil(this._unsubscribeAll)).subscribe((users :IUser[]) => {
-          console.log("usersusers",users);
-          users.forEach(u => {
-            this.chatTitle += u.data.displayName  + ',';
-          });
-          this.chatTitle = this.chatTitle.slice(0,this.chatTitle.length -1);
-        });
-      } else {
-        //스쿼드채팅
+
+      if(reload){
+
+        if(this.room.isPublic()) {
+          // General 스쿼드 채팅
+          this.chatTitle = this.room.data.name;
+          this.userCount = this.room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : this.room.getMemberCount();
+        } else {
+
+          this.chatTitle = '';
+          this.cacheService.resolvedUserList(this.room.getMemberIds(false), Commons.userInfoSorter)
+            .subscribe((users :IUser[]) => {
+              users.forEach(u => {
+                if(this.chatTitle.length > 0){
+                  this.chatTitle += ',';
+                }
+                this.chatTitle += u.data.displayName;
+              });
+            });
+          this.userCount = this.room.getMemberCount();
+        }
 
       }
+
     }
   }
 
@@ -71,22 +87,35 @@ export class ChatRoomComponent {
   }
 
   constructor(private cacheService: CacheService,
+              private chatService : ChatService,
               private bizFire : BizFireService) {
-    this._unsubscribeAll = new Subject<any>();
+    super();
   }
 
 
   ngOnInit() {
     this.myId = this.bizFire.uid;
 
+    if(this._room){
+      const cid = this._room.cid;
+
+      this.chatService.unreadCountMap$
+        .pipe(
+          this.takeUntil,
+          filter(d=>d!=null),
+          map((list: IUnreadItem[]) => list.filter(i=> i.cid === this._room.cid))
+        )
+        .subscribe((map: IUnreadItem[]) => {
+          if(map){
+            //console.log('unread datas:',cid,  map);
+            this.unreadCount = map.length;
+          }
+        });
+    }
+
   }
 
   onSelectRoom(){
     this.onClick.emit(this._room);
-  }
-
-  ngOnDestroy(): void {
-    this._unsubscribeAll.next();
-    this._unsubscribeAll.complete();
   }
 }

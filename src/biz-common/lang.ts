@@ -132,9 +132,9 @@ export const language = {
         "ja": "掲示板"
       }
       ,"property": {
-        "ko": "상세정보",
+        "ko": "그룹설정",
         "en": "Property",
-        "ja": "詳細情報"
+        "ja": "グループ設定"
       }
       ,"taskbox": {
         "ko": "테스크박스",
@@ -222,14 +222,14 @@ export const language = {
         "ja": "チャット"
       }
       ,"chatroom": {
-        "ko": "채팅 룸",
-        "en": "Chat Room",
-        "ja": "チャットルーム"
+        "ko": "채팅",
+        "en": "Chat",
+        "ja": "チャット"
       }
       ,"squad_chatroom": {
-        "ko": "스쿼드 채팅 룸",
-        "en": "Squad ChatRoom",
-        "ja": "スクワッドチャットルーム"
+        "ko": "스쿼드 채팅",
+        "en": "Squad Chat",
+        "ja": "スクワッドチャット"
       }
       ,"auth": {
         "ko": "권한",

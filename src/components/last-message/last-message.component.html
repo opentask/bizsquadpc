@@ -1,0 +1,32 @@
+<div class="d-flex align-items-center justify-content-between ">
+
+  <ng-template #reading>
+    <div class="chat-message">
+      ...
+    </div>
+  </ng-template>
+
+  <ng-template #noMessage>
+    <div class="chat-message">
+      No message
+    </div>
+  </ng-template>
+
+  <ng-container *ngIf="lastMessage$ | async as lastMessage ; else reading">
+    <ng-container *ngIf="lastMessage && lastMessage.message
+    && lastMessage.message.text
+    && lastMessage.isNotice !== true; else noMessage">
+      <div class="flex-grow-1" >
+        <div class="chat-message ">
+          <div [innerHtml]="lastMessage.message.text | sanitizingHtml"></div>
+        </div>
+      </div>
+      <!--   라스트메세지 시간    -->
+      <div class="chat-time flex-shrink-0 ">
+        <span>{{ lastMessage.created | timestampToDate | date: 'HH:mm'}}</span>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
+
+

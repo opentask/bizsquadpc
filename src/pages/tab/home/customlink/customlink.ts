@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { BizFireService, IBizGroup } from '../../../../providers/biz-fire/biz-fire';
+import { BizFireService } from '../../../../providers/biz-fire/biz-fire';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { GroupColorProvider } from '../../../../providers/group-color';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { TokenProvider } from '../../../../providers/token/token';
+import {IBizGroup} from "../../../../_models";
 
-@IonicPage({  
+@IonicPage({
   name: 'page-customlink',
   segment: 'customlink',
   priority: 'high'
@@ -37,8 +38,8 @@ export class CustomlinkPage {
   ]);
 
   constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams,    
+    public navCtrl: NavController,
+    public navParams: NavParams,
     public viewCtrl: ViewController,
     public bizFire: BizFireService,
     public formBuilder: FormBuilder,

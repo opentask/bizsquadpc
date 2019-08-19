@@ -4,14 +4,14 @@ import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams,App, PopoverController } from 'ionic-angular';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Subject, Subscription } from 'rxjs';
-import { IUserData, IUser, INotification } from '../../../_models/message';
 import { filter, takeUntil, map } from 'rxjs/operators';
-import { IBizGroup,BizFireService, userLinks } from '../../../providers/biz-fire/biz-fire';
+import { BizFireService, userLinks } from '../../../providers/biz-fire/biz-fire';
 import { STRINGS } from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
 import { NotificationService } from '../../../providers/notification.service';
 import { DataCache } from '../../../classes/cache-data';
 import {LangService} from "../../../providers/lang-service";
+import {IBizGroup, INotification, IUser, IUserData} from "../../../_models";
 
 interface IBbsItem {
   bbsId: string,
@@ -40,7 +40,6 @@ export class HomePage implements OnInit {
 
   currentUser: IUserData;
   group: IBizGroup;
-  allCollectedUsers: IUser[];
   userCustomLinks: Array<userLinks> = [];
 
   getFavicons = 'https://www.google.com/s2/favicons?domain=';

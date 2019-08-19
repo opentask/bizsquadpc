@@ -4,11 +4,13 @@ import { BizFireService } from './biz-fire/biz-fire';
 import {Commons, STRINGS} from '../biz-common/commons';
 import { takeUntil, map } from 'rxjs/operators';
 import * as firebase from "firebase";
-import {IChatData, IFirestoreDoc} from "./chat.service";
+import {IBizGroupBase, IFirestoreDoc} from "../_models";
 
-export interface ISquad extends IFirestoreDoc{
-    sid: string,
-    data?: IChatData
+export interface ISquad extends IBizGroupBase{
+    sid?: string,
+    data?: ISquadData,
+    gid?: string,
+    members?: any
 }
 
 export interface ISquadData {
@@ -16,6 +18,8 @@ export interface ISquadData {
   members: any,
   created: any,
   type: string,
+
+  gid?: string,
   name?: string,
 
   manager?: any,

@@ -2,14 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, PopoverController } from 'ionic-angular';
 import { Electron } from '../../../../../providers/electron/electron';
 import { AlertProvider } from '../../../../../providers/alert/alert';
-import { IroomData } from '../../../../../providers/chat.service';
-
-/**
- * Generated class for the MemberChatMenuPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import {IroomData} from "../../../../../_models/message";
 
 @IonicPage({
   name: 'page-member-chat-menu',

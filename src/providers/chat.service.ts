@@ -1,77 +1,16 @@
 import { Electron } from './electron/electron';
 import { Injectable } from '@angular/core';
-import {BizFireService, IBizGroup} from './biz-fire/biz-fire';
-import {SquadService, ISquad, ISquadData} from './squad.service';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import { IUser } from '../_models/message';
+import {BizFireService} from './biz-fire/biz-fire';
+import {SquadService, ISquad} from './squad.service';
+import {BehaviorSubject } from 'rxjs';
 import { LoadingProvider } from './loading/loading';
 import * as firebase from 'firebase';
 import {Commons, STRINGS} from '../biz-common/commons';
-import {UnreadCounter} from "../classes/unread-counter";
+
 import {LangService} from "./lang-service";
 import {takeUntil} from "rxjs/operators";
-import {take} from "rxjs-compat/operator/take";
-import {CacheService} from "./cache/cache";
-
-export interface IFirestoreDoc {
-  ref?: firebase.firestore.DocumentReference;
-}
-
-export interface IChat extends IFirestoreDoc{
-    cid: string,
-    data: IChatData,
-  }
-export interface IChatData extends ISquadData{
-    created: any,
-    members: any,
-    gid?: string,
-    lastMessage? : { text?: string, files?: any[] },
-    lastMessageTime?: any,
-    lastMessageTo?: string,
-    manager?: any,
-
-    read?: any,
-    status: boolean
-}
-
-export interface IMessage extends IFirestoreDoc{
-    mid: string,
-    data: IMessageData,
-    type?: any
-}
-
-export interface IMessageData {
-  created?: any,
-  type?: string,
-  message: {
-    text?: string,
-    files?: any[],
-    notice?: {
-      langKey?: string,
-      uid?: any,
-      type?: string
-    }
-  };
-  isNotice?: boolean,
-  sender?: any,
-  status?: boolean,
-  title?: string,
-  updated?:any,
-  read?:{ [uid: string]: { unread: boolean, read?: any}}
-}
-export interface IFiles {
-    name:string,
-    size:number,
-    type:string,
-    storagePath:string,
-    url:string
-}
-
-export interface IroomData{
-    cid : string,
-    data : IChatData,
-    uid : string
-}
+import {IChat, IChatData, IMessageData} from "../_models/message";
+import {IUser} from "../_models";
 
 @Injectable({
     providedIn: 'root'

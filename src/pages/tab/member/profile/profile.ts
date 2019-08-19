@@ -6,8 +6,9 @@ import { Subject } from 'rxjs';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
-import { IUser } from '../../../../_models/message';
-import { ChatService, IChat } from '../../../../providers/chat.service';
+import { ChatService } from '../../../../providers/chat.service';
+import {IUser} from "../../../../_models";
+import {IChat} from "../../../../_models/message";
 
 
 @IonicPage({

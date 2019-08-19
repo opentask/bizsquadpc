@@ -31,22 +31,22 @@
         </ion-avatar>
         <h2 class="groupName">{{ group.data.team_name }}</h2>
       </ion-item>
-      <ion-grid class="groupInfo" *ngIf="langPack">
-        <ion-row>
-          <ion-col>
-              <div class="InfoTitle">{{langPack['members']}}</div>
-              {{ group.data.group_members }}
-          </ion-col>
-          <ion-col>
-              <div class="InfoTitle">{{langPack['agile']}}</div>
-              {{ group.data.agile_squad_count }}
-          </ion-col>
-          <ion-col>
-              <div class="InfoTitle">{{langPack['general']}}</div>
-              {{ group.data.general_squad_count }}
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+<!--      <ion-grid class="groupInfo" *ngIf="langPack">-->
+<!--        <ion-row>-->
+<!--          <ion-col>-->
+<!--              <div class="InfoTitle">{{langPack['members']}}</div>-->
+<!--              {{ group.data.group_members }}-->
+<!--          </ion-col>-->
+<!--          <ion-col>-->
+<!--              <div class="InfoTitle">{{langPack['agile']}}</div>-->
+<!--              {{ group.data.agile_squad_count }}-->
+<!--          </ion-col>-->
+<!--          <ion-col>-->
+<!--              <div class="InfoTitle">{{langPack['general']}}</div>-->
+<!--              {{ group.data.general_squad_count }}-->
+<!--          </ion-col>-->
+<!--        </ion-row>-->
+<!--      </ion-grid>-->
     </ion-list>
   </ion-scroll>
 </ion-content>
