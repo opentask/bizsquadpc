@@ -10,6 +10,7 @@ import {Commons, STRINGS} from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
 import {LangService} from "../../../providers/lang-service";
 import {IBizGroup, IFolderItem} from "../../../_models";
+import {IChat} from "../../../_models/message";
 
 export interface ISquadListData {
   generalSquads?: ISquad[];
@@ -50,9 +51,9 @@ export class SquadPage {
 
   folders: Array<IFolderItem> = [];
   privateFolders: Array<IFolderItem> = [];
-  publicSquads: ISquad[] = [];
-  privateSquads: ISquad[] = [];
-  bookmark : ISquad[] = [];
+  publicSquads: IChat[] = [];
+  privateSquads: IChat[] = [];
+  bookmark : IChat[] = [];
 
   public_shownGroup = null;
   private_shownGroup = null;
@@ -169,7 +170,7 @@ export class SquadPage {
   * 실제 존재하는 폴더를 위주로
   * 사이드바에 표시해 리얼타임 갱신이 가능하게 한다.
   * */
-  private updateShelf(userData: any, originalSquadList: ISquad[]) {
+  private updateShelf(userData: any, originalSquadList: IChat[]) {
     //console.log('updateShelf with userData', userData, originalSquadList);
     // clear old ones.
     console.log("originalsquadlist",originalSquadList);
@@ -213,10 +214,11 @@ export class SquadPage {
       return this.private_shownGroup === group;
   };
 
-  onSquadChat(ev,squad) {
+  onSquadChat(ev,squad : IChat) {
     ev.stopPropagation();
+    const cutRefValue = {sid: squad.cid, data: squad.data};
     console.log(squad);
-    this.electron.openChatRoom(squad);
+    this.electron.openChatRoom(cutRefValue);
   }
   onFavoritesSelect(ev,sid){
     ev.stopPropagation();
@@ -252,6 +254,10 @@ export class SquadPage {
         this.userDataMargin.unsubscribe();
         this.userDataChanged = null;
     }
+  }
+
+  groupData(s) {
+    console.log(this.currentBizGroup.gid,s);
   }
 
 }

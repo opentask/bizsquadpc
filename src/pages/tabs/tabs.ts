@@ -194,10 +194,12 @@ export class TabsPage {
             if(this.chatRooms[index].cid === mid){
               // find replacement
               const item = new Chat(mid, data, this.bizFire.uid, change.payload.doc.ref);
+
               //---------- 껌벅임 테스트 -------------//
-              this.chatRooms[index] = item; // data 만 경신 한다.
+              this.chatRooms[index].data.lastMessage = item.data.lastMessage; // data 만 경신 한다.
               console.log("Type Modified : ",this.chatRooms[index]);
               //-----------------------------------//
+
               break;
             }
           }
@@ -261,6 +263,9 @@ export class TabsPage {
     this._unsubscribeAll.complete();
     this.squadNewMessage = 0;
     this.memberNewMessage = 0;
+
+    // tabs페이지를 벗어날때 = 그룹변경 , 로그아웃 등.
+    this.electron.setAppBadge(0);
   }
 
 }

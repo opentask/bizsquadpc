@@ -11,6 +11,8 @@ import {LangService} from "./lang-service";
 import {takeUntil} from "rxjs/operators";
 import {IChat, IChatData, IFiles, IMessageData} from "../_models/message";
 import {IUser} from "../_models";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {environment} from "../environments/environments";
 
 @Injectable({
     providedIn: 'root'
@@ -35,6 +37,7 @@ export class ChatService {
         public electron: Electron,
         public squadService : SquadService,
         private langService : LangService,
+        private http: HttpClient,
         private loading: LoadingProvider,) {
 
       this.langService.onLangMap
@@ -130,7 +133,7 @@ export class ChatService {
         if(parentRef == null) {
           throw new Error('parentRef has no data.');
         }
-
+        const membersUids = [];
         const now = new Date();
         const msg: IMessageData = {
           message: {
@@ -146,6 +149,11 @@ export class ChatService {
 
         if(unreadMembers) {
           msg.read = Commons.makeReadFrom(unreadMembers, this.bizFire.uid);
+          Object.keys(unreadMembers)
+            .filter(uid => uid !== this.bizFire.uid)
+            .forEach(uid => {
+              membersUids.push(uid);
+          })
         }
         const newChatRef = parentRef.collection('chat').doc();
 
@@ -180,6 +188,9 @@ export class ChatService {
             lastMessageTime: new Date(),
           }, {merge: true});
         }
+        const pushText = this.convertMessage(text);
+        await this.sendPush(membersUids,'',pushText);
+
         return newChatRef.id;
       } catch (e) {
         console.log('addMessage',e,text);
@@ -205,7 +216,6 @@ export class ChatService {
       if(uid){
         newMessage.message.notice.uid = uid;
       }
-
         return this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,cid)).add(newMessage)
     }
 
@@ -245,6 +255,55 @@ export class ChatService {
         }
       }
       return added;
+    }
+
+    async sendPush(targetUids: any[], msgTitle:string, msgBody:string){
+
+      return new Promise<any>(resolve => {
+        const headers = {
+          headers: new HttpHeaders({
+            'authorization': this.bizFire.uid
+          })
+        };
+
+        const payload = {
+          notification: {
+            click_action : "FCM_PLUGIN_ACTIVITY",
+            title: msgTitle,
+            body: msgBody,
+            badge: "1",
+            sound:"default",
+          }
+        };
+
+        const path = `${environment.bizServerUri}/sendFCM`;
+        let body = {
+          usersUid: targetUids,
+          payload: payload
+        };
+        this.http.post(path, body, headers)
+          .subscribe((result: any) => {
+            console.log(result);
+            resolve(result);
+            if(result.ok){
+
+            } else {
+
+            }
+          });
+      });
+    }
+
+    private convertMessage(text: string): string {
+      let ret = '';
+      if(text != null){
+        ret = text ? String(text).replace(/<[^>]+>/gm, '') : '';
+        if(ret.indexOf('\n') !== -1){
+          // replace \n
+          ret = text.split('\n').join('<br>');
+        }
+      }
+      return ret;
     }
 
     onNotification(msg){

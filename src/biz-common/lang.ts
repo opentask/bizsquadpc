@@ -1316,12 +1316,12 @@ export const language = {
     "ja": "ファイルの容量は5MBまでです。"
   }
   ,"chat_exit_user_notice": {
-    "ko": "$DISPLAYNAME씨가 채팅방에서 나갔습니다",
+    "ko": "$DISPLAYNAME님께서 채팅방에서 나갔습니다",
     "en": "$DISPLAYNAME exit from chat",
     "ja": "$DISPLAYNAMEさんがチャットから出ました。"
   }
   ,"chat_invite_user_notice": {
-    "ko": "$DISPLAYNAME님이 채팅방에 들어왔습니다.",
+    "ko": "$DISPLAYNAME님께서 채팅방에 들어왔습니다.",
     "en": "$DISPLAYNAME in a chat room.",
     "ja": "$DISPLAYNAMEさんが入ってきました。"
   }

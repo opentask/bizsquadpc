@@ -101,13 +101,13 @@ export class SquadService {
                 )
             );
     }
-    makeSquadMenuWith(userData: any, squadList: ISquad[]){
+    makeSquadMenuWith(userData: any, squadList: IChat[]){
         console.log('makeSquadMenuWith', userData, squadList);
 
         const folders = [];
         const privateFolders = [];
         const addedSqaud = {};
-        const bookmark: ISquad[] = [];
+        const bookmark: IChat[] = [];
 
         if(userData != null){
             const publicFolders = userData.folders;
@@ -184,8 +184,8 @@ export class SquadService {
 
         }
         const privateSquads = squadList.filter(s => {
-          let ret = s.data.type !== 'public' && addedSqaud[s.sid] !== true;
-          if(ret && this.isFavoriteSquad(userData,s.sid)){
+          let ret = s.data.type !== 'public' && addedSqaud[s.cid] !== true;
+          if(ret && this.isFavoriteSquad(userData,s.cid)){
             bookmark.push(s);
             ret = false;
           }
@@ -193,13 +193,13 @@ export class SquadService {
         });
 
         const publicSquads = squadList.filter(s => {
-          let ret = s.data.type === 'public' && addedSqaud[s.sid] !== true;
-          if(ret && this.isFavoriteSquad(userData,s.sid)) {
+          let ret = s.data.type === 'public' && addedSqaud[s.cid] !== true;
+          if(ret && this.isFavoriteSquad(userData,s.cid)) {
             bookmark.push(s);
             ret = false;
           }
           return ret;
-        })
+        });
 
         // console.log(folders, privateSquads, publicSquads);
         return { folders,privateFolders, privateSquads, publicSquads, bookmark };
