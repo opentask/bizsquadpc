@@ -39,8 +39,10 @@ export class ChatRoomComponent extends TakeUntil{
   @Input()
   set chat(room : IChat) {
     if(room) {
+
       let reload = true;
-      if(this._room ){
+
+      if(this._room){
         const oldCount = this._room.isPublic()? this.bizFire.currentBizGroup.getMemberCount() : this._room.getMemberCount();
         const newCount = room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : room.getMemberCount();
         // member 수가 다를 때만 리로드.
@@ -49,9 +51,9 @@ export class ChatRoomComponent extends TakeUntil{
       this._room = room;
 
       if(reload){
-        if(this.room.data.type === 'member') {
+        if(this._room.data.type === 'member') {
           this.chatTitle = '';
-          this.cacheService.resolvedUserList(this.room.getMemberIds(false), Commons.userInfoSorter)
+          this.cacheService.resolvedUserList(this._room.getMemberIds(false), Commons.userInfoSorter)
             .subscribe((users :IUser[]) => {
               users.forEach(u => {
                 if(this.chatTitle.length > 0){
@@ -60,13 +62,12 @@ export class ChatRoomComponent extends TakeUntil{
                 this.chatTitle += u.data.displayName;
               });
             });
-          this.userCount = this.room.getMemberCount();
+          this.userCount = this._room.getMemberCount();
         } else {
           // 스쿼드 채팅
-          this.chatTitle = this.room.data.name;
-          this.userCount = this.room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : this.room.getMemberCount();
+          this.chatTitle = this._room.data.name;
+          this.userCount = this._room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : this.room.getMemberCount();
         }
-
       }
 
     }
@@ -116,4 +117,5 @@ export class ChatRoomComponent extends TakeUntil{
   onSelectRoom(){
     this.onClick.emit(this._room);
   }
+
 }

@@ -8,6 +8,7 @@ import { AccountService } from '../../../../../../providers/account/account';
 import { GroupColorProvider } from '../../../../../../providers/group-color';
 import {IBizGroupData, IUser} from "../../../../../../_models";
 import {IChatData, IroomData} from "../../../../../../_models/message";
+import {ChatService} from "../../../../../../providers/chat.service";
 
 @IonicPage({
   name: 'page-invite-room',
@@ -38,6 +39,7 @@ export class InviteRoomPage {
     public viewCtrl: ViewController,
     public bizFire : BizFireService,
     public groupColorProvider: GroupColorProvider,
+    public chatService : ChatService,
     public accountService: AccountService) {
 
       this._unsubscribeAll = new Subject<any>();
@@ -117,13 +119,15 @@ export class InviteRoomPage {
 
   invite(){
     let members = {};
-
+    let makeNoticeUsers = [];
     this.isChecked.forEach(d => {
       members[d.data.uid] = true;
+      makeNoticeUsers.push(d.data.uid);
     })
     this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.gid,this.roomData.cid)).set({
       members : members
     },{merge : true}).then(() =>{
+      this.chatService.makeRoomNoticeMessage('member-chat','invite',this.roomData.data.gid,this.roomData.cid,makeNoticeUsers);
       this.viewCtrl.dismiss();
     })
   }
@@ -144,7 +148,7 @@ export class InviteRoomPage {
   }
 
   ngOnDestroy(): void {
-    console.log("구독종료")
+    console.log("구독종료");
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }

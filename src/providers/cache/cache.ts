@@ -224,9 +224,9 @@ export class CacheService {
   }
 
 
-  userGetObserver(uid: string): Observable<IUser> {
+  userGetObserver(uid: string,stateChange?:boolean): Observable<IUser> {
     const path = new Path(Commons.userPath(uid), 'userGet_IUser');
-    return this.getObserver(path, ref => ref.map(data=> ({uid: uid, data: data})), false);
+    return this.getObserver(path, ref => ref.map(data=> ({uid: uid, data: data})), stateChange);
   }
 
 

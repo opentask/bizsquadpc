@@ -3,12 +3,12 @@
     <!-- 프로필 사진이 있으면 -->
     <ion-avatar item-start *ngIf="currentUser && currentUser.photoURL">
         <img class="photoURL" src="{{currentUser.photoURL}}">
-        <ion-badge class="statusBadge" (click)="showStatus()" [style.background-color]="myStatus">V</ion-badge>
+        <div class="statusBadge" (click)="showStatus()" [style.background-color]="myStatus">V</div>
     </ion-avatar>
     <!-- 프로필 사진이 없으면 -->
     <ion-avatar class="notPhoto" [style.background-color]=group.data.team_color item-start *ngIf="currentUser && currentUser.photoURL == null && displayName != null">
         <span class="displayName">{{ displayName }}</span>
-        <ion-badge class="statusBadge" (click)="showStatus()" [style.background-color]="myStatus">V</ion-badge>
+        <div class="statusBadge" (click)="showStatus()" [style.background-color]="myStatus">V</div>
     </ion-avatar>
     <ion-badge *ngIf="badgeCount" class="notifiBadge" (click)="showNotify()">&nbsp;</ion-badge>
     <h2 class="user-name" *ngIf="currentUser.displayName != null">{{ fullName }}

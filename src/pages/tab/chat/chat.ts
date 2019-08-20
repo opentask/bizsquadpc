@@ -12,6 +12,7 @@ import firebase from 'firebase';
 import {LangService} from "../../../providers/lang-service";
 import {TakeUntil} from "../../../biz-common/take-until";
 import {IBizGroup, IUser} from "../../../_models";
+import {timer} from "rxjs";
 
 @IonicPage({
   name: 'page-chat',
@@ -75,6 +76,8 @@ export class ChatPage extends TakeUntil{
     .pipe(filter(d=>d!=null),this.takeUntil)
     .subscribe((rooms : IChat[]) => {
 
+      console.log("룸데이터변경",rooms);
+
       this.chatRooms = rooms.sort((a,b): number => {
         if(a.data.lastMessageTime && b.data.lastMessageTime) {
           return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
@@ -82,6 +85,7 @@ export class ChatPage extends TakeUntil{
           return 0;
         }
       });
+
 
     });
 

@@ -5,6 +5,7 @@ import {Commons, STRINGS} from '../biz-common/commons';
 import { takeUntil, map } from 'rxjs/operators';
 import * as firebase from "firebase";
 import {IBizGroupBase, IFirestoreDoc} from "../_models";
+import {IChat} from "../_models/message";
 
 export interface ISquad extends IBizGroupBase{
     sid?: string,
@@ -49,7 +50,7 @@ export class SquadService {
     * Current BizGroups' squad list:
     * public or mine.
     * */
-    onSquadListChanged = new BehaviorSubject<ISquad[]>([]);
+    onSquadListChanged = new BehaviorSubject<IChat[]>(null);
 
 
     constructor(public bizFire : BizFireService,) {

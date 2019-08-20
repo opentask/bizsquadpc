@@ -60,7 +60,7 @@
                 <!--EXIT 채팅방에서 누가 나감-->
                 <ng-container *ngSwitchCase="'exit'">
                   <div class="notice-frame" *ngIf="langPack">
-                    <ng-container *ngIf="userGetObserver(msg.data.message.notice.uid) | async let user">
+                    <ng-container *ngIf="userGetObserver(msg.data.message.notice.uid[0]) | async let user">
                       {{ langPack['chat_exit_user_notice'].replace('$DISPLAYNAME', user.data.displayName) }}
                     </ng-container>
                   </div>
@@ -99,18 +99,21 @@
                   </div>
                 </div>
 
-                <ng-container *ngIf="msg.data.message.files != null">
-                  <div class="msg-content-img" *ngIf="msg.data.message.files[0]">
-                    <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(msg.data.message.files[0].url)">
+              <ng-container *ngIf="msg.data.message.files &&  msg.data.message.files.length > 0">
+                <ng-container *ngFor="let file of msg.data.message.files">
+                  <div class="msg-content-img">
+                    <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(file.url)">
                       <ion-icon name="download"></ion-icon>
                     </button>
-                    <img class="msg-img" [src]="msg.data.message.files[0].url">
-                    <span class="triangle" *ngIf="!msg.data.message.files[0] && msg.data.sender == this.bizFire.currentUID"></span>
-                    <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.currentUID">
+                    <img class="msg-img" [src]="file.url">
+
+                    <span class="triangle" *ngIf="!file && msg.data.sender == this.bizFire.uid"></span>
+                    <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">
                       <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
                     </div>
                   </div>
                 </ng-container>
+              </ng-container>
               <div class="msg-time-content" *ngIf="msg.data.sender != this.bizFire.currentUID">
                   <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
               </div>

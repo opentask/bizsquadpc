@@ -179,9 +179,9 @@ export class TabsPage {
     })
     .stateChanges()
     .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((changes) => {
+    .subscribe((changes : any) => {
       changes.forEach(change => {
-        const data:any = change.payload.doc.data();
+        const data = change.payload.doc.data();
         const mid = change.payload.doc.id;
 
         if(change.type === 'added') {
@@ -195,7 +195,8 @@ export class TabsPage {
               // find replacement
               const item = new Chat(mid, data, this.bizFire.uid, change.payload.doc.ref);
               //---------- 껌벅임 테스트 -------------//
-              this.chatRooms[index].data = item.data; // data 만 경신 한다.
+              this.chatRooms[index] = item; // data 만 경신 한다.
+              console.log("Type Modified : ",this.chatRooms[index]);
               //-----------------------------------//
               break;
             }
@@ -213,12 +214,6 @@ export class TabsPage {
       });
       this.chatService.onChatRoomListChanged.next(this.chatRooms);
 
-      // if(this.chatService.onSelectChatRoom.value != null){
-      //     const newChat = this.chatRooms.find(l => l.cid === this.chatService.onSelectChatRoom.value.cid);
-      //     if(newChat){
-      //         this.chatService.onSelectChatRoom.next(newChat);
-      //     }
-      // }
     });
   }
 

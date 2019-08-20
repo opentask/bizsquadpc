@@ -1320,6 +1320,11 @@ export const language = {
     "en": "$DISPLAYNAME exit from chat",
     "ja": "$DISPLAYNAMEさんがチャットから出ました。"
   }
+  ,"chat_invite_user_notice": {
+    "ko": "$DISPLAYNAME님이 채팅방에 들어왔습니다.",
+    "en": "$DISPLAYNAME in a chat room.",
+    "ja": "$DISPLAYNAMEさんが入ってきました。"
+  }
   ,"logout_confirm": {
     "ko": "로그아웃 하시겠습니까?",
     "en": "Sign out from BizSquad?",

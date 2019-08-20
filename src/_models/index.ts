@@ -3,7 +3,6 @@ import {ISquad} from "../providers/squad.service";
 import {STRINGS} from "../biz-common/commons";
 import {IMessageData} from "./message";
 
-
 export interface IUser {
   uid: string,
   data: IUserData,

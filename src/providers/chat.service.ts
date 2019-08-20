@@ -18,15 +18,11 @@ import {IUser} from "../_models";
 
 export class ChatService {
 
-    room_type: string;
-
     var_chatRooms: any;
 
     onChatRoomListChanged = new BehaviorSubject<IChat[]>([]);
 
     onSelectChatRoom = new BehaviorSubject<IChat>(null);
-
-    onRoomMessagesListChanged = new BehaviorSubject<IMessageData[]>([]);
 
     fileUploadProgress = new BehaviorSubject<number>(null);
 
@@ -128,52 +124,6 @@ export class ChatService {
         }
     }
 
-    uploadFilesToChat(filePath: string,file: File): Promise<any> {
-        return new Promise<{storagePath: string, url: String}>((resolve, reject) => {
-          let storageRef;
-
-          storageRef = this.bizFire.afStorage.storage.ref(filePath).put(file);
-          storageRef.on(firebase.storage.TaskEvent.STATE_CHANGED,(snapshot) => {
-            let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            this.fileUploadProgress.next(parseFloat(progress.toFixed()));
-          });
-          storageRef.then(fileSnapshot => {
-            fileSnapshot.ref.getDownloadURL().then((url) => {
-              resolve(url);
-            }).catch(err => {
-              console.log(err);
-              reject(err);
-            });
-          }).catch(err => {
-            console.log(err);
-            reject(err);
-          })
-        })
-    }
-
-    addMsg(path : string, msg : IMessageData,roomPath : string, currentChat?: IChat | ISquad) {
-        if(currentChat) {
-            const members = currentChat.data.members;
-            msg.read = Commons.makeReadFrom(members,this.bizFire.uid);
-            console.log("membersmembers",members);
-        }
-        return new Promise<string>( (resolve, reject) => {
-            this.bizFire.afStore.firestore.collection(path).add(msg).then((ref) => {
-                if(roomPath) {
-                    this.bizFire.afStore.firestore.doc(roomPath).set({
-                        lastMessage : msg.message,
-                        lastMessageTime : new Date(),
-                    },{merge : true}).catch(err => console.error("chat : last Data err =>",err));
-                    resolve(ref.id);
-                }
-            })
-            .catch(err => {
-                reject(err);
-                console.error("chat : add Msg err =>",err);
-            });
-        })
-    }
-
     async addMessage(text: string,parentRef: any,unreadMembers : any,
                     files?: any[],saveLastMessage = true) {
       try{
@@ -237,13 +187,9 @@ export class ChatService {
       }
     }
 
-    setMsg(path : string, msg : IMessageData) {
-        this.bizFire.afStore.firestore.doc(path).set(msg,{merge: true});
-    }
+    makeRoomNoticeMessage(room_type,type,gid,cid,uid?) {
 
-    makeRoomNoticeMessage(room_type,type,gid,cid) {
-
-      const newMessage = {
+      const newMessage : IMessageData = {
         message: {
           notice: {
             type: type
@@ -254,7 +200,11 @@ export class ChatService {
         sender: this.bizFire.uid,
         type: 'chat'
 
-      } as IMessageData;
+      };
+
+      if(uid){
+        newMessage.message.notice.uid = uid;
+      }
 
         return this.bizFire.afStore.firestore.collection(this.getMessagePath(room_type,gid,cid)).add(newMessage)
     }
@@ -266,7 +216,7 @@ export class ChatService {
             }).then(()=>{
               // insert exit room message
               const text = this.langPack['chat_exit_user_notice'].replace('$DISPLAYNAME', this.bizFire.currentUserValue.displayName);
-              this.makeRoomNoticeMessage('member-chat','exit',gid,cid).then(() => this.electron.windowClose());
+              this.makeRoomNoticeMessage('member-chat','exit',gid,cid,[this.bizFire.uid]).then(() => this.electron.windowClose());
 
               resolve();
             }).catch(error=>{

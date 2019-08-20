@@ -20,6 +20,9 @@ page-tabs {
     .tab-button ion-badge{
         border-radius: 100%;
     }
+    ion-badge{
+      min-width: 16px;
+    }
     .groupName{
         text-transform: none;
         font-weight: bold;

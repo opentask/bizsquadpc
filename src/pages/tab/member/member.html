@@ -1,64 +1,27 @@
+<!--new member page-->
 <ion-content no-padding class="content-color" overflow-scroll = "true">
-    <ion-scroll class="scrollable" scrollY="true">
-        <ion-searchbar no-padding [(ngModel)]="serachValue" (ionInput)="getItems($event)" style="padding-bottom:5px;"></ion-searchbar>
-        <ion-list style="margin-bottom:56px;">
-            <ng-container>
-                <ion-list no-margin *ngFor="let manager of managerAuthUser">
-                    <ion-item style="background-color: #f6f6f6" no-lines>
-                            <span class="list">{{ langPack['manager'] }}</span>
-                    </ion-item>
-                    <ion-item class="userList listBorder" no-lines *ngIf="!serachValue || manager.data.displayName.indexOf(serachValue.trim())>-1">
-                        <ion-avatar item-start *ngIf="manager && manager.data.photoURL" (click)="clickAvatar($event,manager)">
-                            <img class="photoURL" src="{{ manager.data.photoURL }}">
-                            <ion-badge class="statusBadge" [style.background-color]="manager.data.user_onlineColor"></ion-badge>
-                        </ion-avatar>
-                        <ion-avatar [style.background-color]=groupMainColor class="notPhoto" item-start *ngIf="manager && manager.data.photoURL == null" (click)="clickAvatar($event,manager)">
-                            <span class="displayName">{{ manager.data.user_icon }}</span>
-                            <ion-badge class="statusBadge" [style.background-color]="manager.data.user_onlineColor"></ion-badge>
-                        </ion-avatar>
-                        <h2 class="user-name" *ngIf="manager.data.displayName != null">{{ manager.data.displayName }}</h2>
-                        <h2 class="user-name" *ngIf="manager.data.displayName == null">{{ manager.data.email }}</h2>
-                    </ion-item>
-                </ion-list>
-                <ion-item style="background-color: #f6f6f6" no-lines *ngIf="memberCount > 0">
-                    <span class="list">{{ langPack['members'] }}<span class="member-count">&nbsp;{{ memberCount }}</span></span>
-                </ion-item>
-                <ion-list no-margin>
-                    <ng-container *ngFor="let member of memberAuthUser">
-                        <ion-item class="userList listBorder" no-lines *ngIf="!serachValue || member.data.displayName.indexOf(serachValue.trim())>-1">
-                            <ion-avatar item-start *ngIf="member && member.data.photoURL" (click)="clickAvatar($event,member)">
-                                <img class="photoURL" src="{{ member.data.photoURL }}">
-                                <ion-badge class="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
-                            </ion-avatar>
-                            <ion-avatar [style.background-color]=groupMainColor class="notPhoto" item-start *ngIf="member && member.data.photoURL == null" (click)="clickAvatar($event,member)">
-                                <span class="displayName">{{ member.data.user_icon }}</span>
-                                <ion-badge class="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
-                            </ion-avatar>
-                            <h2 class="user-name" *ngIf="member.data.displayName != null">{{ member.data.displayName }}</h2>
-                            <h2 class="user-name" *ngIf="member.data.displayName == null">{{ member.data.email }}</h2>
-                        </ion-item>
-                    </ng-container>
-                </ion-list>
-                <ion-item style="background-color: #f6f6f6" no-lines *ngIf="partnerCount > 0">
-                    <span  class="list">{{ langPack['partners'] }} <span class="member-count">&nbsp;{{ partnerCount }}</span></span>
-                </ion-item>
-                <ion-list no-margin>
-                    <ng-container *ngFor="let partner of partnerAuthUser">
-                        <ion-item class="userList listBorder" no-lines *ngIf="!serachValue || partner.data.displayName.indexOf(serachValue.trim())>-1">
-                            <ion-avatar item-start *ngIf="partner && partner.data.photoURL" (click)="clickAvatar($event,partner)">
-                                <img class="photoURL" src="{{ partner.data.photoURL }}">
-                                <ion-badge class="statusBadge" [style.background-color]="partner.data.user_onlineColor"></ion-badge>
-                            </ion-avatar>
-                            <ion-avatar [style.background-color]=groupMainColor class="notPhoto" item-start *ngIf="partner && partner.data.photoURL == null" (click)="clickAvatar($event,partner)">
-                                <span class="displayName">{{ partner.data.user_icon }}</span>
-                                <ion-badge class="statusBadge" [style.background-color]="partner.data.user_onlineColor"></ion-badge>
-                            </ion-avatar>
-                            <h2 class="user-name" *ngIf="partner.data.displayName != null">{{ partner.data.displayName }}</h2>
-                            <h2 class="user-name" *ngIf="partner.data.displayName == null">{{ partner.data.email }}</h2>
-                        </ion-item>
-                    </ng-container>
-                </ion-list>
-            </ng-container>
-        </ion-list>
-    </ion-scroll>
+  <ion-scroll class="scrollable" scrollY="true">
+    <ion-searchbar no-padding [(ngModel)]="serachValue" style="padding-bottom:5px;"></ion-searchbar>
+    <ion-list style="margin-bottom:56px;">
+      <ng-container *ngFor="let uid of filteredList">
+        <ng-container *ngIf="getUserObserver(uid) | async as user">
+          <ion-item class="userList listBorder" no-lines *ngIf="!serachValue || user.data.displayName.indexOf(serachValue.trim())>-1">
+            <ion-avatar item-start *ngIf="user.data.photoURL" (click)="clickAvatar($event,user)">
+              <img class="photoURL" src="{{ user.data.photoURL }}">
+              <div class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></div>
+            </ion-avatar>
+            <ion-avatar [style.background-color]=groupMainColor class="notPhoto" item-start *ngIf="!user.data.photoURL" (click)="clickAvatar($event,user)">
+              <span class="displayName">{{ setUserName(user.data) }}</span>
+              <div class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></div>
+            </ion-avatar>
+            <h2 class="user-name d-flex align-items-center">
+              <div class="mr-auto" *ngIf="user.data.displayName">{{ user.data.displayName }}</div>
+              <div class="mr-auto" *ngIf="!user.data.displayName">{{ user.data.email }}</div>
+              <ion-icon *ngIf="isManagerUser(user)" class="chat-count" name="customCrown"></ion-icon>
+            </h2>
+          </ion-item>
+        </ng-container>
+      </ng-container>
+    </ion-list>
+  </ion-scroll>
 </ion-content>

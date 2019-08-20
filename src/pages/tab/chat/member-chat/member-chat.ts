@@ -11,7 +11,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { AlertProvider } from '../../../../providers/alert/alert';
 import { IonContent } from '@ionic/angular';
-import { Observable, timer } from 'rxjs';
+import {BehaviorSubject, Observable, timer} from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import {LangService} from "../../../../providers/lang-service";
 import {IChat, IChatData, IMessage, IMessageData} from "../../../../_models/message";
@@ -35,7 +35,7 @@ export class MemberChatPage {
   editorMsg = '';
   opacity = 100;
   message : string;
-  messages = [];
+  messages : IMessage[] = [];
   chatroom : IChat;
   ipc : any;
   roomData : IChatData;
@@ -54,7 +54,7 @@ export class MemberChatPage {
 
   maxFileSize = 5000000; // max file size = 5mb;
 
-  public loadProgress : number = 0;
+  loadProgress : number = 0;
 
   langPack : any;
 
@@ -123,7 +123,6 @@ export class MemberChatPage {
     console.log(this.chatroom);
 
     if(this.chatroom != null) {
-
       //메세지 30개 가져오기
       this.getMessages();
 
@@ -132,49 +131,34 @@ export class MemberChatPage {
       .snapshotChanges().subscribe((snap : any) => {
         if(snap.payload.exists) {
           const newSquadData = new Chat(snap.payload.id,snap.payload.data(),this.bizFire.uid,snap.payload.ref);
-          this.chatroom = newSquadData;
-          this.chatMembers = Object.keys(this.chatroom.data.members);
-          this.members = this.chatroom.data.members;
-          this.roomCount = Object.keys(this.chatMembers).length;
 
-          this.cacheService.resolvedUserList(this.chatroom.getMemberIds(false),Commons.userInfoSorter)
-            .pipe(take(1))
-            .subscribe((users :IUser[]) => {
-            users.forEach(u => {
-              if(this.chatTitle.length > 0){
-                this.chatTitle += ',';
-              }
-              this.chatTitle += u.data.displayName;
+          if(Object.keys(newSquadData.data.members).length !== this.roomCount) {
+            this.cacheService.resolvedUserList(newSquadData.getMemberIds(false),Commons.userInfoSorter)
+              .pipe(take(1))
+              .subscribe((users :IUser[]) => {
+                this.chatTitle = '';
+                users.forEach(u => {
+                  if(this.chatTitle.length > 0){
+                    this.chatTitle += ',';
+                  }
+                  this.chatTitle += u.data.displayName;
+               });
             });
-          });
+          }
+          this.chatroom = newSquadData;
+          this.members = this.chatroom.data.members;
+          this.chatMembers = Object.keys(this.chatroom.data.members);
+          this.roomCount = this.chatMembers.length;
         }
       });
       this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.gid)).valueChanges().subscribe((data : IBizGroupData) => {
-        this.groupMainColor = this.groupColorProvider.makeGroupColor(data.team_color);
-        console.log("this.groupMainColorthis.groupMainColor",this.groupMainColor);
+        this.groupMainColor = data.team_color;
         // 그룹 탈퇴 당할시 채팅방을 닫는다.
         // ...
       })
     } else {
       this.electron.windowClose();
     }
-
-    this.chatService.fileUploadProgress.subscribe(per => {
-      if(per === 100) {
-
-        // 용량이 작을때 프로그레스 바가 안나오므로..
-        this.loadProgress = per;
-
-        // 1.5초 뒤 값을 초기화한다.
-        timer(1500).subscribe(() => {
-          this.chatService.fileUploadProgress.next(null);
-          this.loadProgress = 0;
-        })
-      } else {
-        this.loadProgress = per;
-      }
-      console.log(per);
-    });
   }
 
   // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
@@ -326,6 +310,50 @@ export class MemberChatPage {
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-member-chat-menu',{roomData : this.chatroom}, {cssClass: 'page-member-chat-menu'});
     popover.present({ev: ev});
+  }
+
+  makeNoticeMessage(message): string {
+
+    if(Object.keys(this.langPack).length > 0
+      && message
+      && message.data.isNotice
+      && message.data.message.notice
+    ){
+      const notice = message.data.message.notice;
+      if(notice.type === 'exit'){
+        const uid = notice.uid;
+        let text = '';
+        if(uid){
+          this.cacheService.userGetObserver(uid[0]).subscribe((user: IUser) => {
+            text = this.langPack['chat_exit_user_notice'].replace('$DISPLAYNAME',user.data.displayName);
+          });
+          return text;
+        }
+      }
+
+      if(notice.type === 'init'){
+        const text = this.langPack['create_chat_room'];
+        return text;
+      }
+      if(notice.type === 'invite'){
+        const uids = notice.uid;
+        let inviteUserNames = '';
+        for(let uid of uids) {
+          this.cacheService.userGetObserver(uid).subscribe((user : IUser) => {
+            if(user.data.displayName) {
+              if(inviteUserNames.length > 0){
+                inviteUserNames += ',';
+              }
+              inviteUserNames += user.data.displayName;
+            }
+          })
+        }
+        const text = this.langPack['chat_invite_user_notice'].replace('$DISPLAYNAME',inviteUserNames);
+        return text;
+      }
+    }
+
+    return;
   }
 
 }
