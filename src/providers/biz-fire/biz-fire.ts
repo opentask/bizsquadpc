@@ -46,6 +46,8 @@ export class BizFireService {
 
   buildNo = '55';
 
+  ipc: any;
+
   private initProcess: InitProcess;
 
 
@@ -86,10 +88,14 @@ export class BizFireService {
 
   userCustomLinks = new BehaviorSubject<userLinks[]>(null);
 
-  userCustomToken = new BehaviorSubject<string>(null);
+  get _userCustomLinks(): userLinks[] {
+    return this.userCustomLinks.getValue();
+  }
 
-  get _userCustomToken(): string {
-    return this.userCustomToken.getValue();
+  _userCustomToken = new BehaviorSubject<string>(null);
+
+  get userCustomToken(): string {
+    return this._userCustomToken.getValue();
   }
 
   // * Biz Groups
@@ -150,9 +156,15 @@ export class BizFireService {
 
             if(user){
 
-                if(this._userCustomToken == null) {
-                    this.getToken(user.uid);
-                    console.log("_userCustomToken :",this._userCustomToken);
+                // ------------------------------------------------------------------
+                // * update user info.
+                // ------------------------------------------------------------------
+
+                const initProcess = new InitProcess(this.afStore);
+                await initProcess.start(user);
+
+                if(this._userCustomLinks == null) {
+                  this.getCustomLinks(user.uid);
                 }
 
                 if(this.bizGroupSub){
@@ -161,12 +173,6 @@ export class BizFireService {
                 }
                 this.startBizGroupMonitor(user);
 
-                // ------------------------------------------------------------------
-                // * update user info.
-                // ------------------------------------------------------------------
-
-                const initProcess = new InitProcess(this.afStore);
-                await initProcess.start(user);
 
                 // start trigger after update login date.
                 this.currentUserSubscription = this.afStore.doc(Commons.userPath(user.uid))
@@ -208,13 +214,6 @@ export class BizFireService {
 
             resolve(user);
 
-            this.afStore.firestore.collection(`users/${user.user.uid}/customlinks`).onSnapshot(linksSnap => {
-                const links = linksSnap.docs.map(doc => {
-                    return {mid:doc.id,data:doc.data()} as userLinks;
-                });
-                this.userCustomLinks.next(links);
-            }, error1 => console.error(error1));
-
         }).catch(err => {
             // reset to original. needed?
             this.userState.autoSignIn = true;
@@ -224,21 +223,18 @@ export class BizFireService {
     })
   }
 
-    async getToken(uid) {
-        const path = `${environment.bizServerUri}/customToken`;
-        const header = await this.idTokenHeader();
-        const body = {
-            uid: uid
-        }
-        if(uid != null) {
-            this.http.post(path,body,{headers: header}).subscribe((res: any) => {
-                if(res.result === true) {
-                    this.userCustomToken.next(res.customToken);
-                    console.log(res.customToken);
-                }
-            })
-        }
-    }
+  getCustomLinks(uid) {
+    this.afStore.collection(`users/${uid}/customlinks`)
+      .snapshotChanges().pipe(takeUntil(this.onUserSignOut))
+      .subscribe(snaps => {
+        const links = snaps.map(snap => {
+          return {mid: snap.payload.doc.id, data: snap.payload.doc.data()} as userLinks;
+        });
+        this.userCustomLinks.next(links);
+      });
+  }
+
+
 
   getDiplayNameInitial(count = 2, user: IUserData = null): string {
 
@@ -362,7 +358,7 @@ export class BizFireService {
         // clear bookmark
         this.userCustomLinks.next(null);
 
-        this.userCustomToken.next(null);
+        this._userCustomToken.next(null);
 
         return this.afAuth.auth.signOut().then(()=> {
 
@@ -449,16 +445,8 @@ export class BizFireService {
     })
   }
 
-  async idTokenHeader(): Promise<HttpHeaders> {
-    const idToken = await this.afAuth.auth.currentUser.getIdToken(true);
-    return new HttpHeaders({
-      'authorization': idToken
-    });
-  }
-
   deleteLink(link){
       return this.afStore.collection(`users/${this.currentUID}/customlinks`).doc(link.mid).delete();
   }
-
 
 }

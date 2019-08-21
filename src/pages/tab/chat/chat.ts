@@ -97,6 +97,10 @@ export class ChatPage extends TakeUntil{
         squad.forEach(squad =>{
           const newData = squad.data;
 
+          if(!squad.data.lastMessageTime) {
+            newData['lastMessageTime'] = 1;
+          }
+
           newData['member_count'] = Object.keys(squad.data.members).filter(uid => squad.data.members[uid] === true).length;
         });
 
@@ -135,7 +139,7 @@ export class ChatPage extends TakeUntil{
     this.electron.openChatRoom(cutRefValue);
   }
   gotoSquadRoom(value : IChat){
-    const cutRefValue = {sid: value.cid, data: value.data};
+    const cutRefValue = {cid: value.cid, data: value.data};
     console.log(cutRefValue);
     this.electron.openChatRoom(cutRefValue);
   }

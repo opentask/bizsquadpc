@@ -11,12 +11,13 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { AlertProvider } from '../../../../providers/alert/alert';
 import { IonContent } from '@ionic/angular';
-import {BehaviorSubject, Observable, timer} from 'rxjs';
+import {Observable, fromEvent, timer} from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import {LangService} from "../../../../providers/lang-service";
 import {IChat, IChatData, IMessage, IMessageData} from "../../../../_models/message";
 import {IBizGroupData, IUser, IUserData} from "../../../../_models";
 import {Chat} from "../../../../biz-common/chat";
+import {ToastProvider} from "../../../../providers/toast/toast";
 
 @IonicPage({
   name: 'page-member-chat',
@@ -29,8 +30,7 @@ import {Chat} from "../../../../biz-common/chat";
 })
 export class MemberChatPage {
 
-  @ViewChild('scrollMe') contentArea: IonContent;
-  @ViewChild('scrollMe') content: Content;
+  @ViewChild('scrollMe') contentArea: Content;
 
   editorMsg = '';
   opacity = 100;
@@ -51,6 +51,8 @@ export class MemberChatPage {
   roomCount : number;
   chatTitle = '';
 
+  private scrolled = false;
+
 
   maxFileSize = 5000000; // max file size = 5mb;
 
@@ -64,13 +66,12 @@ export class MemberChatPage {
     public chatService : ChatService,
     public bizFire : BizFireService,
     public electron: Electron,
-    public accountService : AccountService,
     public afAuth: AngularFireAuth,
     public popoverCtrl :PopoverController,
-    public alertCtrl: AlertProvider,
     public groupColorProvider: GroupColorProvider,
     private loading: LoadingProvider,
     private cacheService : CacheService,
+    private toastProvider : ToastProvider,
     private langService : LangService
     ) {
       this.afAuth.authState.subscribe((user: User | null) => {
@@ -104,13 +105,7 @@ export class MemberChatPage {
         // prevent default behavior
         e.preventDefault();
         // call submit
-        let value = e.target.value;
-        value = value.trim();
-        if (value.length > 0) {
-          this.sendMsg(value);
-        }
-      } else {
-        // shift + enter. Let textarea insert new line.
+        this.sendMsg(e.target.value);
       }
     }
   }
@@ -184,10 +179,12 @@ export class MemberChatPage {
 
       changes.forEach((change: any) => {
         if(change.type === 'added') {
-
           const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
           this.messages.push(msgData);
           this.chatService.setToReadStatus(change.payload.doc, batch);
+          if(!this.chatService.scrollBottom(this.contentArea)) {
+            this.toastProvider.showToast(this.langPack['new_message']);
+          }
         }
         if(change.type === 'modified') {
           const msg = this.messages.find(m => m.mid === change.payload.doc.id);
@@ -198,7 +195,13 @@ export class MemberChatPage {
         }
       });
       batch.commit();
-      this.scrollToBottom(500);
+      // scroll to bottom
+      if(this.chatService.scrollBottom(this.contentArea)) {
+        timer(400).subscribe(() => {
+          // call ion-content func
+          this.contentArea.scrollToBottom(0);
+        });
+      }
     });
 
   }
@@ -233,13 +236,13 @@ export class MemberChatPage {
   }
 
   sendMsg(value) {
-
-    this.editorMsg = '';
     const converterText = Commons.chatInputConverter(value);
 
     if(converterText) {
-      this.chatService.addMessage(converterText,this.chatroom.ref,this.members);
+      this.contentArea.scrollToBottom(0);
+      this.chatService.addChatMessage(converterText,this.chatroom);
     }
+    this.editorMsg = '';
   }
 
   doInfinite(infiniteScroll) {
@@ -264,8 +267,11 @@ export class MemberChatPage {
       const attachedFile  = file.target.files[0];
       const converterText = Commons.chatInputConverter(attachedFile.name);
 
-      this.chatService.addMessage(converterText,this.chatroom.ref,this.members,[attachedFile]).then(() => {
-        this.scrollToBottom(1000);
+      this.chatService.addChatMessage(converterText,this.chatroom,[attachedFile]).then(() => {
+        timer(800).subscribe(() => {
+          // call ion-content func
+          this.contentArea.scrollToBottom(0);
+        });
       });
     }
   }

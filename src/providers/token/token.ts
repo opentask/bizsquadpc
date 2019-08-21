@@ -1,7 +1,10 @@
 import { environment } from './../../environments/environments';
 import { BizFireService } from './../biz-fire/biz-fire';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Electron } from "../electron/electron";
+import {LoadingProvider} from "../../providers/loading/loading";
+
 /*
   Generated class for the TokenProvider provider.
 
@@ -13,46 +16,81 @@ export class TokenProvider {
 
     customToken : string;
 
+    ipc : any;
+
     constructor(
         private http: HttpClient,
+        private electron : Electron,
+        private loading: LoadingProvider,
         private bizFire:BizFireService) {
+      this.ipc = this.electron.ipc;
     }
-    
-    async testSendFcm() {
-        const path = `${environment.bizServerUri}/sendFCM`;
-        const header = await this.bizFire.idTokenHeader();
-        
-        // 임시. users=text + notification=text
-        const users = ['E1PK4kTXgiYVu9F9ksEa52esqSH3','nwmxyLdPtdMeaXMAKmKJ27HF0ZB3','MO6sfMXSNbM1uAomtMzprSN6fe63'];
-        const payload = {
-            notification: {
-                title: `노드서버에서 보냅니다.`,
-                body: `노드서버에서 보내는 메세지 내용은 이상무`,
-                sound: "default",
-                click_action: "FCM_PLUGIN_ACTIVITY",
-            }
-        }
+
+    async idTokenHeader(): Promise<HttpHeaders> {
+      const idToken = await this.bizFire.afAuth.auth.currentUser.getIdToken(true);
+      return new HttpHeaders({
+        'authorization': idToken
+      });
+    }
+
+    getToken(uid) {
+      return new Promise<string>(async resolve => {
+        const path = `${environment.bizServerUri}/customToken`;
+        const header = await this.idTokenHeader();
         const body = {
-          users : users,
-          payload: payload
+          uid: uid
+        };
+        if(uid != null) {
+          this.http.post(path,body,{headers: header}).subscribe((res: any) => {
+            if(res.result === true) {
+              resolve(res.customToken);
+            }
+          })
         }
-        this.http.post(path,body,{headers: header}).subscribe((res: any) => {
-            // 완료후 확인.
-        })
+      });
     }
 
     async addCustomLink(uid,title,url) {
+      console.log(uid,title,url);
         const path = `${environment.bizServerUri}/customLink`;
-        const header = await this.bizFire.idTokenHeader();
-        const body = { 
+        const header = await this.idTokenHeader();
+        const body = {
             uid: uid,
             title: title,
             url: url,
-        }
+        };
+        console.log("body :",body);
         this.http.post(path,body,{headers: header}).subscribe((res: any) => {
-            console.log(res.result);
+          console.log(res);
             // 파이어스토어에서 링크 데이터 가져오기.
         })
+    }
+
+    makeWebJump(type: string,gid?:string,sid?:string) {
+      this.loading.show();
+      this.getToken(this.bizFire.uid).then((token : string) => {
+        if(type === 'member'){
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=home/${gid}/users`);
+        }
+        if(type === 'bbs') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=bbs/${gid}`);
+        }
+        if(type === 'property') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=home/${gid}/property`);
+        }
+        if(type == 'mypage') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=mypage`);
+        }
+        if(type == 'squad') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=squad/${gid}/${sid}`);
+        }
+        if(type == 'notify') {
+
+        }
+        this.loading.hide();
+      }).catch(err => {
+        this.loading.hide();
+      });
     }
 
 }

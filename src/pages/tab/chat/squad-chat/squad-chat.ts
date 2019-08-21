@@ -1,5 +1,3 @@
-import { ISquad } from './../../../../providers/squad.service';
-import { AccountService } from './../../../../providers/account/account';
 import { Electron } from './../../../../providers/electron/electron';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
@@ -8,15 +6,17 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { STRINGS, Commons } from '../../../../biz-common/commons';
 import { ChatService } from '../../../../providers/chat.service';
-import { IonContent } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
 import { GroupColorProvider } from '../../../../providers/group-color';
 import { Observable, timer } from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
-import {IMessage, IMessageData} from "../../../../_models/message";
+import {IChat, IMessage, IMessageData} from "../../../../_models/message";
 import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../_models";
 import {takeUntil} from "rxjs/operators";
 import {LangService} from "../../../../providers/lang-service";
+import {Chat} from "../../../../biz-common/chat";
+import {BizGroupBuilder} from "../../../../biz-common/biz-group";
+import {ToastProvider} from "../../../../providers/toast/toast";
 
 @IonicPage({
   name: 'page-squad-chat',
@@ -29,7 +29,7 @@ import {LangService} from "../../../../providers/lang-service";
 })
 export class SquadChatPage {
 
-  @ViewChild('scrollMe') contentArea: IonContent;
+  @ViewChild('scrollMe') contentArea: Content;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
   message : string;
@@ -38,9 +38,7 @@ export class SquadChatPage {
   opacity = 100;
   squadMainColor: any;
 
-  selectSquad : ISquad;
-  squad : ISquad;
-  members: any;
+  selectSquad : IChat;
   editorMsg = '';
   ipc : any;
 
@@ -62,6 +60,7 @@ export class SquadChatPage {
      public groupColorProvider: GroupColorProvider,
      private cacheService : CacheService,
      private langService : LangService,
+     private toastProvider : ToastProvider,
      public electron: Electron
      ) {
       this.afAuth.authState.subscribe((user: User | null) => {
@@ -72,7 +71,7 @@ export class SquadChatPage {
       // esc 버튼 클릭시 채팅창 닫기.
       document.addEventListener('keydown', event => {
         if(event.key === 'Escape' || event.keyCode === 27){
-          this.electron.windowClose();
+          this.windowClose();
         }
       });
 
@@ -97,13 +96,7 @@ export class SquadChatPage {
         // prevent default behavior
         e.preventDefault();
         // call submit
-        let value = e.target.value;
-        value = value.trim();
-        if(value.length > 0){
-          this.sendMsg(value);
-        }
-      } else {
-        // shift + enter. Let textarea insert new line.
+          this.sendMsg(e.target.value);
       }
     }
   }
@@ -120,23 +113,30 @@ export class SquadChatPage {
 
       // 그룹 데이터
       this.bizFire.afStore.doc(Commons.groupPath(this.selectSquad.data.gid))
-        .get().subscribe(group => {
-          const groupData = group.data() as IBizGroupData;
-          if(groupData && this.selectSquad.data.type === 'public') {
-            this.roomCount = Object.keys(groupData.members).length;
-            this.members = groupData.members;
+        .get().subscribe(doc => {
+
+          const group : IBizGroup = BizGroupBuilder.buildWithData(this.selectSquad.data.gid,doc.data(),this.bizFire.uid);
+
+          if(group.data.members[this.bizFire.uid] === true && group.data.status === true) {
+            this.bizFire.onBizGroupSelected.next(group);
+          } else {
+            this.windowClose();
+          }
+
+          if(group && this.selectSquad.data.type === 'public') {
+            this.roomCount = Object.keys(group.data.members).length;
           }
       });
 
       // 스쿼드 데이터 갱신
-      this.bizFire.afStore.doc(Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.sid))
-      .snapshotChanges().subscribe(snap => {
+      this.bizFire.afStore.doc(Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.cid))
+      .snapshotChanges().subscribe((snap:any) => {
         if(snap.payload.exists) {
-          this.selectSquad = ({sid: snap.payload.id, data: snap.payload.data(), ref: snap.payload.ref} as ISquad);
+          this.selectSquad = new Chat(snap.payload.id,snap.payload.data(),this.bizFire.uid,snap.payload.ref);
+
           this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
           if(this.selectSquad.data.type === 'private'){
             this.roomCount = Object.keys(this.selectSquad.data.members).length;
-            this.members = this.selectSquad.data.members;
           }
         }
       })
@@ -165,7 +165,7 @@ export class SquadChatPage {
   // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
   getMessages() {
 
-    const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
+    const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.cid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
     .get().subscribe((snapshots) => {
@@ -189,6 +189,9 @@ export class SquadChatPage {
           const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
           this.messages.push(msgData);
           this.chatService.setToReadStatus(change.payload.doc, batch);
+          if(!this.chatService.scrollBottom(this.contentArea)) {
+            this.toastProvider.showToast(this.langPack['new_message']);
+          }
         }
         if(change.type === 'modified') {
           const msg = this.messages.find(m => m.mid === change.payload.doc.id);
@@ -199,14 +202,20 @@ export class SquadChatPage {
         }
       });
       batch.commit();
-      this.scrollToBottom(500);
+      // scroll to bottom
+      if(this.chatService.scrollBottom(this.contentArea)) {
+        timer(400).subscribe(() => {
+          // call ion-content func
+          this.contentArea.scrollToBottom(0);
+        });
+      }
     });
 
   }
 
   getMoreMessages() {
 
-    const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.sid);
+    const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.cid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc')
     .startAt(this.start).limit(30)).get()
@@ -235,15 +244,14 @@ export class SquadChatPage {
 
 
   sendMsg(value) {
-    this.editorMsg = '';
 
     const converterText = Commons.chatInputConverter(value);
 
     if(converterText){
-
-      this.chatService.addMessage(converterText,this.selectSquad.ref,this.members);
-
+      this.contentArea.scrollToBottom(0);
+      this.chatService.addChatMessage(converterText,this.selectSquad);
     }
+    this.editorMsg = '';
   }
 
   doInfinite(infiniteScroll) {
@@ -268,8 +276,11 @@ export class SquadChatPage {
       const attachedFile  = file.target.files[0];
       const converterText = Commons.chatInputConverter(attachedFile.name);
 
-      this.chatService.addMessage(converterText,this.selectSquad.ref,this.members,[attachedFile]).then(() => {
-        this.scrollToBottom(1000);
+      this.chatService.addChatMessage(converterText,this.selectSquad,[attachedFile]).then(() => {
+        timer(800).subscribe(() => {
+          // call ion-content func
+          this.contentArea.scrollToBottom(0);
+        });
       });
     }
   }
@@ -281,14 +292,6 @@ export class SquadChatPage {
   getUserObserver(msg: IMessageData): Observable<IUser>{
     if(!msg.isNotice) {
       return this.cacheService.userGetObserver(msg.sender);
-    }
-  }
-
-  scrollToBottom(num : number) {
-    if (this.contentArea.scrollToBottom) {
-        setTimeout(() => {
-            this.contentArea.scrollToBottom(0);
-        },num);
     }
   }
 

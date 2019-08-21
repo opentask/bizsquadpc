@@ -19,7 +19,8 @@ export interface ISquadData {
   members: any,
   created: any,
   type: string,
-
+  agile?: boolean,
+  general?: boolean,
   gid?: string,
   name?: string,
 
@@ -184,7 +185,7 @@ export class SquadService {
 
         }
         const privateSquads = squadList.filter(s => {
-          let ret = s.data.type !== 'public' && addedSqaud[s.cid] !== true;
+          let ret = s.data.agile && s.data.type !== 'public' && addedSqaud[s.cid] !== true;
           if(ret && this.isFavoriteSquad(userData,s.cid)){
             bookmark.push(s);
             ret = false;
@@ -193,7 +194,7 @@ export class SquadService {
         });
 
         const publicSquads = squadList.filter(s => {
-          let ret = s.data.type === 'public' && addedSqaud[s.cid] !== true;
+          let ret = s.data.general && addedSqaud[s.cid] !== true;
           if(ret && this.isFavoriteSquad(userData,s.cid)) {
             bookmark.push(s);
             ret = false;

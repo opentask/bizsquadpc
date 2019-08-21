@@ -1330,6 +1330,11 @@ export const language = {
     "en": "Sign out from BizSquad?",
     "ja": "ログアウトしますか？"
   }
+  ,"new_message": {
+    "ko": "새로운 메세지가 도착했습니다.",
+    "en": "new message arrived",
+    "ja": "新しいメッセージが到着しました"
+  }
 
 
   };

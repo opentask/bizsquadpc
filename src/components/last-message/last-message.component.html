@@ -1,4 +1,4 @@
-<div class="d-flex align-items-center justify-content-between ">
+<div class="d-flex align-items-center justify-content-between">
 
   <ng-template #reading>
     <div class="chat-message">
@@ -16,13 +16,11 @@
     <ng-container *ngIf="lastMessage && lastMessage.message
     && lastMessage.message.text
     && lastMessage.isNotice !== true; else noMessage">
-      <div class="flex-grow-1" >
-        <div class="chat-message ">
-          <div [innerHtml]="lastMessage.message.text | sanitizingHtml"></div>
-        </div>
+      <div class="chat-message w-100">
+        <span [innerHtml]="lastMessage.message.text | sanitizingHtml"></span>
       </div>
       <!--   라스트메세지 시간    -->
-      <div class="chat-time flex-shrink-0 ">
+      <div class="chat-time flex-shrink-1">
         <span>{{ lastMessage.created | timestampToDate | date: 'HH:mm'}}</span>
       </div>
     </ng-container>

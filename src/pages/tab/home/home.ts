@@ -12,6 +12,7 @@ import { NotificationService } from '../../../providers/notification.service';
 import { DataCache } from '../../../classes/cache-data';
 import {LangService} from "../../../providers/lang-service";
 import {IBizGroup, INotification, IUser, IUserData} from "../../../_models";
+import {environment} from "../../../environments/environments";
 
 interface IBbsItem {
   bbsId: string,
@@ -105,12 +106,6 @@ export class HomePage implements OnInit {
 
     this.group = this.bizFire.onBizGroupSelected.getValue();
 
-    this.bizFire.userCustomToken
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((token) => {
-      this.customToken = token;
-    })
-
     // * current User for RIGHT MENU
     this.bizFire.currentUser
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll))
@@ -138,50 +133,27 @@ export class HomePage implements OnInit {
 
 
     this.bizFire.userCustomLinks.pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
-    .subscribe(Links => {
-      Links.forEach(Link => {
-        if(Link){
-          const newData = Link.data;
+    .subscribe((links : userLinks[]) => {
+      links.forEach(link => {
+        if(link){
+          const newData = link.data;
           newData['hidden'] = true;
         }
-      })
-      this.userCustomLinks = Links.sort((a,b) => {
+      });
+      this.userCustomLinks = links.sort((a,b) => {
         if(a.data.create && b.data.create) {
           return a.data.create > b.data.create ? -1 : 1;
         } else {
           return 0;
         }
       });
-      console.log(this.userCustomLinks);
-    })
+      console.log("userCustomLinks",this.userCustomLinks);
+    });
 
     if(this.group){
       this.isPartner = this.bizFire.isPartner(this.group);
       this.manager = this.group.data.manager != null && this.group.data.manager[this.bizFire.currentUID] === true;
     }
-    // this.noticeService.onNotifications
-    // .pipe(filter(n => n !=null),takeUntil(this._unsubscribeAll))
-    // .subscribe((msgs: INotification[]) => {
-    //   this.messages = msgs.filter(m => {
-    //     let ret;
-    //     if(m.data.type === 'invitation') {
-    //       if(m.data.invitation.type === 'group') {
-    //         return true;
-    //       } else {
-    //         ret = m.data.invitation.gid == this.bizFire.onBizGroupSelected.getValue().gid;
-    //       }
-    //     }
-    //     if(m.data.type === 'notify'){
-    //       ret = m.data.notify.gid == this.bizFire.onBizGroupSelected.getValue().gid;
-    //     }
-    //     return ret;
-    //   })
-    //   if(this.messages.length > 0) {
-    //     this.badgeVisible = true;
-    //   } else if(this.messages.length == 0) {
-    //     this.badgeVisible = false;
-    //   }
-    // });
 
     this.noticeService.onNotifications
     .pipe(
@@ -253,6 +225,7 @@ export class HomePage implements OnInit {
   showNotify(){
     this.navCtrl.setRoot('page-notify');
   }
+
   goLink(ev,link){
     this.ipc.send('loadGH',link.data.url);
   }

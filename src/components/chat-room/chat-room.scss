@@ -19,12 +19,6 @@ chat-room {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .chat-title, .chat-message{
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
   .msg-badge{
     width: 20px;
     height:20px;
@@ -50,10 +44,9 @@ chat-room {
     font-weight: 500;
     font-size: 12px;
 
-    width:200px;
-    //overflow:hidden;
+    overflow:hidden;
     text-overflow:ellipsis;
-    //white-space:nowrap;
+    white-space:nowrap;
 
   }
 

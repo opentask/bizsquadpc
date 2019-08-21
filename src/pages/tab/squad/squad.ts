@@ -42,8 +42,6 @@ export class SquadPage {
 
   isPartner = false;
 
-  customToken: any;
-
   userCustomData: any;
 
   defaultSegment : string = "generalSquad";
@@ -88,14 +86,6 @@ export class SquadPage {
   }
 
   ngOnInit() {
-
-
-
-    this.bizFire.userCustomToken
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((token) => {
-      this.customToken = token;
-    });
 
     this.bizFire.onBizGroupSelected
     .pipe(filter(g=>g!=null), takeUntil(this._unsubscribeAll))

@@ -13,6 +13,7 @@ import {IChat, IChatData, IFiles, IMessageData} from "../_models/message";
 import {IUser} from "../_models";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../environments/environments";
+import {Content} from "ionic-angular";
 
 @Injectable({
     providedIn: 'root'
@@ -127,6 +128,27 @@ export class ChatService {
         }
     }
 
+    async addChatMessage(text: string, currentChat: IChat, files?: File[]){
+      if(currentChat.ref == null) {
+        console.error('addChatMessage', currentChat);
+        throw new Error('currentChat.ref is null.');
+      }
+      let fcmText = '';
+
+      if(files && files.length > 0) {
+          fcmText = files[0].name;
+      } else {
+        fcmText = text;
+      }
+
+      const members = currentChat.isPublic() ? this.bizFire.currentBizGroup.data.members : currentChat.data.members;
+
+      await this.addMessage(text,currentChat.ref,members,files);
+
+      await this.sendPush(Object.keys(members).map(uid=>uid),'',this.convertMessage(fcmText));
+
+    }
+
     async addMessage(text: string,parentRef: any,unreadMembers : any,
                     files?: any[],saveLastMessage = true) {
       try{
@@ -188,9 +210,6 @@ export class ChatService {
             lastMessageTime: new Date(),
           }, {merge: true});
         }
-        const pushText = this.convertMessage(text);
-        await this.sendPush(membersUids,'',pushText);
-
         return newChatRef.id;
       } catch (e) {
         console.log('addMessage',e,text);
@@ -304,6 +323,16 @@ export class ChatService {
         }
       }
       return ret;
+    }
+
+    scrollBottom(content : Content) : boolean {
+      const contentArea = content.getContentDimensions();
+      // content.scrollTop == content.scrollHeight - content.contentHeight;
+      const top = contentArea.scrollTop; // 스크롤 현재 top
+      const height = contentArea.scrollHeight; // 내 화면에 보이지 않는 내용을 포함한 내용 높이.
+      const offset = contentArea.contentHeight; // 현재 보이는 높이.
+
+      return 100 > height - (top + offset);
     }
 
     onNotification(msg){

@@ -30,7 +30,7 @@
   </ion-item>
   <div class="popup" *ngIf="menuShow">
     <ul>
-        <li id="profileSetting"(click)="ipc.send('loadGH',webUrl+customToken+'&url=mypage')">{{ langPack['myaccount'] }}</li>
+        <li id="profileSetting"(click)="tokenService.makeWebJump('mypage')">{{ langPack['myaccount'] }}</li>
         <li id="signoutBtn" (click)="logout()">{{ langPack['logout'] }}</li>
         <li id="exitBtn" (click)="windowClose()">{{ langPack['shutdown'] }}</li>
     </ul>
@@ -46,19 +46,19 @@
     <span>{{ langPack['taskbox'] }}</span>
         <ul>
             <li>
-                <button id="extMember" (click)="ipc.send('loadGH',webUrl+customToken+'&url=home/'+group.gid+'/users');">
+                <button id="extMember" (click)="tokenService.makeWebJump('member',group.gid)">
                     <img src="imgs/member.svg">
                     <span class="title">{{ langPack['members'] }}</span>
                 </button>
             </li>
             <li>
-                <button id="extBbs" [disabled]="isPartner" (click)="ipc.send('loadGH',webUrl+customToken+'&url=bbs/'+group.gid);">
+                <button id="extBbs" [disabled]="isPartner" (click)="tokenService.makeWebJump('bbs',group.gid)">
                     <img src="imgs/notice.svg">
                     <span class="title">{{ langPack['BBS'] }}</span>
                 </button>
             </li>
             <li>
-                <button [disabled]="!manager" (click)="ipc.send('loadGH',webUrl+customToken+'&url=home/'+group.gid+'/property');">
+                <button [disabled]="!manager" (click)="tokenService.makeWebJump('property',group.gid)">
                     <img src="imgs/setting.svg">
                     <span class="title">{{ langPack['property'] }}</span>
                 </button>
@@ -98,7 +98,7 @@
     <div class="appSelectArea selectApps">
         <div>
             <span>{{ langPack['apps'] }}</span>
-            <ion-icon *ngIf="8 > userCustomLinks.length" class="addLinkButton" style="float:right" name="add" (click)="presentPopover()"></ion-icon>
+            <ion-icon *ngIf="8 > userCustomLinks.length" class="addLinkButton" style="float:right" name="add" (click)="presentPopover($event)"></ion-icon>
         </div>
         <ul>
             <ng-container *ngFor="let link of userCustomLinks">

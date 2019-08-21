@@ -63,12 +63,6 @@ export class NotificationService {
         ) {
             this.ipc = this.electron.ipc;
 
-            this.bizFire.userCustomToken
-            .pipe(takeUntil(this.bizFire.onUserSignOut))
-            .subscribe((token) => {
-              this.customToken = token;
-            })
-
             // delete all notifications
             this.bizFire.onUserSignOut.subscribe(()=>{
 

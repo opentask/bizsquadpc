@@ -5,7 +5,7 @@ const { ipcMain,dialog } = require('electron');
 const { shell } = require('electron');
 const url = require('url');
 const path = require('path');
-const contextMenu = require('electron-context-menu')
+const contextMenu = require('electron-context-menu');
 
 // const {dialog} = require('electron');
 // Module to control application life.
@@ -47,7 +47,7 @@ let trayContextMenu = Menu.buildFromTemplate([
         accelerator: 'CmdOrCtrl+Q',
         role:'quit',
     }
-])
+]);
 
 autoUpdater.logger = logger;
 autoUpdater.logger["transports"].file.level = "info";
@@ -86,7 +86,7 @@ function historyWindow() {
         pathname: path.join(__dirname, '../www/history.html'),
         protocol: 'file:',
         slashes: true
-    }))
+    }));
 
     // history.webContents.openDevTools();
 
@@ -125,7 +125,7 @@ function createWindow() {
         pathname: path.join(__dirname, '../www/index.html'),
         protocol: 'file:',
         slashes: true
-    }))
+    }));
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
@@ -147,7 +147,7 @@ function createWindow() {
     tray = new Tray(path.join(__dirname,'logo16.png'));
     tray.on('double-click',() => {
         win.show();
-    })
+    });
     tray.setContextMenu(trayContextMenu);
     tray.on('right-click',() => {
         tray.popUpContextMenu(trayContextMenu);
@@ -193,7 +193,7 @@ app.on('activate', () => {
     if(win !== null){
         win.show();
     }
-})
+});
 
 ipcMain.on('windowsFlashFrame',(event, count) => {
     if(count > 0) {
@@ -201,7 +201,7 @@ ipcMain.on('windowsFlashFrame',(event, count) => {
     } else {
         win.flashFrame(false);
     }
-})
+});
 
 ipcMain.on('loadGH', (event, arg) => {
     shell.openExternal(arg);
@@ -265,6 +265,27 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     testRooms[chatRoomId].on('closed', () => {
         testRooms[chatRoomId] = null;
     });
+
+    const menuTemplate = [{
+      label: "Application",
+      submenu: [
+        { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+        { type: "separator" },
+        { label: "Quit", accelerator: "Command+Q", click: function() { testRooms[chatRoomId] = null; }}
+      ]}, {
+      label: "Edit",
+      submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+      ]}
+    ];
+
+    Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
 
 });
 

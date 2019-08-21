@@ -22,5 +22,6 @@ export const environment = {
         showBackdrop: false,
     },
     // bizServerUri: 'http://localhost:9010'
-    bizServerUri: 'https://manager.bizsquad.net:9010'
+    bizServerUri: 'https://manager.bizsquad.net:9010',
+    webJumpBaseUrl: 'https://product.bizsquad.net/auth?token='
 };

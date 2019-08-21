@@ -19,6 +19,7 @@ import { TokenProvider } from '../providers/token/token';
 import { GroupColorProvider } from '../providers/group-color';
 import { HttpClientModule } from '@angular/common/http';
 import { CacheService } from '../providers/cache/cache';
+import { ToastProvider } from '../providers/toast/toast';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { CacheService } from '../providers/cache/cache';
     AlertProvider,
     TokenProvider,
     GroupColorProvider,
-    CacheService
+    CacheService,
+    ToastProvider
   ]
 })
 export class AppModule {}

@@ -90,7 +90,7 @@ export class TabsPage {
         this.bizFire.windowCloseAndUserStatus().then(() => {
             this.bizFire.signOut();
         });
-      })
+      });
     this.bizFire.onUserSignOut.subscribe(()=>{
       this.clear();
     });
@@ -196,7 +196,7 @@ export class TabsPage {
               const item = new Chat(mid, data, this.bizFire.uid, change.payload.doc.ref);
 
               //---------- 껌벅임 테스트 -------------//
-              this.chatRooms[index].data.lastMessage = item.data.lastMessage; // data 만 경신 한다.
+              this.chatRooms[index] = item; // data 만 경신 한다.
               console.log("Type Modified : ",this.chatRooms[index]);
               //-----------------------------------//
 
