@@ -5,11 +5,11 @@
     </button>
     <button ion-button icon-only clear small color="light" (click)="windowHide()">
       <ion-icon class="login-top-menu" name="md-close"></ion-icon>
-    </button> 
+    </button>
   </div>
   <div id="wrapper">
     <ion-img width="90" height="90" alt="logo" [src]="imgPath" style="margin-bottom:20px;"></ion-img>
-    
+
     <form [formGroup]="loginForm">
       <input type="email" [(ngModel)]="userEmail" formControlName="email" placeholder="Email" id="username" />
       <input type="password" formControlName="password" placeholder="Password" id="password" />
@@ -17,14 +17,14 @@
     </form>
     <!-- <div class="textLabel">
       <div class="left">
-        <div class="box"> 
+        <div class="box">
           <label class="txt"><ion-checkbox [(ngModel)]="rememberId"></ion-checkbox><span> Remember me</span></label>
         </div>
       </div>
     </div> -->
     <div id="footer">
       <span class="txt left">New to Bizsquad?</span>
-      <button type="button" class="right txt"><a target="_blank" (click)="ipc.send('loadGH','https://product.bizsquad.net/login/signup');">Sign up</a></button>
+      <button type="button" class="right txt"><a target="_blank" (click)="ipc.send('loadGH','https://product.bizsquad.net/signUp');">Sign up</a></button>
     </div>
   </div>
   <div class="version">

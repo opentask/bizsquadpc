@@ -145,7 +145,7 @@ export class ChatService {
 
       await this.addMessage(text,currentChat.ref,members,files);
 
-      await this.sendPush(Object.keys(members).map(uid=>uid),'',this.convertMessage(fcmText));
+      await this.sendPush(Object.keys(members).map(uid=>uid),this.bizFire.currentUserValue.displayName,this.convertMessage(fcmText));
 
     }
 
