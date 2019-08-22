@@ -33,7 +33,7 @@ export class TokenProvider {
       });
     }
 
-    getToken(uid) {
+    async getToken(uid) {
       return new Promise<string>(async resolve => {
         const path = `${environment.bizServerUri}/customToken`;
         const header = await this.idTokenHeader();
@@ -41,7 +41,7 @@ export class TokenProvider {
           uid: uid
         };
         if(uid != null) {
-          this.http.post(path,body,{headers: header}).subscribe((res: any) => {
+          await this.http.post(path,body,{headers: header}).subscribe((res: any) => {
             if(res.result === true) {
               resolve(res.customToken);
             }
@@ -83,9 +83,6 @@ export class TokenProvider {
         }
         if(type == 'squad') {
           this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=squad/${gid}/${sid}`);
-        }
-        if(type == 'notify') {
-
         }
         this.loading.hide();
       }).catch(err => {

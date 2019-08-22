@@ -5,11 +5,15 @@ import { AlertController } from 'ionic-angular';
 import { Electron } from '../electron/electron';
 import {NotificationService} from "../notification.service";
 import {INotificationItem} from "../../_models";
+import {TokenProvider} from "../token/token";
+import {take} from "rxjs/operators";
 
 @Injectable()
 export class AlertProvider {
 
   private ipc: any;
+
+  private langPack = {};
 
   constructor(
     public alertCtrl: AlertController,
@@ -17,71 +21,68 @@ export class AlertProvider {
     public electron : Electron,
     public bizFire : BizFireService,
     private noticeService : NotificationService,
+    private   tokenService : TokenProvider
     ) {
       this.ipc = this.electron.ipc;
+
+      this.bizFire.onLang
+        .pipe(take(1))
+        .subscribe(l => {
+          this.langPack = l.pack();
+        });
     }
 
-  showAlert(title,text) {
+  successEditProfile() {
     const alert = this.alertCtrl.create({
-      title: title,
-      subTitle: text,
-      buttons: ['OK']
+      title: this.langPack['success'],
+      subTitle: this.langPack['profile_update_success'],
+      buttons: [this.langPack['ok']]
     });
     alert.present();
   }
 
-  groupInviteAlert(title,text,msg : INotificationItem) {
+  groupInviteAlert(msg : INotificationItem) {
     const alert = this.alertCtrl.create({
-      title: title,
-      message: text,
+      title: this.langPack['invitation'],
+      message: this.langPack['invitation_confirm'],
       buttons: [
         {
-          text: 'Cancel',
+          text: this.langPack['cancel'],
           role: 'cancel',
         }, {
-          text: 'Accept',
+          text: this.langPack['accept'],
           handler: () => {
             // 여기에 그룹 승인 함수
             this.noticeService.acceptInvitation(msg.data).then(() => {
 
               this.noticeService.deleteNotification(msg);
 
-              this.ipc.send('loadGH',msg.html.link[0]);
+              this.noticeService.onClickNotifyContents(msg);
             })
           }
         }
       ]
-    })
-    alert.present();
-  }
-
-
-  logoutSelectUser() {
-    const alert = this.alertCtrl.create({
-      title: 'info',
-      subTitle: 'Your opponent is not online.',
-      buttons: ['OK']
     });
     alert.present();
   }
 
-  VideoCall(){
+  deleteInviteAlert(msg : INotificationItem) {
     const alert = this.alertCtrl.create({
-      title: 'Video Call',
-      message: 'Someone made a video call to you.',
+      title: this.langPack['deiete_invitation'],
+      message: this.langPack['notice_delete_confirm_test'],
       buttons: [
         {
-          text: 'Cancel',
+          text: this.langPack['cancel'],
           role: 'cancel',
         }, {
-          text: 'Connect',
+          text: this.langPack['delete'],
           handler: () => {
-            this.electron.openVedioRoom();
+              this.noticeService.deleteNotification(msg);
           }
         }
       ]
-    })
-    return alert.present();
+    });
+    alert.present();
   }
 
   leaveRoomAlert(uid,gid,cid){

@@ -7,6 +7,12 @@ page-menu {
         line-height: 2.5;
         cursor: pointer;
     }
+    .notify-type {
+      display: inline-block;
+      margin-right: 3px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
     .group-list-item{
         padding-left: 0px !important;
         width: 45px !important;
@@ -45,7 +51,7 @@ page-menu {
     .item-md {
         background-color: #f6f6f6;
     }
-    
+
     .isListShown-item{
         text-align: center;
     }
@@ -104,7 +110,7 @@ page-menu {
         float: right;
     }
 
-    /* -------------------------------- 
+    /* --------------------------------
 
     timeLine Design
 
@@ -140,11 +146,11 @@ page-menu {
     .marginBottom5{
         margin-bottom: 5px !important;
     }
-    
-    /* -------------------------------- 
-    
+
+    /* --------------------------------
+
     Modules - reusable parts of our design
-    
+
     -------------------------------- */
     .cd-container {
         /* this class is used to give a max-width to the element it is applied to, and center it horizontally when it reaches that max-width */
@@ -163,11 +169,11 @@ page-menu {
         font-weight: 500;
         text-transform: capitalize;
     }
-    
-    /* -------------------------------- 
-    
-    Main components 
-    
+
+    /* --------------------------------
+
+    Main components
+
     -------------------------------- */
     .timelineText {
         color: black;
@@ -196,7 +202,7 @@ page-menu {
         width: 3px;
         background: #aaa;
     }
-    
+
     .cd-timeline-block {
         position: relative;
         margin: 2em 0;
@@ -212,7 +218,7 @@ page-menu {
     .cd-timeline-block:last-child {
         margin-bottom: 0;
     }
-    
+
     .cd-timeline-icon {
         position: absolute;
         top: 0;
@@ -248,7 +254,7 @@ page-menu {
         position: absolute;
         border-radius: 50%;
     }
-    
+
     .cd-timeline-content {
         position: relative;
         margin-left: 50px;
@@ -265,7 +271,7 @@ page-menu {
     .new-notify {
         color : #3f51b5;
     }
-    
+
     .cd-timeline-content:after {
         content: "";
         display: table;
@@ -285,8 +291,8 @@ page-menu {
         margin: 1em 0;
         line-height: 1.6;
     }
-    
-    
+
+
     .cd-timeline-content::before {
         content: '';
         position: absolute;
@@ -297,7 +303,7 @@ page-menu {
         border-right: 7px solid white;
         border-right-color: inherit;
     }
-    
+
     /*COLORS*/
     /*POSITIVE*/
     .positive {
@@ -355,7 +361,7 @@ page-menu {
     .white i {
         color: #fff;
     }
-    
+
     @media only screen and (min-width: 768px) {
         .cd-timeline-content h2 {
         font-size: 20px;
@@ -369,5 +375,5 @@ page-menu {
         font-size: 14px;
         font-size: 0.875rem;
         }
-    }  
+    }
 }

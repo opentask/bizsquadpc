@@ -6,7 +6,6 @@ export class ToastProvider {
 
   isToastPresent:boolean=false;
 
-
   constructor(private toastCtrl: ToastController) { }
 
   presentToast(text) {

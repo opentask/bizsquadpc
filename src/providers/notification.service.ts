@@ -14,6 +14,8 @@ import { CacheService } from './cache/cache';
 import {environment} from "../environments/environments";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {IAlarmConfig, IBizGroup, INotification, INotificationData, INotificationItem} from "../_models";
+import {Token} from "@angular/compiler";
+import {LoadingProvider} from "./loading/loading";
 
 export interface IAlarm {
     all: boolean,
@@ -59,6 +61,7 @@ export class NotificationService {
         private tokenService : TokenProvider,
         private cacheService : CacheService,
         private http: HttpClient,
+        private loading: LoadingProvider,
         public electron: Electron,
         ) {
             this.ipc = this.electron.ipc;
@@ -101,11 +104,7 @@ export class NotificationService {
                     .subscribe((changes : DocumentChangeAction<any>[]) => {
 
                         //save new value
-                        changes.filter(change => {
-                            const data = change.payload.doc.data();
-                            return parseInt(data.version) >= 50;
-                        })
-                        .forEach(change => {
+                        changes.forEach(change => {
                             const data = change.payload.doc.data();
                             const mid = change.payload.doc.id;
 
@@ -146,7 +145,7 @@ export class NotificationService {
                         groupInvite: true,
                         post: true,
                         bbs: true
-                    }
+                    };
                     // and update firebase
                     this.updateAlarmStatus(alarm);
                 } else {
@@ -164,16 +163,51 @@ export class NotificationService {
     }
 
     // Click alarm text. 아직 안씀 보류
-    onClickNotifyContents(msg: INotificationItem) {
+    async onClickNotifyContents(msg: INotificationItem) {
 
-        // 알람 스테이터스 true로 변경.
-        this.bizFire.setReadNotify(msg).then(() => {
-            console.log(msg);
-            // 웹 링크로 이동.
-            this.ipc.send('loadGH',msg.html.link[0]);
-        })
+      this.loading.show();
+      try {
+
+        const token = await this.tokenService.getToken(this.bizFire.uid);
+
+        //invite 알림은 업데이트없이 바로삭제.
+        if(msg.html.link[0] !== 'invite') {
+          await this.bizFire.setReadNotify(msg);
+        }
+
+        await this.makeWebJumpNotify(token,msg.html.link[0],msg.html.link[1],msg.html.link[2]);
+
+        this.loading.hide();
+
+      } catch (e) {
+        this.loading.hide();
+      }
+      // this.tokenService.getToken(this.bizFire.uid).then((token : string) => {
+      //   // 알람 스테이터스 true로 변경.
+      //   this.bizFire.setReadNotify(msg).then(() => {
+      //     console.log(msg);
+      //     // 웹 링크로 이동. 0 : type , 1 : gid , 2 : 필요한 id - sid,mid 등
+      //     this.makeWebJumpNotify(msg.html.link[0],msg.html.link[1],msg.html.link[2]);
+      //   })
+      // });
     }
 
+    async makeWebJumpNotify(token: string,type: string, gid?: string, id?: string) {
+        if(type === 'invite' || type === 'inOut') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=home/${gid}`)
+          // item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
+          // item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
+        }
+        if(type === 'post') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=squad/${gid}/${id}/post`)
+          // item.html.link = [`${this.webUrl}${this.customToken}&url=squad/${data.gid}/${info.sid}/post`];
+        }
+        if(type === 'bbs') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=bbs/${gid}/${id}/read`)
+          // item.html.link = [`${this.webUrl}${this.customToken}&url=bbs/${data.gid}/${data.info.mid}/read`];
+
+        }
+    }
 
     makeHtml(notification: INotification) : Observable<INotificationItem>{
 
@@ -231,9 +265,10 @@ export class NotificationService {
                   }
 
                   // set content
-                  item.html.header = [`${userName}`,`invited you to BizGroup ${team_name}`];
+                  item.html.header = ['[invite]',`${userName}`,`${team_name}`];
                   item.html.content = [`Invitation to ${team_name}`];
-                  item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
+                  item.html.link = ['invite',data.gid];
+                  // item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
 
                   resolve.next(item);
                 });
@@ -282,9 +317,10 @@ export class NotificationService {
                   }
 
                 // set content
-                item.html.header = [`${userName}`, `posted ${info.title}`];
+                item.html.header = ['[post]',`${userName}`, `${info.title}`];
                 item.html.content = [`${info.title}`];
-                item.html.link = [`${this.webUrl}${this.customToken}&url=squad/${data.gid}/${info.sid}/post`];
+                item.html.link = ['post',data.gid,info.sid];
+                // item.html.link = [`${this.webUrl}${this.customToken}&url=squad/${data.gid}/${info.sid}/post`];
 
                 resolve.next(item);
 
@@ -312,11 +348,11 @@ export class NotificationService {
                     }
 
                     // set content
-                    item.html.header = [`${userName}`, `registered a new notice ${title}`];
+                    item.html.header = ['[notice]',`${userName}`, `${title}`];
                     item.html.content = [`${userName} 씨가 새 게시글 등록했다. 보려면 밑에 링크를 클릭하라.`];
-
+                    item.html.link = ['bbs',data.gid,data.info.mid];
                     // second array is a routerLink !
-                    item.html.link = [`${this.webUrl}${this.customToken}&url=bbs/${data.gid}/${data.info.mid}/read`];
+                    // item.html.link = [`${this.webUrl}${this.customToken}&url=bbs/${data.gid}/${data.info.mid}/read`];
 
                     resolve.next(item);
 
@@ -347,6 +383,7 @@ export class NotificationService {
 
                   let team_name;
                   let userName;
+                  let type;
                   if(u != null ){
                     userName = u.data['displayName'] || u.data['email'];
                     item.html.user = u;
@@ -361,9 +398,10 @@ export class NotificationService {
                   }
 
                   // user joined a group.
-                  item.html.header = [`${userName}`, `joined ${team_name}`];
+                  item.html.header = ['[InOut]',`${userName}`, `${team_name} - ${userName}`];
                   item.html.content = [`${userName} joined BizGroup ${team_name}`];
-                  item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
+                  item.html.link = ['inOut',data.gid];
+                  // item.html.link = [`${this.webUrl}${this.customToken}&url=home/${data.gid}`];
 
                   resolve.next(item);
 

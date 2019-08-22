@@ -1072,10 +1072,15 @@ export const language = {
         "en": "This operation is sensitive and requires recent authentication. Login again before retrying this request.",
         "ja": "パスワードは保安のため、再度ログインが必要です。ログイン画面に移動でします？"
       }
-      ,"update_success": {
-        "ko": "갱신완료",
+      ,"success": {
+        "ko": "완료",
+        "en": "complete",
+        "ja": "完了"
+      }
+      ,"profile_update_success": {
+        "ko": "프로필이 업데이트 되었습니다.",
         "en": "Update finished successfully",
-        "ja": "更新されました。"
+        "ja": "プロファイルが更新されました。"
       }
 
     },
@@ -1170,6 +1175,11 @@ export const language = {
         "ko": "초대승인",
         "en": "Invitation Accepted.",
         "ja": "招待を承諾しました。"
+      }
+      ,"deiete_invitation": {
+        "ko": "초대삭제",
+        "en": "Delete Invitation.",
+        "ja": "通知削除"
       }
       ,"notice_deleted": {
         "ko": "삭제했습니다",

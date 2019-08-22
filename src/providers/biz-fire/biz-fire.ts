@@ -398,13 +398,13 @@ export class BizFireService {
     })
   }
 
-  setReadNotify(item : INotificationItem): Promise<boolean> {
+  async setReadNotify(item : INotificationItem): Promise<boolean> {
     const notification : INotificationData = item.data;
-    return new Promise<boolean>(resolve => {
+    return new Promise<boolean>(async resolve => {
         if(notification.statusInfo != null){
             if(notification.statusInfo.done !== true) {
                 //읽음 상태로 바꾼다.
-                this.afStore.collection(Commons.notificationPath(this.currentUID)).doc(item.mid).update({
+                await this.afStore.collection(Commons.notificationPath(this.currentUID)).doc(item.mid).update({
                     statusInfo: {
                         done: true
                     }

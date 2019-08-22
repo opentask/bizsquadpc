@@ -20,13 +20,14 @@
                       <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(noticeItem)">
                           <p class="cd-author marginTop5 marginBottom5">
                               <span class="from" *ngIf="noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.user.data.displayName}}</span>
-                              <span class="from" *ngIf="!noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[0]}}</span>
+                              <span class="from" *ngIf="!noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[1]}}</span>
                               <span class="created" [ngClass]="{'new-notify': noticeItem.data.statusInfo.done !== true}">
                                 {{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}
                               </span>
                           </p>
                           <p class="timelineText marginBottom5 marginTop5">
-                              {{noticeItem.html.header[0]}} {{noticeItem.html.header[1]}}
+                            <span class="notify-type" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[0]}}</span>
+                            {{noticeItem.html.header[2]}}
                           </p>
                       </div>
                   </div>

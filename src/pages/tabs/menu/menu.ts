@@ -117,15 +117,18 @@ export class MenuPage {
   }
 
   onClickNotifyContents(msg : INotificationItem){
+    //그룹초대 알람일경우 그룹인바이트 함수로. groupInvite(msg)
     if(msg.data.groupInvite !== true) {
       this.noticeService.onClickNotifyContents(msg);
     }
   }
 
   groupInvite(msg) {
+    this.alertCtrl.groupInviteAlert(msg);
+  }
 
-    this.alertCtrl.groupInviteAlert('Accept Invitation','Are you sure you want to join this group?',msg);
-
+  onDelete(msg) {
+    this.alertCtrl.deleteInviteAlert(msg);
   }
 
   toggleList() {

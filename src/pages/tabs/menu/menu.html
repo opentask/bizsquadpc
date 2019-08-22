@@ -1,4 +1,4 @@
-<ion-content no-padding class="content-color">
+<ion-content no-padding no-bounce class="content-color">
   <ion-list class="listHeight" [ngClass]="{'listHeightAuto': !isListShown}">
     <ion-item class="group-list-item" no-lines (click)="showAllNotify()">
       <ion-avatar class="all_notify_button" item-start>
@@ -21,7 +21,7 @@
       </ng-container>
     </ng-container>
   </ion-list>
-  
+
    <section id="cd-timeline" class="cd-container">
        <button class="isListShown-button" ion-button color="dark" clear icon-only (click)="toggleList()">
            <ion-icon [name]="isListShown ? 'ios-arrow-down' : 'ios-arrow-up'"></ion-icon>
@@ -45,16 +45,18 @@
                 <div class="cd-timeline-content padding white" (click)="onClickNotifyContents(msg)">
                   <p class="cd-author marginTop5 marginBottom5">
                       <span class="from" *ngIf="noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.user.data.displayName}}</span>
-                      <span class="from" *ngIf="!noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[0]}}</span>
+                      <span class="from" *ngIf="!noticeItem.html.user" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[1]}}</span>
                       <span class="created" [ngClass]="{'new-notify': noticeItem.data.statusInfo.done !== true}">
                         {{noticeItem.data.created | timestampToDate | date: 'MM/dd HH:mm'}}
                       </span>
                   </p>
                   <p class="timelineText marginBottom5 marginTop5">
-                      {{noticeItem.html.header[0]}} {{noticeItem.html.header[1]}}
+                    <span class="notify-type" [style.color]="noticeItem.html.groupColor">{{noticeItem.html.header[0]}}</span>
+                    {{noticeItem.html.header[2]}}
                   </p>
                   <div *ngIf="msg.data.groupInvite === true">
                     <button ion-button color="secondary" clear small (click)="groupInvite(msg)">Accept</button>
+                    <button class="ml-auto" ion-button color="danger" clear small (click)="onDelete(msg)">Delete</button>
                   </div>
                 </div>
               </div>
@@ -66,5 +68,5 @@
 <div class="noNotify" *ngIf="noNotify">
     <img src="imgs/none_alarm.svg">
     <p>No new notifications</p>
-</div> 
+</div>
 

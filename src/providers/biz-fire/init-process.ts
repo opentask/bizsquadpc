@@ -40,9 +40,7 @@ export class InitProcess {
             emailVerified: emailVerified,
             providerId: providerData.map(data=>data.providerId),
             // set default data:
-            status: {
-                use: true
-            },
+            status: true,
             language: 'en',
             version: 'v2'
         };
