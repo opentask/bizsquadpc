@@ -231,6 +231,11 @@ export const language = {
         "en": "Partner",
         "ja": "パートナー"
       }
+      ,"longText": {
+        "ko": "1000자 내로 입력해주세요.",
+        "en": "enter less than 1000 characters",
+        "ja": "1000文字以内で入力してください"
+      }
       ,"create_chat_room": {
         "ko": "채팅방을 개설하였습니다.",
         "en": "The chat room has been created.",

@@ -11,7 +11,7 @@ import { Observable, timer } from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
 import {IChat, IMessage, IMessageData} from "../../../../_models/message";
 import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../_models";
-import {takeUntil} from "rxjs/operators";
+import {debounceTime, takeUntil} from "rxjs/operators";
 import {LangService} from "../../../../providers/lang-service";
 import {Chat} from "../../../../biz-common/chat";
 import {BizGroupBuilder} from "../../../../biz-common/biz-group";
@@ -80,6 +80,17 @@ export class SquadChatPage {
           ])]
         }
       );
+      this.chatForm.get('chat').valueChanges
+        .pipe(debounceTime(300))
+        .subscribe((value: string) => {
+          value = value.trim();
+          //console.log(value);
+          if(value.length > this.maxChatLength){
+            this.chatLengthError = `${this.langPack['longText']} (${value.length}/${this.maxChatLength})`;
+          } else {
+            this.chatLengthError = null;
+          }
+      });
 
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){

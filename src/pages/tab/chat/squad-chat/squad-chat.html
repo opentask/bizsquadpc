@@ -124,11 +124,12 @@
       </div>
     </ion-content>
     <ion-footer no-border>
-      <div class="input-menu">
+      <div class="input-menu d-flex justify-content-between align-items-center">
         <button ion-button clear icon-only small color="dark" (click)="fileAttach.click()">
           <ion-icon name="attach"></ion-icon>
         </button>
-        <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
+        <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)" accept="image/jpeg,image/gif,image/png">
+        <span class="chatLengthError" *ngIf="chatLengthError">{{ chatLengthError }} </span>
       </div>
       <div class="input-wrap">
         <form [formGroup]="chatForm">

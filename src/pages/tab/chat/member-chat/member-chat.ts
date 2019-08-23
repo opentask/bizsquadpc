@@ -7,7 +7,7 @@ import { ChatService } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import {map, take, takeUntil} from 'rxjs/operators';
+import {debounceTime, map, take, takeUntil} from 'rxjs/operators';
 import {BehaviorSubject, Observable, timer} from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import {LangService} from "../../../../providers/lang-service";
@@ -85,6 +85,17 @@ export class MemberChatPage {
           ])]
         }
       );
+    this.chatForm.get('chat').valueChanges
+      .pipe(debounceTime(300))
+      .subscribe((value: string) => {
+        value = value.trim();
+        //console.log(value);
+        if(value.length > this.maxChatLength){
+          this.chatLengthError = `${this.langPack['longText']} (${value.length}/${this.maxChatLength})`;
+        } else {
+          this.chatLengthError = null;
+        }
+    });
 
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
@@ -127,7 +138,6 @@ export class MemberChatPage {
 
 
   ngOnInit(): void {
-
 
     this.chatroom = this.navParams.get('roomData');
 
