@@ -129,18 +129,14 @@
           <ion-icon name="attach"></ion-icon>
         </button>
         <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)">
-<!--        <button ion-button clear icon-only small color="dark">-->
-<!--          <ion-icon name="happy"></ion-icon>-->
-<!--        </button>-->
       </div>
       <div class="input-wrap">
-        <textarea id="drag-file"
-                  #chat_input
-                  [(ngModel)]="editorMsg"
-                  (keydown)="keydown($event)">
-        </textarea>
-        <button color="dark" class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)" [disabled]="!editorMsg">
-          send
+        <form [formGroup]="chatForm">
+          <textarea formControlName="chat" (keyup)="keydown($event)">
+          </textarea>
+        </form>
+        <button type="submit" color="dark" class="sendButton" ion-button item-right
+                (click)="sendMsg(chatForm.value.chat)" [disabled]="chatForm.invalid">send
         </button>
       </div>
     </ion-footer>

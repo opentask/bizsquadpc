@@ -192,11 +192,14 @@ page-squad-chat {
           padding: 5px;
           display: flex;
           height: 90px;
+          form {
+            height: 90px;
+            flex: 1;
+          }
           textarea {
             flex: 1;
             border: 0;
-            border-bottom: 1px $userBackgroundColor;
-            border-style: solid;
+            height: 80px;
           }
         }
         .input-menu {

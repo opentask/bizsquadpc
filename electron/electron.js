@@ -129,7 +129,7 @@ function createWindow() {
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.
     win.on('closed', () => {
@@ -259,7 +259,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    testRooms[chatRoomId].webContents.openDevTools();
+    // testRooms[chatRoomId].webContents.openDevTools();
 
     // 창이 닫히면 호출됩니다.f
     testRooms[chatRoomId].on('closed', () => {

@@ -61,8 +61,6 @@ export class MemberChatPage {
   chatForm : FormGroup;
   chatLengthError: string;
 
-  private chatList$: BehaviorSubject<IMessage[]>;
-
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -164,6 +162,7 @@ export class MemberChatPage {
           this.roomCount = this.chatMembers.length;
         }
       });
+
       this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.gid)).valueChanges().subscribe((data : IBizGroupData) => {
         this.groupMainColor = data.team_color;
         // 그룹 탈퇴 당할시 채팅방을 닫는다.
@@ -197,7 +196,7 @@ export class MemberChatPage {
 
     const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
 
-    this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
+    this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(20))
     .get().subscribe(async (snapshots) => {
       if(snapshots && snapshots.docs) {
         this.start = snapshots.docs[snapshots.docs.length - 1];
@@ -221,20 +220,20 @@ export class MemberChatPage {
       .startAt(start))
       .stateChanges().subscribe(changes => {
 
-        // const batch = this.bizFire.afStore.firestore.batch();
+        const batch = this.bizFire.afStore.firestore.batch();
 
         changes.forEach((change : any) => {
           if(change.type === 'added') {
             const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
             this.messages.push(msgData);
-            // this.chatService.setToReadStatus(change.payload.doc, batch);
+            this.chatService.setToReadStatus(change.payload.doc, batch);
             if(!this.chatService.scrollBottom(this.contentArea) && msgData.data.sender !== this.bizFire.uid) {
               this.toastProvider.showToast(this.langPack['new_message']);
             }
           }
         });
 
-        // batch.commit();
+        batch.commit();
 
         // scroll to bottom
         if(this.chatService.scrollBottom(this.contentArea)) {
@@ -251,7 +250,7 @@ export class MemberChatPage {
     const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc')
-    .startAt(this.start).limit(30)).get()
+    .startAt(this.start).limit(20)).get()
     .subscribe((snapshots) => {
       this.end = this.start;
       this.start = snapshots.docs[snapshots.docs.length - 1];
@@ -260,15 +259,15 @@ export class MemberChatPage {
       .startAt(this.start).endBefore(this.end))
       .stateChanges().subscribe((messages) => {
 
-        // const batch = this.bizFire.afStore.firestore.batch();
+        const batch = this.bizFire.afStore.firestore.batch();
 
         messages.reverse().forEach((message) => {
           const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
           this.messages.unshift(msgData);
-          // this.chatService.setToReadStatus(message.payload.doc, batch);
+          this.chatService.setToReadStatus(message.payload.doc, batch);
         });
 
-        // batch.commit();
+        batch.commit();
       });
     })
   }

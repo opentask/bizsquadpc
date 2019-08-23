@@ -6,7 +6,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { STRINGS, Commons } from '../../../../biz-common/commons';
 import { ChatService } from '../../../../providers/chat.service';
-import { IonInfiniteScroll } from '@ionic/angular';
 import { GroupColorProvider } from '../../../../providers/group-color';
 import { Observable, timer } from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
@@ -17,6 +16,7 @@ import {LangService} from "../../../../providers/lang-service";
 import {Chat} from "../../../../biz-common/chat";
 import {BizGroupBuilder} from "../../../../biz-common/biz-group";
 import {ToastProvider} from "../../../../providers/toast/toast";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @IonicPage({
   name: 'page-squad-chat',
@@ -44,6 +44,7 @@ export class SquadChatPage {
   ipc : any;
 
   maxFileSize = 5000000; // max file size = 5mb;
+  maxChatLength = 1000;
 
   start : any;
   end : any;
@@ -51,6 +52,9 @@ export class SquadChatPage {
   loadProgress : number = 0;
 
   langPack : any;
+
+  chatForm : FormGroup;
+  chatLengthError: string;
 
   constructor(
      public navCtrl: NavController,
@@ -63,8 +67,20 @@ export class SquadChatPage {
      private langService : LangService,
      private toastProvider : ToastProvider,
      private loading: LoadingProvider,
+     private fb: FormBuilder,
      public electron: Electron
      ) {
+
+      this.chatForm = fb.group(
+        {
+          'chat': ['', Validators.compose([
+            Validators.required,
+            Validators.maxLength(this.maxChatLength),
+            Validators.minLength(1)
+          ])]
+        }
+      );
+
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
           this.windowClose();
@@ -92,13 +108,17 @@ export class SquadChatPage {
 
   }
 
-  keydown(e : any){
-    if (e.keyCode == 13  ) {
-      if(e.shiftKey === false){
+  keydown(e : any) {
+    if (e.keyCode == 13) {
+      if (e.shiftKey === false) {
         // prevent default behavior
         e.preventDefault();
         // call submit
-          this.sendMsg(e.target.value);
+        let value = e.target.value;
+        value = value.trim();
+        if(value.length > 0){
+          this.sendMsg(value);
+        }
       }
     }
   }
@@ -195,20 +215,20 @@ export class SquadChatPage {
     .startAt(start))
     .stateChanges().subscribe((changes: any[]) => {
 
-      // const batch = this.bizFire.afStore.firestore.batch();
+      const batch = this.bizFire.afStore.firestore.batch();
 
       changes.forEach((change : any) => {
         if(change.type === 'added') {
           const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
           this.messages.push(msgData);
-          // this.chatService.setToReadStatus(change.payload.doc, batch);
+          this.chatService.setToReadStatus(change.payload.doc, batch);
           if(!this.chatService.scrollBottom(this.contentArea) && msgData.data.sender !== this.bizFire.uid) {
             this.toastProvider.showToast(this.langPack['new_message']);
           }
         }
       });
 
-      // batch.commit();
+      batch.commit();
 
       // scroll to bottom
       if(this.chatService.scrollBottom(this.contentArea)) {
@@ -235,15 +255,15 @@ export class SquadChatPage {
       .startAt(this.start).endBefore(this.end))
       .stateChanges().subscribe((messages) => {
 
-        // const batch = this.bizFire.afStore.firestore.batch();
+        const batch = this.bizFire.afStore.firestore.batch();
 
         messages.reverse().forEach((message) => {
           const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
           this.messages.unshift(msgData);
-          // this.chatService.setToReadStatus(message.payload.doc, batch);
+          this.chatService.setToReadStatus(message.payload.doc, batch);
         });
 
-        // batch.commit();
+        batch.commit();
       });
 
       console.log("more_messages",this.messages);
@@ -252,14 +272,15 @@ export class SquadChatPage {
 
 
   sendMsg(value) {
+    let valid = this.chatForm.valid;
 
-    const converterText = Commons.chatInputConverter(value);
-
-    if(converterText){
-      this.contentArea.scrollToBottom(0);
-      this.chatService.addChatMessage(converterText,this.selectSquad);
+    if(valid) {
+      const text = Commons.chatInputConverter(value);
+      if(text.length > 0) {
+        this.chatService.addChatMessage(text,this.selectSquad);
+        this.chatForm.setValue({chat:''});
+      }
     }
-    this.editorMsg = '';
   }
 
   doInfinite(infiniteScroll) {
