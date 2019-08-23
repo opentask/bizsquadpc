@@ -5,6 +5,7 @@ import {IChat, IMessageData} from "../../_models/message";
 import {BizFireService} from "../../providers";
 import {TakeUntil} from "../../biz-common/take-until";
 import {BehaviorSubject} from "rxjs";
+import {Commons} from "../../biz-common/commons";
 
 
 @Component({
@@ -89,6 +90,10 @@ export class LastMessageComponent extends TakeUntil implements OnInit {
 
     }
 
+  }
+
+  removeHtml(text: string): string {
+    return Commons.removeHtmlTag(text);
   }
 
 }

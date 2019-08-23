@@ -1,4 +1,11 @@
 page-squad-chat {
+    .loading-content{
+      background-color: #C9DBE5;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      position: fixed;
+    }
     .progress-Header{
         background-color:#f4f4f4;
         position: relative !important;

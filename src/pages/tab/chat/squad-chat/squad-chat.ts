@@ -30,7 +30,8 @@ import {ToastProvider} from "../../../../providers/toast/toast";
 export class SquadChatPage {
 
   @ViewChild('scrollMe') contentArea: Content;
-  @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+
+  showContent : boolean;
 
   message : string;
   messages : IMessage[] = [];
@@ -61,6 +62,7 @@ export class SquadChatPage {
      private cacheService : CacheService,
      private langService : LangService,
      private toastProvider : ToastProvider,
+     private loading: LoadingProvider,
      public electron: Electron
      ) {
       this.afAuth.authState.subscribe((user: User | null) => {
@@ -104,6 +106,7 @@ export class SquadChatPage {
   ngOnInit(): void {
 
     this.selectSquad = this.navParams.get("roomData");
+    console.log("selectSquadselectSquad",this.selectSquad);
 
     if(this.selectSquad != null) {
       this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
@@ -154,6 +157,7 @@ export class SquadChatPage {
         timer(1500).subscribe(() => {
           this.chatService.fileUploadProgress.next(null);
           this.loadProgress = 0;
+          this.contentArea.scrollToBottom(0);
         })
       } else {
         this.loadProgress = per;
@@ -168,11 +172,20 @@ export class SquadChatPage {
     const msgPath = Commons.chatSquadMsgPath(this.selectSquad.data.gid,this.selectSquad.cid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
-    .get().subscribe((snapshots) => {
+    .get().subscribe(async (snapshots) => {
       if(snapshots && snapshots.docs) {
         this.start = snapshots.docs[snapshots.docs.length - 1];
-        console.log(this.start);
-        this.getNewMessages(msgPath,this.start);
+
+        await this.getNewMessages(msgPath,this.start);
+
+        this.loading.show();
+
+        timer(3000).subscribe(() => {
+          // call ion-content func
+          this.showContent = true;
+          this.contentArea.scrollToBottom(0);
+          this.loading.hide();
+        });
       }
     })
   }
@@ -182,29 +195,24 @@ export class SquadChatPage {
     .startAt(start))
     .stateChanges().subscribe((changes: any[]) => {
 
-      const batch = this.bizFire.afStore.firestore.batch();
+      // const batch = this.bizFire.afStore.firestore.batch();
 
       changes.forEach((change : any) => {
         if(change.type === 'added') {
           const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
           this.messages.push(msgData);
-          this.chatService.setToReadStatus(change.payload.doc, batch);
-          if(!this.chatService.scrollBottom(this.contentArea)) {
+          // this.chatService.setToReadStatus(change.payload.doc, batch);
+          if(!this.chatService.scrollBottom(this.contentArea) && msgData.data.sender !== this.bizFire.uid) {
             this.toastProvider.showToast(this.langPack['new_message']);
           }
         }
-        if(change.type === 'modified') {
-          const msg = this.messages.find(m => m.mid === change.payload.doc.id);
-          if(msg){
-            msg.data = change.payload.doc.data();
-            msg.ref = change.payload.doc.ref;
-          }
-        }
       });
-      batch.commit();
+
+      // batch.commit();
+
       // scroll to bottom
       if(this.chatService.scrollBottom(this.contentArea)) {
-        timer(400).subscribe(() => {
+        timer(100).subscribe(() => {
           // call ion-content func
           this.contentArea.scrollToBottom(0);
         });
@@ -227,15 +235,15 @@ export class SquadChatPage {
       .startAt(this.start).endBefore(this.end))
       .stateChanges().subscribe((messages) => {
 
-        const batch = this.bizFire.afStore.firestore.batch();
+        // const batch = this.bizFire.afStore.firestore.batch();
 
         messages.reverse().forEach((message) => {
           const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
           this.messages.unshift(msgData);
-          this.chatService.setToReadStatus(message.payload.doc, batch);
+          // this.chatService.setToReadStatus(message.payload.doc, batch);
         });
 
-        batch.commit();
+        // batch.commit();
       });
 
       console.log("more_messages",this.messages);

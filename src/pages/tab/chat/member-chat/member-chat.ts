@@ -1,29 +1,28 @@
 import { CacheService } from './../../../../providers/cache/cache';
 import { GroupColorProvider } from './../../../../providers/group-color';
-import { AccountService } from './../../../../providers/account/account';
-import { Component, ViewChild } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { filter, take, takeUntil } from 'rxjs/operators';
-import { AlertProvider } from '../../../../providers/alert/alert';
-import { IonContent } from '@ionic/angular';
-import {Observable, fromEvent, timer} from 'rxjs';
+import {map, take, takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, Observable, timer} from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import {LangService} from "../../../../providers/lang-service";
 import {IChat, IChatData, IMessage, IMessageData} from "../../../../_models/message";
 import {IBizGroupData, IUser, IUserData} from "../../../../_models";
 import {Chat} from "../../../../biz-common/chat";
 import {ToastProvider} from "../../../../providers/toast/toast";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @IonicPage({
   name: 'page-member-chat',
   segment: 'member-chat',
   priority: 'high'
 })
+
 @Component({
   selector: 'page-member-chat',
   templateUrl: 'member-chat.html',
@@ -32,7 +31,8 @@ export class MemberChatPage {
 
   @ViewChild('scrollMe') contentArea: Content;
 
-  editorMsg = '';
+  showContent : boolean;
+
   opacity = 100;
   message : string;
   messages : IMessage[] = [];
@@ -51,14 +51,17 @@ export class MemberChatPage {
   roomCount : number;
   chatTitle = '';
 
-  private scrolled = false;
-
-
   maxFileSize = 5000000; // max file size = 5mb;
+  maxChatLength = 1000;
 
   loadProgress : number = 0;
 
   langPack : any;
+
+  chatForm : FormGroup;
+  chatLengthError: string;
+
+  private chatList$: BehaviorSubject<IMessage[]>;
 
   constructor(
     public navCtrl: NavController,
@@ -72,22 +75,32 @@ export class MemberChatPage {
     private loading: LoadingProvider,
     private cacheService : CacheService,
     private toastProvider : ToastProvider,
-    private langService : LangService
+    private langService : LangService,
+    private fb: FormBuilder
     ) {
+      this.chatForm = fb.group(
+        {
+          'chat': ['', Validators.compose([
+            Validators.required,
+            Validators.maxLength(this.maxChatLength),
+            Validators.minLength(1)
+          ])]
+        }
+      );
+
       this.afAuth.authState.subscribe((user: User | null) => {
         if(user == null){
           this.windowClose();
         }
       });
       // esc 버튼 클릭시 채팅창 닫기. node_module keycode
-      document.addEventListener('keydown', event => {
+      document.addEventListener('keyup', event => {
         if(event.key === 'Escape' || event.keyCode === 27){
           this.electron.windowClose();
         }
       });
 
        this.bizFire.currentUser.subscribe((user : IUserData) => {
-        console.log("useruseruseruser",user);
         if(user) {
           this.langService.onLangMap
             .pipe(takeUntil(this.bizFire.onUserSignOut))
@@ -105,13 +118,18 @@ export class MemberChatPage {
         // prevent default behavior
         e.preventDefault();
         // call submit
-        this.sendMsg(e.target.value);
+        let value = e.target.value;
+        value = value.trim();
+        if(value.length > 0){
+          this.sendMsg(value);
+        }
       }
     }
   }
 
 
   ngOnInit(): void {
+
 
     this.chatroom = this.navParams.get('roomData');
 
@@ -154,6 +172,24 @@ export class MemberChatPage {
     } else {
       this.electron.windowClose();
     }
+
+    this.chatService.fileUploadProgress.subscribe(per => {
+      if(per === 100) {
+
+        // 용량이 작을때 프로그레스 바가 안나오므로..
+        this.loadProgress = per;
+
+        // 1.5초 뒤 값을 초기화한다.
+        timer(1500).subscribe(() => {
+          this.chatService.fileUploadProgress.next(null);
+          this.loadProgress = 0;
+          this.contentArea.scrollToBottom(0);
+        })
+      } else {
+        this.loadProgress = per;
+      }
+      console.log(per);
+    });
   }
 
   // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
@@ -162,48 +198,52 @@ export class MemberChatPage {
     const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
 
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(30))
-    .get().subscribe((snapshots) => {
+    .get().subscribe(async (snapshots) => {
       if(snapshots && snapshots.docs) {
         this.start = snapshots.docs[snapshots.docs.length - 1];
-        this.getNewMessages(msgPath, this.start);
+
+        await this.getNewMessages(msgPath, this.start);
+
+        this.loading.show();
+
+        timer(3000).subscribe(() => {
+          // call ion-content func
+          this.showContent = true;
+          this.contentArea.scrollToBottom(0);
+          this.loading.hide();
+        });
       }
     })
   }
 
   getNewMessages(msgPath,start) {
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
-    .startAt(start))
-    .stateChanges().subscribe((changes: any[]) => {
+      .startAt(start))
+      .stateChanges().subscribe(changes => {
 
-      const batch = this.bizFire.afStore.firestore.batch();
+        // const batch = this.bizFire.afStore.firestore.batch();
 
-      changes.forEach((change: any) => {
-        if(change.type === 'added') {
-          const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
-          this.messages.push(msgData);
-          this.chatService.setToReadStatus(change.payload.doc, batch);
-          if(!this.chatService.scrollBottom(this.contentArea)) {
-            this.toastProvider.showToast(this.langPack['new_message']);
+        changes.forEach((change : any) => {
+          if(change.type === 'added') {
+            const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
+            this.messages.push(msgData);
+            // this.chatService.setToReadStatus(change.payload.doc, batch);
+            if(!this.chatService.scrollBottom(this.contentArea) && msgData.data.sender !== this.bizFire.uid) {
+              this.toastProvider.showToast(this.langPack['new_message']);
+            }
           }
-        }
-        if(change.type === 'modified') {
-          const msg = this.messages.find(m => m.mid === change.payload.doc.id);
-          if(msg){
-            msg.data = change.payload.doc.data();
-            msg.ref = change.payload.doc.ref;
-          }
-        }
-      });
-      batch.commit();
-      // scroll to bottom
-      if(this.chatService.scrollBottom(this.contentArea)) {
-        timer(400).subscribe(() => {
-          // call ion-content func
-          this.contentArea.scrollToBottom(0);
         });
-      }
-    });
 
+        // batch.commit();
+
+        // scroll to bottom
+        if(this.chatService.scrollBottom(this.contentArea)) {
+          timer(100).subscribe(() => {
+            // call ion-content func
+            this.contentArea.scrollToBottom(0);
+          });
+        }
+    });
   }
 
   getMoreMessages() {
@@ -220,38 +260,36 @@ export class MemberChatPage {
       .startAt(this.start).endBefore(this.end))
       .stateChanges().subscribe((messages) => {
 
-        const batch = this.bizFire.afStore.firestore.batch();
+        // const batch = this.bizFire.afStore.firestore.batch();
 
         messages.reverse().forEach((message) => {
           const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
           this.messages.unshift(msgData);
-          this.chatService.setToReadStatus(message.payload.doc, batch);
+          // this.chatService.setToReadStatus(message.payload.doc, batch);
         });
 
-        batch.commit();
+        // batch.commit();
       });
-
-      console.log("more_messages",this.messages);
     })
   }
 
   sendMsg(value) {
-    const converterText = Commons.chatInputConverter(value);
+    let valid = this.chatForm.valid;
 
-    if(converterText) {
-      this.contentArea.scrollToBottom(0);
-      this.chatService.addChatMessage(converterText,this.chatroom);
+    if(valid) {
+      const text = Commons.chatInputConverter(value);
+      if(text.length > 0) {
+        this.chatService.addChatMessage(text,this.chatroom);
+        this.chatForm.setValue({chat:''});
+      }
     }
-    this.editorMsg = '';
   }
 
   doInfinite(infiniteScroll) {
-    console.log('Begin async operation');
 
     setTimeout(() => {
       this.getMoreMessages();
 
-      console.log('Async operation has ended');
 
       infiniteScroll.complete();
     }, 500);
@@ -284,14 +322,6 @@ export class MemberChatPage {
   getUserObserver(msg: IMessageData): Observable<IUser>{
     if(!msg.isNotice) {
       return this.cacheService.userGetObserver(msg.sender);
-    }
-  }
-
-  scrollToBottom(num : number) {
-    if (this.contentArea.scrollToBottom) {
-      setTimeout(() => {
-        this.contentArea.scrollToBottom(0);
-      },num);
     }
   }
 

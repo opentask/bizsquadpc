@@ -186,6 +186,26 @@ export const language = {
         "en": "Members",
         "ja": "メンバー"
       },
+      "translate": {
+        "ko": "번역",
+        "en": "Translate",
+        "ja": "翻訳"
+      },
+      "conference": {
+        "ko": "회의실",
+        "en": "Conference",
+        "ja": "会議室"
+      },
+      "task": {
+        "ko": "업무일지",
+        "en": "Tasklog",
+        "ja": "業務日誌"
+      },
+      "workflow": {
+        "ko": "전자결제",
+        "en": "Workflow",
+        "ja": "電子決済"
+      },
       "squad": {
         "ko": "스쿼드",
         "en": "Squad",

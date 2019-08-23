@@ -128,10 +128,6 @@ export class SquadPage {
         takeUntil(this._unsubscribeAll))
     .subscribe(([userData, squadList]) => {
         if(userData.gid === this.currentBizGroup.gid){
-            squadList.forEach(squad =>{
-                const newData = squad.data;
-                newData["member_count"] = Object.keys(squad.data.members).length;
-            })
             this.updateShelf(userData, squadList);
         }
     });
@@ -206,7 +202,7 @@ export class SquadPage {
 
   onSquadChat(ev,squad : IChat) {
     ev.stopPropagation();
-    const cutRefValue = {sid: squad.cid, data: squad.data};
+    const cutRefValue = {cid: squad.cid, data: squad.data};
     console.log(squad);
     this.electron.openChatRoom(cutRefValue);
   }
@@ -232,6 +228,15 @@ export class SquadPage {
 
     this.bizFire.afStore.doc(path).set(this.userCustomData.data, {merge: true});
 
+  }
+
+  memberCount(squad : IChat) : number {
+    if(squad.data.agile) {
+      return Object.keys(squad.data.members).length;
+    }
+    if(squad.data.general) {
+      return squad.isPublic() ? this.generalMembers : Object.keys(squad.data.members).length;
+    }
   }
 
   ngOnDestroy(): void {

@@ -45,53 +45,51 @@
   <div class="appSelectArea">
     <span>{{ langPack['taskbox'] }}</span>
         <ul>
-            <li>
-                <button id="extMember" (click)="tokenService.makeWebJump('member',group.gid)">
-                    <img src="imgs/member.svg">
-                    <span class="title">{{ langPack['members'] }}</span>
-                </button>
-            </li>
-            <li>
-                <button id="extBbs" [disabled]="isPartner" (click)="tokenService.makeWebJump('bbs',group.gid)">
-                    <img src="imgs/notice.svg">
-                    <span class="title">{{ langPack['BBS'] }}</span>
-                </button>
-            </li>
-            <li>
-                <button [disabled]="!manager" (click)="tokenService.makeWebJump('property',group.gid)">
-                    <img src="imgs/setting.svg">
-                    <span class="title">{{ langPack['property'] }}</span>
-                </button>
-            </li>
             <!-- 현재 없는 기능이므로 기능 추가시 주석 해제 후 추가 -->
             <li>
-                <!-- <button id="plusTaskbox">
-                    <img style="margin-top: 0 !important" src="imgs/plus.svg">
-                </button> -->
+              <button (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
+                <img src="imgs/translate.svg">
+                <span class="title">{{ langPack['translate'] }}</span>
+              </button>
             </li>
             <li>
-                <!-- <button disabled id="extApproval">
-                    <img src="imgs/approval.svg">
-                    <span class="title">Apporoval</span>
-                </button> -->
+              <button [disabled]="isPartner" (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
+                <img src="imgs/approval.svg">
+                <span class="title">{{ langPack['conference'] }}</span>
+              </button>
             </li>
             <li>
-                <!-- <button disabled id="extStorage">
-                    <img src="imgs/cloud.svg">
-                    <span class="title">Storage</span>
-                </button> -->
+              <button (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
+                <img src="imgs/document.svg">
+                <span class="title">{{ langPack['task'] }}</span>
+              </button>
             </li>
             <li>
-                <!-- <button disabled id="extEstablishment">
-                    <img src="imgs/establishment.svg">
-                    <span class="title">establishment</span>
-                </button> -->
+              <button (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
+                <img src="imgs/mail.svg">
+                <span class="title long-title">{{ langPack['workflow'] }}</span>
+              </button>
+            </li>
+
+            <li>
+              <button (click)="tokenService.makeWebJump('member',group.gid)">
+                <img src="imgs/member.svg">
+                <span class="title">{{ langPack['members'] }}</span>
+              </button>
             </li>
             <li>
-                <!-- <button disabled id="extDocument">
-                    <img src="imgs/document.svg">
-                    <span class="title">Document</span>
-                </button> -->
+              <button [disabled]="isPartner" (click)="tokenService.makeWebJump('bbs',group.gid)">
+                <img src="imgs/notice.svg">
+                <span class="title">{{ langPack['BBS'] }}</span>
+              </button>
+            </li>
+            <li>
+              <button [disabled]="!manager" (click)="tokenService.makeWebJump('property',group.gid)">
+                <img src="imgs/setting.svg">
+                <span class="title">{{ langPack['property'] }}</span>
+              </button>
+            </li>
+            <li>
             </li>
         </ul>
     </div>

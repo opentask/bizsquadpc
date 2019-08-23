@@ -69,6 +69,9 @@ export class TokenProvider {
     makeWebJump(type: string,gid?:string,sid?:string) {
       this.loading.show();
       this.getToken(this.bizFire.uid).then((token : string) => {
+        if(type === 'serviceinfo') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=serviceinfo`);
+        }
         if(type === 'member'){
           this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=home/${gid}/users`);
         }

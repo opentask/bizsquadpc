@@ -9,7 +9,7 @@ import {Commons, STRINGS} from '../biz-common/commons';
 
 import {LangService} from "./lang-service";
 import {takeUntil} from "rxjs/operators";
-import {IChat, IChatData, IFiles, IMessageData} from "../_models/message";
+import {IChat, IChatData, IFiles, IMessage, IMessageData} from "../_models/message";
 import {IUser} from "../_models";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../environments/environments";
@@ -128,25 +128,20 @@ export class ChatService {
         }
     }
 
-    async addChatMessage(text: string, currentChat: IChat, files?: File[]){
+    async addChatMessage(text: string, currentChat: IChat, files?: File[]) {
+
       if(currentChat.ref == null) {
         console.error('addChatMessage', currentChat);
         throw new Error('currentChat.ref is null.');
       }
-      let fcmText = '';
-
-      if(files && files.length > 0) {
-          fcmText = files[0].name;
-      } else {
-        fcmText = text;
-      }
 
       const members = currentChat.isPublic() ? this.bizFire.currentBizGroup.data.members : currentChat.data.members;
 
-      await this.addMessage(text,currentChat.ref,members,files);
+      const msg = await this.addMessage(text,currentChat.ref,members,files);
 
-      await this.sendPush(Object.keys(members).map(uid=>uid),this.bizFire.currentUserValue.displayName,this.convertMessage(fcmText));
+      this.sendPush(Commons.memberUID(members),this.bizFire.currentUserValue.displayName,this.convertMessage(text));
 
+      return msg;
     }
 
     async addMessage(text: string,parentRef: any,unreadMembers : any,
@@ -177,6 +172,7 @@ export class ChatService {
               membersUids.push(uid);
           })
         }
+
         const newChatRef = parentRef.collection('chat').doc();
 
         if(files && files.length > 0) {
@@ -188,6 +184,8 @@ export class ChatService {
             const storagePath = `${storageChatPath}/${mid}/${file.name}`;
             const storageRef = this.bizFire.afStorage.storage.ref(storagePath);
             const fileSnapshot = await storageRef.put(file);
+
+            this.fileUploadProgress.next(fileSnapshot.bytesTransferred / fileSnapshot.totalBytes * 100);
 
             // get download url
             const downloadUrl = await fileSnapshot.ref.getDownloadURL();
@@ -204,13 +202,13 @@ export class ChatService {
         }
         await newChatRef.set(msg);
 
-        if(saveLastMessage === true) {
-          await parentRef.set({
-            lastMessage: msg.message,
-            lastMessageTime: new Date(),
-          }, {merge: true});
-        }
-        return newChatRef.id;
+        // if(saveLastMessage === true) {
+        //   await parentRef.set({
+        //     lastMessage: msg.message,
+        //     lastMessageTime: new Date(),
+        //   }, {merge: true});
+        // }
+        return {mid: newChatRef.id, data: msg} as IMessage;;
       } catch (e) {
         console.log('addMessage',e,text);
         return null;
@@ -287,11 +285,8 @@ export class ChatService {
 
         const payload = {
           notification: {
-            click_action : "FCM_PLUGIN_ACTIVITY",
             title: msgTitle,
             body: msgBody,
-            badge: "1",
-            sound:"default",
           }
         };
 
@@ -304,12 +299,10 @@ export class ChatService {
           .subscribe((result: any) => {
             console.log(result);
             resolve(result);
-            if(result.ok){
-
-            } else {
-
-            }
-          });
+          },(error => {
+            console.error("sendPush error",error);
+            resolve(null);
+          }));
       });
     }
 
@@ -332,7 +325,7 @@ export class ChatService {
       const height = contentArea.scrollHeight; // 내 화면에 보이지 않는 내용을 포함한 내용 높이.
       const offset = contentArea.contentHeight; // 현재 보이는 높이.
 
-      return 100 > height - (top + offset);
+      return 150 > height - (top + offset);
     }
 
     onNotification(msg){

@@ -15,7 +15,7 @@ import {filter, map} from "rxjs/operators";
   templateUrl: 'chat-room.html'
 })
 
-export class ChatRoomComponent extends TakeUntil{
+export class ChatRoomComponent extends TakeUntil {
 
   myId : string;
 

@@ -10,10 +10,9 @@ export class LoadingProvider {
   // Show the loading indicator.
   public show(): void {
     if (!this.loading) {
-      let options = environment.loading;
       this.loading = this.loadingCtrl.create({
         spinner: 'ios',
-        showBackdrop: true,
+        showBackdrop: false,
       });
       this.loading.present();
     }
@@ -26,5 +25,6 @@ export class LoadingProvider {
       this.loading = null;
     }
   }
+
 
 }

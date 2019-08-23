@@ -96,6 +96,14 @@ export class Commons {
         return `${STRINGS.USERS}/${uid}`;
       }
 
+      static memberUID(members: any): string[] {
+        if(members){
+          return Object.keys(members).filter(uid => members[uid] === true).map(uid => uid);
+        } else {
+          throw new Error('member is null');
+        }
+      }
+
       // /works : some invite actions
       static userInfoSorter(a: IUser, b: IUser): number {
         let index = 0;
@@ -179,6 +187,24 @@ export class Commons {
             read[uid] = {unread: uid !== myUid, read: uid === myUid ? new Date(): null};
           });
         return read;
+      }
+
+
+      static removeHtmlTag(text: string): string {
+        let ret: string;
+        if(text != null && text.length > 0){
+
+          /* replace <br> to '\n'
+          if(ret.indexOf('<br>') !== -1){
+            // replace \n
+            ret = ret.split('<br>').join('\n');
+          }
+           */
+
+          // remove tags.
+          ret = text.replace(/<[^>]+>/gm, '');
+        }
+        return ret;
       }
 
 }

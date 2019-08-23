@@ -36,6 +36,7 @@
   </ion-header>
 
    <ion-content #scrollMe>
+      <div *ngIf="!showContent" class="loading-content"></div>
       <div class="message-wrap">
         <ion-infinite-scroll position="top" (ionInfinite)="doInfinite($event)" *ngIf="messages.length >= 30">
           <ion-infinite-scroll-content loadingText="Loading more chats..."></ion-infinite-scroll-content>

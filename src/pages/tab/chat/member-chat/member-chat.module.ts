@@ -4,6 +4,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { MemberChatPage } from './member-chat';
 import { PipesModule } from '../../../../pipes/pipes.module';
 import {ComponentsModule} from "../../../../components/components.module";
+import { FormsModule,ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -13,6 +14,8 @@ import {ComponentsModule} from "../../../../components/components.module";
     IonicPageModule.forChild(MemberChatPage),
     PipesModule,
     ComponentsModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [
     AccountService

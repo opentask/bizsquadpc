@@ -35,6 +35,7 @@
   <progress-bar [progress]="loadProgress"></progress-bar>
 </ion-header>
  <ion-content #scrollMe>
+      <div *ngIf="!showContent" class="loading-content"></div>
       <div class="message-wrap">
         <ion-infinite-scroll position="top" (ionInfinite)="doInfinite($event)" *ngIf="messages.length >= 30">
           <ion-infinite-scroll-content loadingText="Loading more chats..."></ion-infinite-scroll-content>
@@ -89,7 +90,6 @@
               </div>
 
               <div class="msg-content" *ngIf="msg.data.message.files == null">
-                <span class="triangle" *ngIf="msg.data.sender == this.bizFire.uid"></span>
                 <p class="line-breaker textdrag" [innerHtml]="msg.data.message.text | sanitizingHtml"></p>
                 <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">
                   <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
@@ -104,7 +104,6 @@
                     </button>
                     <img class="msg-img" [src]="file.url">
 
-                    <span class="triangle" *ngIf="!file && msg.data.sender == this.bizFire.uid"></span>
                     <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">
                       <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>
                     </div>
@@ -119,26 +118,21 @@
         </div>
       </div>
   </ion-content>
-  <ion-footer no-border>
-    <div class="input-menu">
-      <button ion-button clear icon-only small color="dark" (click)="fileAttach.click()">
-        <ion-icon name="attach"></ion-icon>
-      </button>
-      <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)" accept="image/jpeg,image/gif,image/png">
-<!--      <button ion-button clear icon-only small color="dark">-->
-<!--        <ion-icon name="happy"></ion-icon>-->
-<!--      </button>-->
-      <!-- <button *ngIf="roomCount === 2" ion-button clear icon-only small color="dark" style="position: absolute; right:5px">
-        <ion-icon name="videocam"></ion-icon>
-      </button>  -->
-    </div>
-    <div class="input-wrap">
-      <textarea id="drag-file"
-                [(ngModel)]="editorMsg"
-                (keydown)="keydown($event)">
+<ion-footer no-border>
+  <div class="input-menu">
+    <button ion-button clear icon-only small color="dark" (click)="fileAttach.click()">
+      <ion-icon name="attach"></ion-icon>
+    </button>
+    <input #fileAttach type="file" style="display: none;" #fileAttach (change)="file($event)" accept="image/jpeg,image/gif,image/png">
+  </div>
+  <div class="input-wrap">
+    <form [formGroup]="chatForm">
+      <textarea formControlName="chat" (keyup)="keydown($event)">
       </textarea>
-      <button color="dark" class="sendButton" ion-button item-right (click)="sendMsg(editorMsg)" [disabled]="!editorMsg">
-        send
-      </button>
-    </div>
-  </ion-footer>
+    </form>
+    <button type="submit" color="dark" class="sendButton" ion-button item-right
+            (click)="sendMsg(chatForm.value.chat)" [disabled]="chatForm.invalid">send
+    </button>
+  </div>
+</ion-footer>
+

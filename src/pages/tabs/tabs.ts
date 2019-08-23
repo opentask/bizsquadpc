@@ -187,7 +187,7 @@ export class TabsPage {
         if(change.type === 'added') {
           const item = new Chat(mid, data, this.bizFire.uid, change.payload.doc.ref);
           this.chatRooms.push(item);
-          this.unreadCounter.register(mid, change.payload.doc.ref);
+          // this.unreadCounter.register(mid, change.payload.doc.ref);
 
         } else if(change.type === 'modified') {
           for(let index = 0 ; index < this.chatRooms.length; index ++){

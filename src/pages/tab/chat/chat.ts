@@ -46,7 +46,6 @@ export class ChatPage extends TakeUntil{
     private squadService: SquadService,
     public popoverCtrl :PopoverController,
     public groupColorProvider: GroupColorProvider,
-    private langService: LangService
     ) {
       super();
   }
@@ -70,13 +69,19 @@ export class ChatPage extends TakeUntil{
     this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
     this.group = this.bizFire.onBizGroupSelected.getValue();
 
-
     // 멤버 채팅방
     this.chatService.onChatRoomListChanged
     .pipe(filter(d=>d!=null),this.takeUntil)
     .subscribe((rooms : IChat[]) => {
 
       console.log("룸데이터변경",rooms);
+
+      rooms.forEach(r => {
+        const newData = r.data;
+        if(!r.data.lastMessageTime) {
+          newData['lastMessageTime'] = 1;
+        }
+      });
 
       this.chatRooms = rooms.sort((a,b): number => {
         if(a.data.lastMessageTime && b.data.lastMessageTime) {
@@ -85,8 +90,6 @@ export class ChatPage extends TakeUntil{
           return 0;
         }
       });
-
-
     });
 
     // 스쿼드 채팅방
@@ -138,6 +141,7 @@ export class ChatPage extends TakeUntil{
     this.chatService.onSelectChatRoom.next(value);
     this.electron.openChatRoom(cutRefValue);
   }
+
   gotoSquadRoom(value : IChat){
     const cutRefValue = {cid: value.cid, data: value.data};
     console.log(cutRefValue);
