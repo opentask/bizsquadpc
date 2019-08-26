@@ -54,19 +54,19 @@
             </li>
             <li>
               <button [disabled]="isPartner" (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
-                <img src="imgs/approval.svg">
+                <img class="circle_icon circle_meeting" src="imgs/meeting_room.svg">
                 <span class="title">{{ langPack['conference'] }}</span>
               </button>
             </li>
             <li>
               <button (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
-                <img src="imgs/document.svg">
+                <img class="circle_icon circle_work" src="imgs/work.svg">
                 <span class="title">{{ langPack['task'] }}</span>
               </button>
             </li>
             <li>
               <button (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
-                <img src="imgs/mail.svg">
+                <img class="circle_icon circle_workflow" src="imgs/insert_drive_file.svg">
                 <span class="title long-title">{{ langPack['workflow'] }}</span>
               </button>
             </li>

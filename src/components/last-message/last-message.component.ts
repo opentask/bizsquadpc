@@ -64,9 +64,6 @@ export class LastMessageComponent extends TakeUntil implements OnInit {
             })
           ).subscribe((data: IMessageData) => {
 
-          // save data to display latest message on top.
-          this.room.data.lastMessage = data.message;
-          this.room.data.lastMessageTime = data.created;
           // show html
           this.lastMessage$.next(data);
         });

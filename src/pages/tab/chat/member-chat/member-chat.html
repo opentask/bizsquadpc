@@ -34,12 +34,9 @@
 <ion-header class="progress-Header" *ngIf="loadProgress > 0">
   <progress-bar [progress]="loadProgress"></progress-bar>
 </ion-header>
- <ion-content #scrollMe>
+ <ion-content #scrollMe (ionScroll)="scrollHandler($event)">
       <div *ngIf="!showContent" class="loading-content"></div>
       <div class="message-wrap">
-        <ion-infinite-scroll position="top" (ionInfinite)="doInfinite($event)">
-          <ion-infinite-scroll-content loadingText="Loading more chats..."></ion-infinite-scroll-content>
-        </ion-infinite-scroll>
         <div *ngFor="let msg of messages"
             class="message"
             [class.left]="msg.data.sender != this.bizFire.uid"
@@ -60,14 +57,14 @@
                 <!--EXIT 채팅방에서 누가 나감-->
                 <ng-container *ngSwitchCase="'exit'">
                   <div class="notice-frame" *ngIf="langPack">
-                    {{makeNoticeMessage(msg)}}
+                    {{this.chatService.makeNoticeMessage(msg)}}
                   </div>
                 </ng-container>
 
                 <!--INVITE 누가 들어옴.-->
                 <ng-container *ngSwitchCase="'invite'">
                   <div class="notice-frame" *ngIf="langPack">
-                    {{makeNoticeMessage(msg)}}
+                    {{this.chatService.makeNoticeMessage(msg)}}
                   </div>
                 </ng-container>
 
@@ -103,6 +100,10 @@
                       <ion-icon name="download"></ion-icon>
                     </button>
                     <img class="msg-img" [src]="file.url">
+<!--                    <ion-thumbnail *ngIf="file.url">-->
+<!--                      <ion-img [src]="file.url" style="width: 80px; height: 80px;"></ion-img>-->
+<!--                    </ion-thumbnail>-->
+<!--                    <ion-img src="{{file.url}}" style="width: 80px; height: 80px;"></ion-img>-->
 
                     <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">
                       <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>

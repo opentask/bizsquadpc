@@ -14,6 +14,7 @@ import {IUser} from "../_models";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../environments/environments";
 import {Content} from "ionic-angular";
+import {CacheService} from "./cache/cache";
 
 @Injectable({
     providedIn: 'root'
@@ -36,9 +37,10 @@ export class ChatService {
     constructor(
         public bizFire : BizFireService,
         public electron: Electron,
-        public squadService : SquadService,
         private langService : LangService,
         private http: HttpClient,
+        private cacheService : CacheService,
+        private squadService: SquadService,
         private loading: LoadingProvider,) {
 
       this.langService.onLangMap
@@ -67,7 +69,7 @@ export class ChatService {
             },
             status: true,
             type: 'member'
-        }
+        };
 
         this.createRoom(newRoom);
     }
@@ -181,7 +183,7 @@ export class ChatService {
           const mid = newChatRef.id;
           msg.message.files = [];
           const loads = files.map(async file => {
-            const storagePath = `${storageChatPath}/${mid}/${file.name}`;
+            const storagePath = `${storageChatPath}/chat/${mid}/${file.name}`;
             const storageRef = this.bizFire.afStorage.storage.ref(storagePath);
             const fileSnapshot = await storageRef.put(file);
 
@@ -327,6 +329,59 @@ export class ChatService {
 
       return 150 > height - (top + offset);
     }
+
+
+    makeNoticeMessage(message): string {
+
+      if(Object.keys(this.langPack).length > 0
+        && message
+        && message.data.isNotice
+        && message.data.message.notice
+      ){
+        const notice = message.data.message.notice;
+        if(notice.type === 'exit'){
+          const uid = notice.uid;
+          let text = '';
+          if(uid){
+            this.cacheService.userGetObserver(uid[0]).subscribe((user: IUser) => {
+              text = this.langPack['chat_exit_user_notice'].replace('$DISPLAYNAME',user.data.displayName);
+            });
+            return text;
+          }
+        }
+
+        if(notice.type === 'init'){
+          const text = this.langPack['create_chat_room'];
+          return text;
+        }
+        if(notice.type === 'invite'){
+          const uids = notice.uid;
+          let inviteUserNames = '';
+          for(let uid of uids) {
+            this.cacheService.userGetObserver(uid).subscribe((user : IUser) => {
+              if(user.data.displayName) {
+                if(inviteUserNames.length > 0){
+                  inviteUserNames += ',';
+                }
+                inviteUserNames += user.data.displayName;
+              }
+            })
+          }
+          const text = this.langPack['chat_invite_user_notice'].replace('$DISPLAYNAME',inviteUserNames);
+          return text;
+        }
+      }
+
+      return;
+    }
+
+  findChat(cid: string): IChat| null {
+    let currentChat = this.onChatRoomListChanged.getValue().find(c => c.cid === cid);
+    if(currentChat == null){
+      currentChat = this.squadService.onSquadListChanged.getValue().find(c => c.cid === cid);
+    }
+    return currentChat;
+  }
 
     onNotification(msg){
         Notification.requestPermission().then(() => {

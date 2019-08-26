@@ -1,6 +1,4 @@
 import { GroupColorProvider } from './../../providers/group-color';
-import { AlertProvider } from './../../providers/alert/alert';
-import { AccountService } from './../../providers/account/account';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController,PopoverController } from 'ionic-angular';
 import { Electron } from './../../providers/electron/electron';
@@ -10,7 +8,6 @@ import { filter, takeUntil, map, switchMap } from 'rxjs/operators';
 import { NotificationService } from '../../providers/notification.service';
 import { ChatService } from '../../providers/chat.service';
 import { SquadService, ISquad } from '../../providers/squad.service';
-import { DataCache } from '../../classes/cache-data';
 import { TokenProvider } from '../../providers/token/token';
 import {Commons, STRINGS} from "../../biz-common/commons";
 import { LangService } from '../../providers/lang-service';
@@ -71,13 +68,10 @@ export class TabsPage {
     public navParams: NavParams,
     public electron: Electron,
     private bizFire: BizFireService,
-    public menuCtrl: MenuController,
     public popoverCtrl :PopoverController,
     private noticeService: NotificationService,
     public chatService: ChatService,
     private squadService: SquadService,
-    public accountService : AccountService,
-    public alertCtrl: AlertProvider,
     public groupColorProvider : GroupColorProvider,
     private tokenService: TokenProvider,
     private langService: LangService,
@@ -153,7 +147,8 @@ export class TabsPage {
       .subscribe((map: any[]) => {
         if(map){
           //console.log('unread datas:', map);
-          this.chatCount = map.length;
+          this.chatCount = map.length > 99 ? 99 : map.length;
+
           this.electron.setAppBadge(this.chatCount);
           console.log("tabs unread field");
       }
@@ -165,12 +160,9 @@ export class TabsPage {
     .subscribe((msgs: INotification[]) => {
       if(msgs){
         // get unfinished notification count.
-        this.badgeCount = msgs.filter(m => m.data.statusInfo.done !== true).length;
-
-        if(this.badgeCount > 99){ this.badgeCount = 99; }
-        console.log("tabs badgeCount:",this.badgeCount);
+        const unreadNotify = msgs.filter(m => m.data.statusInfo.done !== true).length;
+        this.badgeCount = unreadNotify > 99 ? 99 : unreadNotify;
       }
-
     });
 
 
@@ -187,7 +179,7 @@ export class TabsPage {
         if(change.type === 'added') {
           const item = new Chat(mid, data, this.bizFire.uid, change.payload.doc.ref);
           this.chatRooms.push(item);
-          // this.unreadCounter.register(mid, change.payload.doc.ref);
+          this.unreadCounter.register(mid, change.payload.doc.ref);
 
         } else if(change.type === 'modified') {
           for(let index = 0 ; index < this.chatRooms.length; index ++){

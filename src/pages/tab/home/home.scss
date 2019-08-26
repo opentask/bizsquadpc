@@ -12,6 +12,19 @@ page-home {
         font-size: 11px;
         color:#444;
     }
+    .circle_icon{
+      border-radius: 100%;
+      padding: 6px;
+    }
+    .circle_meeting{
+      background-color: #c7a237;
+    }
+    .circle_work{
+      background-color: #379392;
+    }
+    .circle_workflow{
+      background-color: dodgerblue;
+    }
     .notifiBadge {
         position: absolute;
         right: 35px;
@@ -81,6 +94,8 @@ page-home {
         display: inline-block;
         margin-left: 20px;
     }
+
+
 
     .appSelectArea {
         width: 100%;

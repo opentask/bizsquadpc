@@ -247,9 +247,9 @@ export const language = {
         "ja": "チャット"
       }
       ,"chatroom": {
-        "ko": "채팅",
-        "en": "Chat",
-        "ja": "チャット"
+        "ko": "퍼스널 채팅",
+        "en": "Personal Chat",
+        "ja": "パーソナルチャット"
       }
       ,"squad_chatroom": {
         "ko": "스쿼드 채팅",
@@ -260,6 +260,11 @@ export const language = {
         "ko": "권한",
         "en": "Auth",
         "ja": "権限"
+      }
+      ,"no_members": {
+        "ko": "대확 가능한 상대가 없습니다.",
+        "en": "There are no members to chat with.",
+        "ja": "チャットするメンバーがいません"
       }
       ,"select_member_invite": {
         "ko": "초대 하고싶은<br> 멤버를 선택해 주세요",

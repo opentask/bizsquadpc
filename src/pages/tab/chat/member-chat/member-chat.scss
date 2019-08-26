@@ -284,6 +284,10 @@ page-member-chat {
                 width: auto;
                 max-width: 80%;
                 font-size: 13px;
+
+                iframe {
+                  width: 100%;
+                }
               }
               .msg-content-file {
                 position: relative;
@@ -346,9 +350,11 @@ page-member-chat {
             }
             .user-img {
               left: 0;
+              top: 10px;
             }
             ion-avatar {
                 left: 0;
+                top: 10px;
               }
             .msg-content {
               color: #343434;

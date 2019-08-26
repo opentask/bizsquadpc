@@ -1,17 +1,17 @@
 import { CacheService } from './../../../../providers/cache/cache';
 import { GroupColorProvider } from './../../../../providers/group-color';
-import {Component, ViewChild} from '@angular/core';
+import {Component, NgZone, ViewChild} from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService } from '../../../../providers/chat.service';
 import { BizFireService, LoadingProvider } from '../../../../providers';
 import { User } from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
-import {debounceTime, map, take, takeUntil} from 'rxjs/operators';
-import {BehaviorSubject, Observable, timer} from 'rxjs';
+import {debounceTime, filter, map, take, takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subject, timer} from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import {LangService} from "../../../../providers/lang-service";
-import {IChat, IChatData, IMessage, IMessageData} from "../../../../_models/message";
+import {IChat, IChatData, IMessage, IMessageData, MessageBuilder} from "../../../../_models/message";
 import {IBizGroupData, IUser, IUserData} from "../../../../_models";
 import {Chat} from "../../../../biz-common/chat";
 import {ToastProvider} from "../../../../providers/toast/toast";
@@ -34,17 +34,15 @@ export class MemberChatPage {
   showContent : boolean;
 
   opacity = 100;
-  message : string;
-  messages : IMessage[] = [];
   chatroom : IChat;
+
   ipc : any;
   roomData : IChatData;
-  chatMembers = [];
+
   groupMainColor: string;
 
   start : any;
   end : any;
-
 
   // room info
   members: any;
@@ -61,6 +59,12 @@ export class MemberChatPage {
   chatForm : FormGroup;
   chatLengthError: string;
 
+  private addedMessages$ = new Subject<any>();
+  private addedMessages: IMessage[];
+  public messages : IMessage[] = [];
+
+  private oldScrollHeight : number;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -74,7 +78,7 @@ export class MemberChatPage {
     private cacheService : CacheService,
     private toastProvider : ToastProvider,
     private langService : LangService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
     ) {
       this.chatForm = fb.group(
         {
@@ -120,6 +124,14 @@ export class MemberChatPage {
       });
       this.ipc = electron.ipc;
     }
+
+  scrollHandler($event) {
+    //스크롤이 가장 상단일때
+    if($event.scrollTop === 0) {
+      this.oldScrollHeight = this.contentArea.getContentDimensions().scrollHeight;
+      this.getMoreMessages();
+    }
+  }
 
   keydown(e : any) {
     if (e.keyCode == 13) {
@@ -168,8 +180,7 @@ export class MemberChatPage {
           }
           this.chatroom = newSquadData;
           this.members = this.chatroom.data.members;
-          this.chatMembers = Object.keys(this.chatroom.data.members);
-          this.roomCount = this.chatMembers.length;
+          this.roomCount = Object.keys(this.chatroom.data.members).length;
         }
       });
 
@@ -198,6 +209,51 @@ export class MemberChatPage {
         this.loadProgress = per;
       }
       console.log(per);
+    });
+
+    this.addedMessages$.pipe(debounceTime(2000))
+    .subscribe(()=>{
+
+      try {
+        const batch = this.bizFire.afStore.firestore.batch();
+        let added = 0;
+
+        const list = this.addedMessages;
+        //const list = this.chatContent;
+        if (list) {
+          // filter my unread messages.
+          let unreadList = list.filter((l: IMessage) => l.data.read == null
+            || l.data.read[this.bizFire.uid] == null
+            || l.data.read[this.bizFire.uid].unread === true
+          );
+
+          if (unreadList.length > 499) {
+            // firestore write limits 500
+            unreadList = unreadList.slice(0,400);
+            //console.log(unreadList.length);
+          }
+          unreadList.forEach((l: IMessage) => {
+
+            const read = {[this.bizFire.uid]: {unread: false, read: new Date()}};
+            batch.set(l.ref, {read: read}, {merge: true});
+            added++;
+
+            // upload memory
+            l.data.read = read;
+          });
+
+          if (added > 0) {
+            console.error('unread batch call!', added);
+            batch.commit();
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        this.addedMessages = [];
+      }
+
+      // clear processed messages
+      this.addedMessages = [];
     });
   }
 
@@ -228,22 +284,21 @@ export class MemberChatPage {
   getNewMessages(msgPath,start) {
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
       .startAt(start))
-      .stateChanges().subscribe(changes => {
+      .stateChanges()
+      .pipe(
+        map((snaps : any[]) => snaps.filter(s => s.type === 'added')),
+        filter(snaps => snaps && snaps.length > 0),
+        map(MessageBuilder.mapBuildSnapShot()))
+      .subscribe((list : IMessage[]) => {
 
-        const batch = this.bizFire.afStore.firestore.batch();
+        this.addAddedMessages(list);
 
-        changes.forEach((change : any) => {
-          if(change.type === 'added') {
-            const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
-            this.messages.push(msgData);
-            this.chatService.setToReadStatus(change.payload.doc, batch);
-            if(!this.chatService.scrollBottom(this.contentArea) && msgData.data.sender !== this.bizFire.uid) {
-              this.toastProvider.showToast(this.langPack['new_message']);
-            }
+        list.forEach((message : IMessage) => {
+          this.messages.push(message);
+          if(!this.chatService.scrollBottom(this.contentArea) && message.data.sender !== this.bizFire.uid) {
+            this.toastProvider.showToast(this.langPack['new_message']);
           }
         });
-
-        batch.commit();
 
         // scroll to bottom
         if(this.chatService.scrollBottom(this.contentArea)) {
@@ -265,19 +320,25 @@ export class MemberChatPage {
       this.end = this.start;
       this.start = snapshots.docs[snapshots.docs.length - 1];
 
+      console.log("getMoreMessages :",snapshots.docs.length);
+
       this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
       .startAt(this.start).endBefore(this.end))
-      .stateChanges().subscribe((messages) => {
+      .stateChanges()
+      .pipe(
+        map((snaps : any[]) => snaps.filter(s => s.type === 'added')),
+        filter(snaps => snaps && snaps.length > 0),
+        map(MessageBuilder.mapBuildSnapShot()))
+      .subscribe((list : IMessage[]) => {
 
-        const batch = this.bizFire.afStore.firestore.batch();
+        this.addAddedMessages(list);
+        this.messages = list.concat(this.messages);
 
-        messages.reverse().forEach((message) => {
-          const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
-          this.messages.unshift(msgData);
-          this.chatService.setToReadStatus(message.payload.doc, batch);
+        timer(100).subscribe(() => {
+          this.contentArea.scrollTo(0,this.contentArea.getContentDimensions().scrollHeight - this.oldScrollHeight,0);
+          console.log("메세지 배열에 넣은 후 스크롤길이 :",this.contentArea.getContentDimensions().scrollHeight);
         });
 
-        batch.commit();
       });
     })
   }
@@ -288,20 +349,12 @@ export class MemberChatPage {
     if(valid) {
       const text = Commons.chatInputConverter(value);
       if(text.length > 0) {
-        this.chatService.addChatMessage(text,this.chatroom);
+        this.chatService.addChatMessage(text,this.chatroom).then(() => {
+          timer(100).subscribe(() => this.contentArea.scrollToBottom(0));
+        });
         this.chatForm.setValue({chat:''});
       }
     }
-  }
-
-  doInfinite(infiniteScroll) {
-
-    setTimeout(() => {
-      this.getMoreMessages();
-
-
-      infiniteScroll.complete();
-    }, 500);
   }
 
   file(file){
@@ -350,55 +403,25 @@ export class MemberChatPage {
   windowMimimize() {
     this.electron.windowMimimize();
   }
-
-
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-member-chat-menu',{roomData : this.chatroom}, {cssClass: 'page-member-chat-menu'});
     popover.present({ev: ev});
   }
 
-  makeNoticeMessage(message): string {
-
-    if(Object.keys(this.langPack).length > 0
-      && message
-      && message.data.isNotice
-      && message.data.message.notice
-    ){
-      const notice = message.data.message.notice;
-      if(notice.type === 'exit'){
-        const uid = notice.uid;
-        let text = '';
-        if(uid){
-          this.cacheService.userGetObserver(uid[0]).subscribe((user: IUser) => {
-            text = this.langPack['chat_exit_user_notice'].replace('$DISPLAYNAME',user.data.displayName);
-          });
-          return text;
-        }
-      }
-
-      if(notice.type === 'init'){
-        const text = this.langPack['create_chat_room'];
-        return text;
-      }
-      if(notice.type === 'invite'){
-        const uids = notice.uid;
-        let inviteUserNames = '';
-        for(let uid of uids) {
-          this.cacheService.userGetObserver(uid).subscribe((user : IUser) => {
-            if(user.data.displayName) {
-              if(inviteUserNames.length > 0){
-                inviteUserNames += ',';
-              }
-              inviteUserNames += user.data.displayName;
-            }
-          })
-        }
-        const text = this.langPack['chat_invite_user_notice'].replace('$DISPLAYNAME',inviteUserNames);
-        return text;
-      }
+  private addAddedMessages(list: IMessage[]){
+    if(this.addedMessages == null){
+      this.addedMessages = [];
     }
+    const unreadList = list.filter((l:IMessage) => l.data.read == null
+      || l.data.read[this.bizFire.uid] == null
+      || l.data.read[this.bizFire.uid].unread === true
+    );
 
-    return;
+    if(unreadList.length > 0){
+      // add to old lsit
+      this.addedMessages = this.addedMessages.concat(unreadList);
+      timer(0).subscribe(()=> this.addedMessages$.next());
+    }
   }
 
 }

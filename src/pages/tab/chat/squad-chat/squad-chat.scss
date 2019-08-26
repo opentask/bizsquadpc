@@ -284,19 +284,9 @@ page-squad-chat {
                 width: auto;
                 max-width: 80%;
                 font-size: 13px;
-                span.triangle {
-                  background-color: #fff;
-                  border-radius: 1px;
-                  height: 8px;
-                  width: 8px;
-                  top: 5px;
-                  display: block;
-                  border-style: solid;
-                  border-color: #ddd;
-                  border-width: 1px;
-                  -webkit-transform: rotate(45deg);
-                  transform: rotate(45deg);
-                  position: absolute;
+
+                iframe {
+                  width: 100%;
                 }
               }
               .msg-content-file {
@@ -398,9 +388,11 @@ page-squad-chat {
             }
             .user-img {
               left: 0;
+              top : 10px;
             }
             ion-avatar {
                 left: 0;
+                top: 10px;
               }
             .msg-content {
               color: #343434;

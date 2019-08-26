@@ -7,11 +7,11 @@ import { BizFireService, LoadingProvider } from '../../../../providers';
 import { STRINGS, Commons } from '../../../../biz-common/commons';
 import { ChatService } from '../../../../providers/chat.service';
 import { GroupColorProvider } from '../../../../providers/group-color';
-import { Observable, timer } from 'rxjs';
+import {Observable, Subject, timer} from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
-import {IChat, IMessage, IMessageData} from "../../../../_models/message";
+import {IChat, IMessage, IMessageData, MessageBuilder} from "../../../../_models/message";
 import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../_models";
-import {debounceTime, takeUntil} from "rxjs/operators";
+import {debounceTime, filter, map, takeUntil} from "rxjs/operators";
 import {LangService} from "../../../../providers/lang-service";
 import {Chat} from "../../../../biz-common/chat";
 import {BizGroupBuilder} from "../../../../biz-common/biz-group";
@@ -33,14 +33,11 @@ export class SquadChatPage {
 
   showContent : boolean;
 
-  message : string;
-  messages : IMessage[] = [];
   roomCount : number;
   opacity = 100;
   squadMainColor: any;
 
   selectSquad : IChat;
-  editorMsg = '';
   ipc : any;
 
   maxFileSize = 5000000; // max file size = 5mb;
@@ -55,6 +52,13 @@ export class SquadChatPage {
 
   chatForm : FormGroup;
   chatLengthError: string;
+
+
+  private addedMessages$ = new Subject<any>();
+  private addedMessages: IMessage[];
+  public messages : IMessage[] = [];
+
+  private oldScrollHeight : number;
 
   constructor(
      public navCtrl: NavController,
@@ -195,6 +199,59 @@ export class SquadChatPage {
       }
       console.log(per);
     });
+
+    this.addedMessages$.pipe(debounceTime(2000))
+      .subscribe(()=>{
+
+        try {
+          const batch = this.bizFire.afStore.firestore.batch();
+          let added = 0;
+
+          const list = this.addedMessages;
+          //const list = this.chatContent;
+          if (list) {
+            // filter my unread messages.
+            let unreadList = list.filter((l: IMessage) => l.data.read == null
+              || l.data.read[this.bizFire.uid] == null
+              || l.data.read[this.bizFire.uid].unread === true
+            );
+
+            if (unreadList.length > 499) {
+              // firestore write limits 500
+              unreadList = unreadList.slice(0,400);
+              //console.log(unreadList.length);
+            }
+            unreadList.forEach((l: IMessage) => {
+
+              const read = {[this.bizFire.uid]: {unread: false, read: new Date()}};
+              batch.set(l.ref, {read: read}, {merge: true});
+              added++;
+
+              // upload memory
+              l.data.read = read;
+            });
+
+            if (added > 0) {
+              console.error('unread batch call!', added);
+              batch.commit();
+            }
+          }
+        } catch (e) {
+          console.error(e);
+          this.addedMessages = [];
+        }
+
+        // clear processed messages
+        this.addedMessages = [];
+      });
+  }
+
+  scrollHandler($event) {
+    //스크롤이 가장 상단일때
+    if($event.scrollTop === 0) {
+      this.oldScrollHeight = this.contentArea.getContentDimensions().scrollHeight;
+      this.getMoreMessages();
+    }
   }
 
   // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
@@ -224,22 +281,21 @@ export class SquadChatPage {
   getNewMessages(msgPath,start) {
     this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
     .startAt(start))
-    .stateChanges().subscribe((changes: any[]) => {
+    .stateChanges()
+    .pipe(
+      map((snaps : any[]) => snaps.filter(s => s.type === 'added')),
+      filter(snaps => snaps && snaps.length > 0),
+      map(MessageBuilder.mapBuildSnapShot()))
+    .subscribe((list : IMessage[]) => {
 
-      const batch = this.bizFire.afStore.firestore.batch();
+      this.addAddedMessages(list);
 
-      changes.forEach((change : any) => {
-        if(change.type === 'added') {
-          const msgData = {mid: change.payload.doc.id, data:change.payload.doc.data()} as IMessage;
-          this.messages.push(msgData);
-          this.chatService.setToReadStatus(change.payload.doc, batch);
-          if(!this.chatService.scrollBottom(this.contentArea) && msgData.data.sender !== this.bizFire.uid) {
-            this.toastProvider.showToast(this.langPack['new_message']);
-          }
+      list.forEach((message : IMessage) => {
+        this.messages.push(message);
+        if(!this.chatService.scrollBottom(this.contentArea) && message.data.sender !== this.bizFire.uid) {
+          this.toastProvider.showToast(this.langPack['new_message']);
         }
       });
-
-      batch.commit();
 
       // scroll to bottom
       if(this.chatService.scrollBottom(this.contentArea)) {
@@ -264,23 +320,24 @@ export class SquadChatPage {
 
       this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
       .startAt(this.start).endBefore(this.end))
-      .stateChanges().subscribe((messages) => {
+      .stateChanges()
+      .pipe(
+        map((snaps : any[]) => snaps.filter(s => s.type === 'added')),
+        filter(snaps => snaps && snaps.length > 0),
+        map(MessageBuilder.mapBuildSnapShot()))
+      .subscribe((list : IMessage[]) => {
 
-        const batch = this.bizFire.afStore.firestore.batch();
+        this.addAddedMessages(list);
+        this.messages = list.concat(this.messages);
 
-        messages.reverse().forEach((message) => {
-          const msgData = {mid: message.payload.doc.id, data:message.payload.doc.data()} as IMessage;
-          this.messages.unshift(msgData);
-          this.chatService.setToReadStatus(message.payload.doc, batch);
+        timer(100).subscribe(() => {
+          this.contentArea.scrollTo(0,this.contentArea.getContentDimensions().scrollHeight - this.oldScrollHeight,0);
+          console.log("메세지 배열에 넣은 후 스크롤길이 :",this.contentArea.getContentDimensions().scrollHeight);
         });
 
-        batch.commit();
       });
-
-      console.log("more_messages",this.messages);
     })
   }
-
 
   sendMsg(value) {
     let valid = this.chatForm.valid;
@@ -288,22 +345,12 @@ export class SquadChatPage {
     if(valid) {
       const text = Commons.chatInputConverter(value);
       if(text.length > 0) {
-        this.chatService.addChatMessage(text,this.selectSquad);
+        this.chatService.addChatMessage(text,this.selectSquad).then(() => {
+          timer(100).subscribe(() => this.contentArea.scrollToBottom(0));
+        });
         this.chatForm.setValue({chat:''});
       }
     }
-  }
-
-  doInfinite(infiniteScroll) {
-    console.log('Begin async operation');
-
-    setTimeout(() => {
-      this.getMoreMessages();
-
-      console.log('Async operation has ended');
-
-      infiniteScroll.complete();
-    }, 500);
   }
 
   file(file){
@@ -349,6 +396,22 @@ export class SquadChatPage {
 
   windowMimimize() {
     this.electron.windowMimimize();
+  }
+
+  private addAddedMessages(list: IMessage[]){
+    if(this.addedMessages == null){
+      this.addedMessages = [];
+    }
+    const unreadList = list.filter((l:IMessage) => l.data.read == null
+      || l.data.read[this.bizFire.uid] == null
+      || l.data.read[this.bizFire.uid].unread === true
+    );
+
+    if(unreadList.length > 0){
+      // add to old lsit
+      this.addedMessages = this.addedMessages.concat(unreadList);
+      timer(0).subscribe(()=> this.addedMessages$.next());
+    }
   }
 
 }

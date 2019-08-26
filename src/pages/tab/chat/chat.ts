@@ -11,7 +11,7 @@ import { SquadService, ISquad } from '../../../providers/squad.service';
 import firebase from 'firebase';
 import {LangService} from "../../../providers/lang-service";
 import {TakeUntil} from "../../../biz-common/take-until";
-import {IBizGroup, IUser} from "../../../_models";
+import {IBizGroup, IUnreadItem, IUser} from "../../../_models";
 import {timer} from "rxjs";
 
 @IonicPage({
@@ -35,6 +35,9 @@ export class ChatPage extends TakeUntil{
   unreadList: any[];
 
   langPack: any;
+
+  memberUnreadTotalCount = 0;
+  squadUnreadTotalCount = 0;
 
   constructor(
     public navCtrl: NavController,
@@ -61,9 +64,27 @@ export class ChatPage extends TakeUntil{
     // unread count map
     this.chatService.unreadCountMap$
       .pipe(this.takeUntil)
-      .subscribe((list: any[]) => {
-        //console.log('unread', list);
-        this.unreadList = list;
+      .subscribe((list: IUnreadItem[]) => {
+        // temp array for counting.
+        const typeMember = [];
+        const typeSquad = [];
+
+        // get chat data
+        list.filter(i => {
+          const chat = this.chatService.findChat(i.cid);
+          if(chat){
+            if(chat.data.type === 'member'){
+              typeMember.push(chat);
+            } else {
+              typeSquad.push(chat);
+            }
+          }
+        });
+
+        this.memberUnreadTotalCount = typeMember.length > 99 ? 99 : typeMember.length;
+        this.squadUnreadTotalCount = typeSquad.length > 99 ? 99 : typeSquad.length;
+        console.log(this.memberUnreadTotalCount, this.squadUnreadTotalCount)
+
     });
 
     this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);

@@ -1,12 +1,12 @@
 <ion-content no-padding class="content-color">
     <ion-segment [(ngModel)]="defaultSegment">
-        <ion-segment-button value="chatRoom">
+        <ion-segment-button value="chatRoom" class="d-flex justify-content-center align-items-center">
             {{ langPack['chatroom'] }}
-<!--            <ion-badge class="segment_badge" *ngIf="memberNewMessage" color="danger">{{ memberNewMessage }}</ion-badge>-->
+            <ion-badge class="msg-badge" *ngIf="memberUnreadTotalCount" color="danger">{{ memberUnreadTotalCount }}</ion-badge>
         </ion-segment-button>
-        <ion-segment-button value="squadChatRoom">
+        <ion-segment-button value="squadChatRoom" class="d-flex justify-content-center align-items-center">
             {{ langPack['squad_chatroom'] }}
-<!--            <ion-badge class="segment_badge" *ngIf="squadNewMessage" color="danger">{{ squadNewMessage }}</ion-badge>-->
+            <ion-badge class="msg-badge" *ngIf="squadUnreadTotalCount" color="danger">{{ squadUnreadTotalCount }}</ion-badge>
         </ion-segment-button>
     </ion-segment>
     <ion-scroll class="scrollable" scrollY="true">
