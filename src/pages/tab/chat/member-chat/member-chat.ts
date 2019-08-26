@@ -325,7 +325,7 @@ export class MemberChatPage {
       this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
       .startAt(this.start).endBefore(this.end))
       .stateChanges()
-      .pipe(
+      .pipe(take(1),
         map((snaps : any[]) => snaps.filter(s => s.type === 'added')),
         filter(snaps => snaps && snaps.length > 0),
         map(MessageBuilder.mapBuildSnapShot()))

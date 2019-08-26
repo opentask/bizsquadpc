@@ -11,7 +11,7 @@ import {Observable, Subject, timer} from 'rxjs';
 import { CacheService } from '../../../../providers/cache/cache';
 import {IChat, IMessage, IMessageData, MessageBuilder} from "../../../../_models/message";
 import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../_models";
-import {debounceTime, filter, map, takeUntil} from "rxjs/operators";
+import {debounceTime, filter, map, take, takeUntil} from "rxjs/operators";
 import {LangService} from "../../../../providers/lang-service";
 import {Chat} from "../../../../biz-common/chat";
 import {BizGroupBuilder} from "../../../../biz-common/biz-group";
@@ -321,7 +321,7 @@ export class SquadChatPage {
       this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
       .startAt(this.start).endBefore(this.end))
       .stateChanges()
-      .pipe(
+      .pipe(take(1),
         map((snaps : any[]) => snaps.filter(s => s.type === 'added')),
         filter(snaps => snaps && snaps.length > 0),
         map(MessageBuilder.mapBuildSnapShot()))
