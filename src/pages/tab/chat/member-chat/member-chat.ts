@@ -348,6 +348,7 @@ export class MemberChatPage {
 
     if(valid) {
       const text = Commons.chatInputConverter(value);
+
       if(text.length > 0) {
         this.chatService.addChatMessage(text,this.chatroom).then(() => {
           timer(100).subscribe(() => this.contentArea.scrollToBottom(0));

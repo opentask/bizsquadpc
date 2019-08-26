@@ -129,7 +129,7 @@
   </div>
   <div class="input-wrap">
     <form [formGroup]="chatForm">
-      <textarea formControlName="chat" (keyup)="keydown($event)">
+      <textarea formControlName="chat" (keydown)="keydown($event)">
       </textarea>
     </form>
     <button type="submit" color="dark" class="sendButton" ion-button item-right
