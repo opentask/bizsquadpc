@@ -99,11 +99,7 @@
                     <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(file.url)">
                       <ion-icon name="download"></ion-icon>
                     </button>
-                    <img class="msg-img" [src]="file.url">
-<!--                    <ion-thumbnail *ngIf="file.url">-->
-<!--                      <ion-img [src]="file.url" style="width: 80px; height: 80px;"></ion-img>-->
-<!--                    </ion-thumbnail>-->
-<!--                    <ion-img src="{{file.url}}" style="width: 80px; height: 80px;"></ion-img>-->
+                    <img (load)="imgLoadSuccess()" [src]="file.url" style="min-width: 120px; min-height: 120px">
 
                     <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">
                       <span class="time">{{ msg.data.created | timestampToDate | date: 'a hh:mm' }}</span>

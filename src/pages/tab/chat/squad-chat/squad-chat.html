@@ -103,7 +103,9 @@
                     <button class="download_button" ion-button clear icon-only small color="dark" (click)="downloadFile(file.url)">
                       <ion-icon name="download"></ion-icon>
                     </button>
-                    <img class="msg-img" [src]="file.url">
+                       <img (load)="imgLoadSuccess()" [src]="file.url" style="min-width: 120px; min-height: 120px">
+<!--                    <img class="msg-img" [src]="file.url">-->
+<!--                    <ion-img [cache]="true" style="min-width: 120px; min-height: 80px" src="{{file.url}}"></ion-img>-->
 
                     <span class="triangle" *ngIf="!file && msg.data.sender == this.bizFire.uid"></span>
                     <div class="msg-time-content" *ngIf="msg.data.sender == this.bizFire.uid">

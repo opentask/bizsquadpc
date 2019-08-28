@@ -15,6 +15,7 @@ page-squad-chat {
         position: relative !important;
         top: 80px;
     }
+
     ion-avatar{
         border-radius: 100%;
         float: left;
@@ -338,6 +339,7 @@ page-squad-chat {
                 }
                 .msg-img{
                     min-width: 120px;
+                    min-height: 80px;
                     border-radius: 5px;
                 }
               }

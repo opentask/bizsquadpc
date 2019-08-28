@@ -425,4 +425,13 @@ export class MemberChatPage {
     }
   }
 
+  imgLoadSuccess() {
+    if(this.chatService.scrollBottom(this.contentArea)) {
+      timer(100).subscribe(() => {
+        // call ion-content func
+        this.contentArea.scrollToBottom(0);
+      });
+    }
+  }
+
 }
