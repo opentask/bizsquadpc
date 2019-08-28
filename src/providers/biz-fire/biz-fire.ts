@@ -274,42 +274,22 @@ export class BizFireService {
     let ref: firebase.firestore.CollectionReference | firebase.firestore.Query;
     ref = this.afStore.firestore.collection(STRINGS.STRING_BIZGROUPS);
 
-    let superUser = false;
-    if(user && user.type != null) {
-        superUser = user.type['super'] === true;
-    }
-    if(superUser) {
+    if(this.bizGroupSub == null) {
+      ref = ref.where(new firebase.firestore.FieldPath('members', user.uid), '==', true);
 
-        if(this.bizGroupSub){
-            this.bizGroupSub();
-            this.bizGroupSub = null;
+      this.bizGroupSub = ref.onSnapshot(groupsSnap => {
+          const groups = groupsSnap.docs.filter(d => {
 
-            this.bizGroupSub = ref.onSnapshot(groupsSnap => {
-                const groups = groupsSnap.docs.map(doc => {
-                    return {data:doc.data(), gid:doc.id} as IBizGroup;
-                });
-                this.onBizGroups.next(groups);
-            }, error1 => console.error(error1));
-        }
-    } else {
+              return d.get('status') !== false;
 
-        if(this.bizGroupSub == null) {
-
-            ref = ref.where(new firebase.firestore.FieldPath('members', user.uid), '==', true);
-
-            this.bizGroupSub = ref.onSnapshot(groupsSnap => {
-                const groups = groupsSnap.docs.filter(d => {
-
-                    return d.get('status') !== false;
-
-                }).map(doc => {
-                    return {data:doc.data(), gid:doc.id} as IBizGroup;
-                });
-                this.onBizGroups.next(groups);
-            }, error1 => console.error(error1));
-        }
+          }).map(doc => {
+              return {data:doc.data(), gid:doc.id} as IBizGroup;
+          });
+          this.onBizGroups.next(groups);
+      },error1 => console.error(error1));
     }
   }
+
     isPartner(group?: IBizGroup): boolean {
         if(group == null){
             group = this.onBizGroupSelected.value;
@@ -382,9 +362,9 @@ export class BizFireService {
       });
 
       this.afStore.doc(`${STRINGS.STRING_BIZGROUPS}/${gid}`)
-      .get().subscribe((doc) => {
+      .valueChanges().subscribe((doc) => {
 
-        const group : IBizGroup = BizGroupBuilder.buildWithData(gid,doc.data(),this.uid);
+        const group : IBizGroup = BizGroupBuilder.buildWithData(gid,doc,this.uid);
 
         if(group.data.members[this.currentUID] === true && group.data.status === true) {
           this.onBizGroupSelected.next(group);

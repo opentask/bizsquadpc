@@ -6,27 +6,11 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Subject, Subscription } from 'rxjs';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { BizFireService, userLinks } from '../../../providers/biz-fire/biz-fire';
-import { STRINGS } from '../../../biz-common/commons';
 import { TokenProvider } from '../../../providers/token/token';
 import { NotificationService } from '../../../providers/notification.service';
-import { DataCache } from '../../../classes/cache-data';
 import {LangService} from "../../../providers/lang-service";
 import {IBizGroup, INotification, IUser, IUserData} from "../../../_models";
-import {environment} from "../../../environments/environments";
 
-interface IBbsItem {
-  bbsId: string,
-  data: {
-      title: string,
-      sender?: {
-        displayName?: string,
-        email?: string,
-      },
-      created?: number,
-      read?: boolean,
-      senderName?: string,
-  }
-}
 
 @IonicPage({
   name: 'page-home',

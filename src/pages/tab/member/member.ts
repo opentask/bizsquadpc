@@ -26,36 +26,20 @@ export class MemberPage {
   // search set
 
   serachValue : string;
-  useSearch : boolean = false;
 
   currentGroup: IBizGroup;
-  gid: string;
   user_icon = '';
 
   // default 회색
   user_onlineColor = '#C7C7C7';
   // online 녹색 = #32db64 ;
 
-  currentUser: IUserData;
 
   // display user info
   displayName;
-  fullName;
-  myStatus;
 
-  allCollectedUsers: IUser[];
-  managerAuthUser: IUser[];
-  memberAuthUser: IUser[];
-  partnerAuthUser: IUser[];
-
-  managerUid: any;
   manager: boolean = false;
-
-  memberCount: any;
-
-  partnerUid: any;
   Partner : boolean = false;
-  partnerCount:any;
 
   groupMainColor : string;
 
@@ -90,11 +74,11 @@ export class MemberPage {
     .subscribe((group) => {
         //console.log('onBizGroupSelected', group.gid);
         // set selected group to
+      console.log("그룹데이터 변경 :", group);
         this.currentGroup = group;
         if(this.currentGroup) {
           this.filteredList = this.currentGroup.getMemberIds(true);
         }
-        this.gid = this.currentGroup.gid;
         this.groupMainColor = group.data.team_color;
     });
   }

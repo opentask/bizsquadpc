@@ -100,11 +100,13 @@ export class TabsPage {
     this.bizFire.onBizGroupSelected
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),
         switchMap(group => {
+
             //* have group changed?
             let reloadGroup = true;
             if(this.group != null){
                 reloadGroup = this.group.gid !== group.gid;
             }
+
             this.group = group;
             this.groupMainColor = this.groupColorProvider.makeGroupColor(this.group.data.team_color);
             this.isPartner = this.bizFire.isPartner(group);
@@ -128,6 +130,7 @@ export class TabsPage {
         takeUntil(this._unsubscribeAll),
       filter(l => l != null) // prevent same group reloading.
     ).subscribe((list : IChat[]) => {
+      console.log("스쿼드 리스트 :",list);
       const newChat = list.map(l => {
         return new Chat(l.sid , l.data, this.bizFire.uid, l.ref);
       });

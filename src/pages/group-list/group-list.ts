@@ -88,19 +88,10 @@ export class GroupListPage {
     this.fireData.clear();
   }
 
-  gotoTeam(group){
-    this.onSelectGroup(group);
-  }
-
-  onSelectGroup(group: IBizGroup) {
-    // save web last login group
-    (async ()=>{
-      await this.bizFire.afStore.collection(STRINGS.USERS).doc(this.bizFire.currentUID).update({
-        lastPcGid: group.gid
-      });
-      this.bizFire.onBizGroupSelected.next(BizGroupBuilder.buildWithData(group.gid,group.data,this.bizFire.uid));
+  async gotoTeam(group : IBizGroup){
+    if(group && await this.bizFire.onSelectGroup(group.gid)) {
       this.navCtrl.setRoot('page-tabs');
-    })();
+    }
   }
 
   //                   //
