@@ -32,7 +32,7 @@ export class InitProcess {
         const now = new Date();
         const updateNow = {
             created: now,
-            lastLogin: now, // convert to timestamp
+            lastPcLogin: now, // convert to timestamp
             uid: uid,
             displayName: displayName,
             email: email,
@@ -55,7 +55,7 @@ export class InitProcess {
         const {uid, displayName, email, photoURL, emailVerified, providerData} = user; //* just to dev. Do not use these datas...
 
         const updateNow = {
-            lastLogin: now,
+            lastPcLogin: now,
             uid: uid,
             // display name 은 없을경우에만 sns 네임을. 이후 제품에선 DB만 사용
             displayName: userData.displayName == null ? displayName: userData.displayName || null,

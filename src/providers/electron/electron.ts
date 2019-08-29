@@ -47,17 +47,6 @@ export class Electron {
     electron.ipcRenderer.send('windowsFlashFrame',count);
   }
 
-
-  updateOnlineStatus(){
-    let k = window.navigator.onLine ? 'online' : 'offline';
-    if(k == 'online'){
-      console.log('온라인 상태입니다.');
-      this.bizFire.setUserOnlineStatus();
-    } else {
-      console.log('오프라인 상태입니다.');
-    }
-  }
-
   setCookieID(url :string,name :string,value :string) {
     let expiration = new Date();
     let hour = expiration.getHours();
@@ -75,11 +64,6 @@ export class Electron {
 
   openChatRoom(ChatRoom) {
     electron.ipcRenderer.send('createChatRoom',ChatRoom);
-  }
-  openVedioRoom() {
-    electron.ipcRenderer.send('openVideoCam');
-    // 그리고 현재 디렉터리의 html을 로드합니다.
-    // win.loadURL(url);
   }
 
   resetValue(){

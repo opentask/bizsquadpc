@@ -17,6 +17,7 @@ export interface IUserData {
   type?: any,
   language?: string,
   uid?: string,
+  lastPcLogin?: any
   lastLogin?: any
   emailVerified?: boolean,
   user_visible_firstname?: string,

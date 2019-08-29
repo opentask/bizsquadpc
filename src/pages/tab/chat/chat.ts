@@ -1,6 +1,5 @@
 import { GroupColorProvider } from './../../../providers/group-color';
 import { Electron } from './../../../providers/electron/electron';
-import { AccountService } from './../../../providers/account/account';
 import { ChatService } from './../../../providers/chat.service';
 import { BizFireService } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
@@ -8,11 +7,8 @@ import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-an
 import { filter } from 'rxjs/operators';
 import {IChat} from '../../../_models/message';
 import { SquadService, ISquad } from '../../../providers/squad.service';
-import firebase from 'firebase';
-import {LangService} from "../../../providers/lang-service";
 import {TakeUntil} from "../../../biz-common/take-until";
 import {IBizGroup, IUnreadItem, IUser} from "../../../_models";
-import {timer} from "rxjs";
 
 @IonicPage({
   name: 'page-chat',
@@ -44,7 +40,6 @@ export class ChatPage extends TakeUntil{
     public navParams: NavParams,
     public bizFire: BizFireService,
     public chatService : ChatService,
-    public accountService : AccountService,
     public electron : Electron,
     private squadService: SquadService,
     public popoverCtrl :PopoverController,
@@ -83,7 +78,7 @@ export class ChatPage extends TakeUntil{
 
         this.memberUnreadTotalCount = typeMember.length > 99 ? 99 : typeMember.length;
         this.squadUnreadTotalCount = typeSquad.length > 99 ? 99 : typeSquad.length;
-        console.log(this.memberUnreadTotalCount, this.squadUnreadTotalCount)
+        console.log(this.memberUnreadTotalCount, this.squadUnreadTotalCount);
 
     });
 
@@ -106,7 +101,7 @@ export class ChatPage extends TakeUntil{
 
       this.chatRooms = rooms.sort((a,b): number => {
         if(a.data.lastMessageTime && b.data.lastMessageTime) {
-          return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
+          return this.chatService.TimestampToDate(b.data.lastMessageTime) - this.chatService.TimestampToDate(a.data.lastMessageTime);
         } else {
           return 0;
         }
@@ -130,7 +125,7 @@ export class ChatPage extends TakeUntil{
 
         this.squadChatRooms = squad.sort((a,b): number => {
           if(a.data.lastMessageTime && b.data.lastMessageTime) {
-            return this.TimestampToDate(b.data.lastMessageTime) - this.TimestampToDate(a.data.lastMessageTime);
+            return this.chatService.TimestampToDate(b.data.lastMessageTime) - this.chatService.TimestampToDate(a.data.lastMessageTime);
           } else {
             return 0;
           }
@@ -138,23 +133,8 @@ export class ChatPage extends TakeUntil{
 
       });
 
-  }
+    this.chatService.newMessageGroupChat();
 
-  TimestampToDate(value) {
-    //console.log(value, typeof value);
-    if(value){
-      if(typeof value === 'number'){
-        // this is old date number
-        return new Date(value * 1000);
-      } else if(value.seconds != null &&  value.nanoseconds != null){
-        const timestamp = new firebase.firestore.Timestamp(value.seconds, value.nanoseconds);
-        return timestamp.toDate();
-      } else {
-        return value;
-      }
-    } else {
-      return value;
-    }
   }
 
   gotoRoom(value:IChat){

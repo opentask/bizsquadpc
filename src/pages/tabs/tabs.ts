@@ -12,9 +12,11 @@ import { TokenProvider } from '../../providers/token/token';
 import {Commons, STRINGS} from "../../biz-common/commons";
 import { LangService } from '../../providers/lang-service';
 import { UnreadCounter } from "../../classes/unread-counter";
-import {IBizGroup, INotification} from "../../_models";
+import {IBizGroup, INotification, IUnreadItem, IUserData} from "../../_models";
 import {IChat, IChatData} from "../../_models/message";
 import {Chat} from "../../biz-common/chat";
+import { UserStatusProvider } from "../../providers/user-status";
+import * as firebase from "firebase";
 
 @IonicPage({
   name: 'page-tabs',
@@ -75,22 +77,27 @@ export class TabsPage {
     public groupColorProvider : GroupColorProvider,
     private tokenService: TokenProvider,
     private langService: LangService,
+    private userStatusService : UserStatusProvider
     ) {
       // test notification count
       this._unsubscribeAll = new Subject<any>();
 
     // 채팅이 아닌 메인 윈도우를 우클릭으로 완전 종료시 유저상태변경하는 리스너.
-      window.addEventListener('unload', () => {
-        this.bizFire.windowCloseAndUserStatus().then(() => {
-            this.bizFire.signOut();
-        });
+    window.addEventListener('unload', () => {
+      this.userStatusService.windowCloseAndUserStatus().then(() => {
+          this.bizFire.signOut();
       });
-    this.bizFire.onUserSignOut.subscribe(()=>{
+    });
+
+    this.bizFire.onUserSignOut
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(()=>{
       this.clear();
     });
   }
 
   ngOnInit() {
+
     this.langService.onLangMap
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((l: any) => {
@@ -147,13 +154,13 @@ export class TabsPage {
 
     this.chatService.unreadCountMap$
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((map: any[]) => {
+      .subscribe((map: IUnreadItem[]) => {
         if(map){
           //console.log('unread datas:', map);
           this.chatCount = map.length > 99 ? 99 : map.length;
-
           this.electron.setAppBadge(this.chatCount);
-          console.log("tabs unread field");
+
+          const lastPcLogin = this.bizFire.currentUserValue.lastPcLogin;
       }
     });
 

@@ -10,6 +10,7 @@ import { IUserState } from '../../providers/biz-fire/biz-fire';
 import * as electron from 'electron';
 import {IChat} from "../../_models/message";
 import {IUserData} from "../../_models";
+import firebase from "firebase";
 
 @IonicPage({
   name: 'page-login',
@@ -88,18 +89,12 @@ export class LoginPage implements OnInit {
 
 
     // on/offline check
-    window.addEventListener('online',this.electron.updateOnlineStatus);
-    window.addEventListener('offline',this.electron.updateOnlineStatus);
+    // window.addEventListener('online',this.electron.updateOnlineStatus);
+    // window.addEventListener('offline',this.electron.updateOnlineStatus);
 
     // 버전 가져오기
     this.version = electron.remote.app.getVersion();
 
-    // test...중복 로그인 중...
-    this.bizFire.authState
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((state: IUserState) => {
-      console.log("statestatestate",state);
-    });
 
     electron.ipcRenderer.on('message',function(text) {
       console.log(text);
@@ -126,7 +121,8 @@ export class LoginPage implements OnInit {
         }
 
         await this.bizFire.loginWithEmail(email,password);
-        await this.electron.updateOnlineStatus();
+
+        firebase.database().goOnline();
 
         this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
 

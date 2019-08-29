@@ -12,7 +12,6 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { FireDataKey } from '../../classes/fire-data-key';
 import { FireData } from '../../classes/fire-data';
-import { environment } from '../../environments/environments';
 import { LangService } from '../lang-service';
 import {IBizGroup, INotificationData, INotificationItem, IUserData} from "../../_models";
 import {BizGroupBuilder} from "../../biz-common/biz-group";
@@ -47,9 +46,6 @@ export class BizFireService {
   buildNo = '55';
 
   ipc: any;
-
-  private initProcess: InitProcess;
-
 
   // * one and only login feature.
   // * Do not use BehaviorSubject
@@ -148,6 +144,8 @@ export class BizFireService {
         // *
         this.afAuth.authState.subscribe(async (user: firebase.User | null) => {
 
+          console.log("로그아웃 테스트:", user);
+
             // unsubscribe old one for UserData
             if(this.currentUserSubscription != null){
                 this.currentUserSubscription.unsubscribe();
@@ -193,7 +191,7 @@ export class BizFireService {
 
             } else {
                 // clear current users' data
-                if(this._currentUser.getValue() != null){
+                if(this._currentUser.getValue() == null){
                     this._currentUser.next(null);
                 }
                 // * start load bizGroups
@@ -315,7 +313,7 @@ export class BizFireService {
         }
     }
 
-    signOut(navigateToLoginWhenDone = true): Promise<boolean> {
+    signOut(): Promise<boolean> {
 
         console.log('BizFireService.signOut()');
         console.log(this.userState.status);
@@ -340,17 +338,16 @@ export class BizFireService {
 
         this._userCustomToken.next(null);
 
+        firebase.database().goOffline();
+
         return this.afAuth.auth.signOut().then(()=> {
 
-            // clear cache.
-            const mine = new FireDataKey('groups', this.currentUID);
-            this.fireData.unregister(mine);
+          // clear cache.
+          const mine = new FireDataKey('groups', this.currentUID);
+          this.fireData.unregister(mine);
 
-            if(navigateToLoginWhenDone){
-                return this._app.getRootNav().setRoot('page-login');
-            } else {
-                return new Promise<any>(resolve => resolve(true));
-            }
+          return this._app.getRootNav().setRoot('page-login');
+
         });
     }
 
@@ -407,22 +404,6 @@ export class BizFireService {
             phoneNumber : editData.phoneNumber
         }, {merge: true})
     }
-  }
-
-  setUserOnlineStatus() {
-      this.afStore.doc(`users/${this.currentUID}`).update({
-        onlineStatus : 'online'
-    })
-  }
-  windowCloseAndUserStatus() {
-    return this.afStore.doc(`users/${this.currentUID}`).update({
-        onlineStatus : 'offline'
-    })
-  }
-  statusChanged(value) {
-    return this.afStore.doc(`users/${this.currentUID}`).update({
-        onlineStatus : value
-    })
   }
 
   deleteLink(link){

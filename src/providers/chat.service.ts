@@ -254,28 +254,6 @@ export class ChatService {
         });
     }
 
-
-  setToReadStatus(doc: any, batch: any): boolean {
-
-      let added = false;
-      let read = doc.get('read');
-
-      if(read == null || read[this.bizFire.uid] == null){
-        read = { [this.bizFire.uid]: { unread: false, read: new Date()}};
-        batch.set(doc.ref, {read: read}, {merge: true});
-        added = true;
-
-      } else {
-
-        if(read[this.bizFire.uid].unread === true){
-          read = { [this.bizFire.uid]: { unread: false, read: new Date()}};
-          batch.set(doc.ref, {read: read}, {merge: true});
-          added = true;
-        }
-      }
-      return added;
-    }
-
     async sendPush(targetUids: any[], msgTitle:string, msgBody:string){
 
       return new Promise<any>(resolve => {
@@ -383,12 +361,45 @@ export class ChatService {
     return currentChat;
   }
 
-    onNotification(msg){
-        Notification.requestPermission().then(() => {
-            let myNotification = new Notification('There is a new message.',{
-            'body': msg,
-            });
-        })
+  TimestampToDate(value) {
+    //console.log(value, typeof value);
+    if(value){
+      if(typeof value === 'number'){
+        // this is old date number
+        return new Date(value * 1000);
+      } else if(value.seconds != null &&  value.nanoseconds != null){
+        const timestamp = new firebase.firestore.Timestamp(value.seconds, value.nanoseconds);
+        return timestamp.toDate();
+      } else {
+        return value;
+      }
+    } else {
+      return value;
     }
+  }
 
+  onNotification(name,msg) {
+      Notification.requestPermission().then(() => {
+          let myNotification = new Notification(name,{
+          'body': msg,
+          });
+      })
+  }
+
+  newMessageGroupChat() {
+      this.bizFire.afStore.collectionGroup('chat', ref => {
+        ref = ref.where('type','==','chat');
+        ref = ref.where(`members.${this.bizFire.uid}`,'==',true);
+        ref = ref.where('created','>', this.bizFire.currentUserValue.lastPcLogin);
+        return ref;
+      }).stateChanges().subscribe((s) => {
+        if(s.length > 0) {
+          s.forEach(d => {
+            if(d.payload.doc.exists){
+              console.log(d.payload.doc.data());
+            }
+          });
+        }
+      })
+  };
 }

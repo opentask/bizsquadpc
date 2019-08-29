@@ -3,13 +3,14 @@ import { Electron } from './../../../providers/electron/electron';
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams,App, PopoverController } from 'ionic-angular';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { Subject, Subscription } from 'rxjs';
+import {Subject, Subscription, timer} from 'rxjs';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { BizFireService, userLinks } from '../../../providers/biz-fire/biz-fire';
 import { TokenProvider } from '../../../providers/token/token';
 import { NotificationService } from '../../../providers/notification.service';
 import {LangService} from "../../../providers/lang-service";
 import {IBizGroup, INotification, IUser, IUserData} from "../../../_models";
+import {UserStatusProvider} from "../../../providers/user-status";
 
 
 @IonicPage({
@@ -74,6 +75,7 @@ export class HomePage implements OnInit {
     private tokenService : TokenProvider,
     public popoverCtrl :PopoverController,
     private langService : LangService,
+    private userStatusService : UserStatusProvider,
     public _app : App) {
 
       this._unsubscribeAll = new Subject<any>();
@@ -185,8 +187,9 @@ export class HomePage implements OnInit {
     } else {
       this.statusMenu = true;
     }
-    if(value != this.myStatus)
-    this.bizFire.statusChanged(value);
+    if(value != this.myStatus){
+      this.userStatusService.statusChanged(value);
+    }
   }
 
   ngOnDestroy(): void {
@@ -199,9 +202,9 @@ export class HomePage implements OnInit {
   }
 
   logout(){
+    // 로그인 페이지에서 처리하는 값 초기화
     this.electron.resetValue();
-    this.bizFire.windowCloseAndUserStatus().then(() =>{
-      // 로그인 페이지에서 처리하는 값 초기화
+    this.userStatusService.windowCloseAndUserStatus().then(() =>{
       this.bizFire.signOut();
     });
   }
