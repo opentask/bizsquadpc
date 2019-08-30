@@ -133,8 +133,6 @@ export class ChatPage extends TakeUntil{
 
       });
 
-    this.chatService.newMessageGroupChat();
-
   }
 
   gotoRoom(value:IChat){

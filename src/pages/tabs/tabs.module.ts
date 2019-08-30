@@ -4,7 +4,6 @@ import { TabsPage } from './tabs';
 import { AccountService } from '../../providers/account/account';
 import { GroupColorProvider } from '../../providers/group-color';
 import {ComponentsModule} from "../../components/components.module";
-import { UserStatusProvider } from "../../providers/user-status";
 
 @NgModule({
   declarations: [
@@ -17,7 +16,6 @@ import { UserStatusProvider } from "../../providers/user-status";
   providers: [
     AccountService,
     GroupColorProvider,
-    UserStatusProvider
   ]
 })
 export class TabsPageModule {}

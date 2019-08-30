@@ -11,6 +11,7 @@ import * as electron from 'electron';
 import {IChat} from "../../_models/message";
 import {IUserData} from "../../_models";
 import firebase from "firebase";
+import {UserStatusProvider} from "../../providers/user-status";
 
 @IonicPage({
   name: 'page-login',
@@ -53,7 +54,7 @@ export class LoginPage implements OnInit {
     private bizFire: BizFireService,
     private loading: LoadingProvider,
     public formBuilder: FormBuilder,
-    private TokenProvider: TokenProvider
+    private userStatusService: UserStatusProvider
     ) {
       this.loginForm = formBuilder.group({
         email: ['', this.emailValidator],
@@ -122,8 +123,6 @@ export class LoginPage implements OnInit {
 
         await this.bizFire.loginWithEmail(email,password);
 
-        firebase.database().goOnline();
-
         this.electron.setCookieID('https://www.bizsquad.net','rememberID',this.loginForm.value['email']);
 
         const gid = await this.findLastBizGroup();
@@ -135,6 +134,8 @@ export class LoginPage implements OnInit {
         } else {
           this.navCtrl.setRoot('page-group-list');
         }
+
+        this.userStatusService.onUserStatusChange();
 
         this.loading.hide();
       } catch (e) {

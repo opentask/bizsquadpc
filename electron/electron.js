@@ -59,6 +59,7 @@ let history;
 let chatRooms;
 let selectChatRoom;
 let testRooms = {};
+let devMode = false;
 
 
 // 프로그램 중복 실행방지.
@@ -88,7 +89,9 @@ function historyWindow() {
         slashes: true
     }));
 
-    // history.webContents.openDevTools();
+    if(devMode) {
+      history.webContents.openDevTools();
+    }
 
     // 창이 닫히면 호출됩니다.
     history.on('closed', () => {
@@ -129,7 +132,9 @@ function createWindow() {
     mainWindowState.manage(win);
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    win.webContents.openDevTools();
+    if(devMode) {
+      win.webContents.openDevTools();
+    }
 
 
     // 창이 닫히면 호출됩니다.
@@ -260,7 +265,9 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     }
 
     // 개발자 도구를 엽니다. 개발완료 시 주석.
-    testRooms[chatRoomId].webContents.openDevTools();
+    if(devMode) {
+      testRooms[chatRoomId].webContents.openDevTools();
+    }
 
     // 창이 닫히면 호출됩니다.fㄴㅇㅇㄴㅁ
     testRooms[chatRoomId].on('closed', () => {

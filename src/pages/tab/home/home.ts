@@ -193,20 +193,22 @@ export class HomePage implements OnInit {
   }
 
   ngOnDestroy(): void {
-    console.log("tab/home destroy?");
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }
   windowClose() {
-    this.electron.windowClose();
+    this.bizFire.signOut().then(() => {
+      this.electron.windowClose();
+    });
   }
 
   logout(){
     // 로그인 페이지에서 처리하는 값 초기화
     this.electron.resetValue();
-    this.userStatusService.windowCloseAndUserStatus().then(() =>{
-      this.bizFire.signOut();
-    });
+    this.bizFire.signOut();
+    // this.userStatusService.windowCloseAndUserStatus().then(() =>{
+    //   this.bizFire.signOut();
+    // });
   }
 
   showNotify(){

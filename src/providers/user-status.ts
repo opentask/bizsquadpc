@@ -10,29 +10,41 @@ import {HttpClient} from "@angular/common/http";
 export class UserStatusProvider {
 
   constructor(private http: HttpClient,
-              private bizFire : BizFireService) { }
+              private bizFire : BizFireService)
+  {}
 
   onUserStatusChange() {
-    console.log("onUserStatusChange !!!");
+
     const userStatusDatabaseRef = firebase.database().ref(`/status/${this.bizFire.uid}`);
     const userStatusFirestoreRef = this.bizFire.afStore.doc(`users/${this.bizFire.uid}`);
 
     const isOnlineForFirestore = { onlineStatus : 'online' };
     const isOfflineForFirestore = { onlineStatus : 'offline' };
 
-    firebase.database().ref('.info/connected').on('value', (snapshot) => {
+    const connectedRef = firebase.database().ref('.info/connected');
+
+    connectedRef.on('value', (snapshot) => {
+
+      if(this.bizFire.currentUserValue) {
+        connectedRef.off();
+      }
+
+      console.log(snapshot.val());
+      console.log("snapshotsnapshot",snapshot);
+
+      // 오프라인 되었을때
       if(snapshot.val() == false) {
-        console.log("로그인했을때 실행 1",snapshot.val());
         userStatusFirestoreRef.set(isOfflineForFirestore,{merge : true});
         return;
       }
 
-      userStatusDatabaseRef.onDisconnect().set(isOfflineForFirestore)
-        .then(() => {
-          console.log("로그인했을때 실행 2",snapshot.val());
-        userStatusDatabaseRef.set(isOnlineForFirestore);
-        userStatusFirestoreRef.set(isOnlineForFirestore,{merge : true});
-      })
+      const onDisconnectRef = userStatusDatabaseRef.onDisconnect();
+
+      onDisconnectRef.set(isOfflineForFirestore)
+      .then(() => {
+          userStatusDatabaseRef.set(isOnlineForFirestore);
+          userStatusFirestoreRef.set(isOnlineForFirestore,{merge : true});
+      });
     });
   }
 

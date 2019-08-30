@@ -1,6 +1,6 @@
 {
   "name": "bizsquad",
-  "version": "3.0.66",
+  "version": "3.0.67",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -46,7 +46,7 @@
     "electron-push-receiver": "^2.1.2",
     "electron-updater": "^4.0.6",
     "electron-window-state": "^5.0.3",
-    "firebase": "^5.11.1",
+    "firebase": "^6.3.3",
     "ionic-angular": "3.9.2",
     "ionicons": "4.5.1",
     "jquery": "^3.3.1",
@@ -57,7 +57,7 @@
     "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "3.2.1",
+    "@ionic/app-scripts": "^3.2.4",
     "electron": "^4.0.1",
     "electron-builder": "^20.38.4",
     "typescript": "~3.2.2"

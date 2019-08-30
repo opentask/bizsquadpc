@@ -2,6 +2,7 @@ import { AccountService } from './../../../providers/account/account';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { HomePage } from './home';
+import {UserStatusProvider} from "../../../providers/user-status";
 @NgModule({
   declarations: [
     HomePage,
@@ -10,7 +11,8 @@ import { HomePage } from './home';
     IonicPageModule.forChild(HomePage),
   ],
   providers: [
-    AccountService
+    AccountService,
+    UserStatusProvider
   ]
 })
 export class HomePageModule {}

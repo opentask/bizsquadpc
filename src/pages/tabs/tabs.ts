@@ -15,8 +15,6 @@ import { UnreadCounter } from "../../classes/unread-counter";
 import {IBizGroup, INotification, IUnreadItem, IUserData} from "../../_models";
 import {IChat, IChatData} from "../../_models/message";
 import {Chat} from "../../biz-common/chat";
-import { UserStatusProvider } from "../../providers/user-status";
-import * as firebase from "firebase";
 
 @IonicPage({
   name: 'page-tabs',
@@ -77,16 +75,16 @@ export class TabsPage {
     public groupColorProvider : GroupColorProvider,
     private tokenService: TokenProvider,
     private langService: LangService,
-    private userStatusService : UserStatusProvider
     ) {
       // test notification count
       this._unsubscribeAll = new Subject<any>();
 
     // 채팅이 아닌 메인 윈도우를 우클릭으로 완전 종료시 유저상태변경하는 리스너.
     window.addEventListener('unload', () => {
-      this.userStatusService.windowCloseAndUserStatus().then(() => {
-          this.bizFire.signOut();
-      });
+      this.bizFire.signOut();
+      // this.userStatusService.windowCloseAndUserStatus().then(() => {
+      //     this.bizFire.signOut();
+      // });
     });
 
     this.bizFire.onUserSignOut
@@ -260,7 +258,6 @@ export class TabsPage {
   }
 
   ngOnDestroy(): void {
-    console.log("tabs destroy?");
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
     this.squadNewMessage = 0;
