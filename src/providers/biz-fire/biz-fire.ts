@@ -184,8 +184,9 @@ export class BizFireService {
 
             } else {
                 // clear current users' data
-                this._currentUser.next(null);
-
+                if(this._currentUser.getValue() == null){
+                    this._currentUser.next(null);
+                }
                 // * start load bizGroups
                 if(this.bizGroupSub){
                     this.bizGroupSub();
@@ -195,16 +196,22 @@ export class BizFireService {
         });
     }
 
-  async loginWithEmail(email: string, password: string): Promise<firebase.User> {
-    try {
-      await this.afAuth.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-      const user = await this.afAuth.auth.signInWithEmailAndPassword(email, password);
-      firebase.database().goOnline();
-      return user.user;
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
+  loginWithEmail(email: string, password: string): Promise<User> {
+    return new Promise<any>( (resolve, reject) => {
+        // * SET autoSignIn false
+        this.userState.autoSignIn = false;
+
+        this.afAuth.auth.signInWithEmailAndPassword(email, password).then(user => {
+            firebase.database().goOnline();
+            resolve(user);
+
+        }).catch(err => {
+            // reset to original. needed?
+            this.userState.autoSignIn = true;
+            console.error(err);
+            reject(err);
+        });
+    })
   }
 
   getCustomLinks(uid) {
@@ -309,7 +316,6 @@ export class BizFireService {
         this.userState.user = null;
         this.userState.status = 'signOut';
         this._authState.next(this.userState);
-        this._currentUser.next(null);
 
         // * called ONLY user signed Out from signIn.
         this.onUserSignOut.next(true);
@@ -321,6 +327,7 @@ export class BizFireService {
         this.userCustomLinks.next(null);
 
         this._userCustomToken.next(null);
+        this._currentUser.next(null);
 
         firebase.database().goOffline();
 

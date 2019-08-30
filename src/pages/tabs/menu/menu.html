@@ -1,7 +1,7 @@
 <ion-content no-padding no-bounce class="content-color">
   <ion-list class="listHeight" [ngClass]="{'listHeightAuto': !isListShown}">
     <ion-item class="group-list-item" no-lines (click)="showAllNotify()">
-      <ion-avatar class="all_notify_button" item-start>
+      <ion-avatar class="all_notify_button" item-start [ngClass]="{'select-group' : filterGroup == null}">
         all
         <ion-badge *ngIf="badgeCount" class="groupBadge">{{ badgeCount }}</ion-badge>
       </ion-avatar>

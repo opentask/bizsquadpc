@@ -158,6 +158,9 @@ export interface IBizGroupData {
   agile_squad_count?: number,
   notifyLength?: Number,
   badgeVisible?: boolean,
+
+  // max upload file size byte.
+  maxFileSize?: number,
 }
 
 export class GroupBase implements IBizGroupBase{

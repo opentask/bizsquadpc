@@ -29,9 +29,6 @@ export class UserStatusProvider {
         connectedRef.off();
       }
 
-      console.log(snapshot.val());
-      console.log("snapshotsnapshot",snapshot);
-
       // 오프라인 되었을때
       if(snapshot.val() == false) {
         userStatusFirestoreRef.set(isOfflineForFirestore,{merge : true});

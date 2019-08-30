@@ -1,6 +1,6 @@
 import { CacheService } from './../../../../providers/cache/cache';
 import { GroupColorProvider } from './../../../../providers/group-color';
-import {Component, NgZone, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import { IonicPage, NavController, NavParams, Content, PopoverController } from 'ionic-angular';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService } from '../../../../providers/chat.service';
@@ -49,7 +49,7 @@ export class MemberChatPage {
   roomCount : number;
   chatTitle = '';
 
-  maxFileSize = 5000000; // max file size = 5mb;
+  maxFileSize = 20000000; // max file size = 5mb;
   maxChatLength = 1000;
 
   loadProgress : number = 0;
@@ -58,6 +58,8 @@ export class MemberChatPage {
 
   chatForm : FormGroup;
   chatLengthError: string;
+
+  private selectBizGroupData : IBizGroupData;
 
   private addedMessages$ = new Subject<any>();
   private addedMessages: IMessage[];
@@ -186,6 +188,7 @@ export class MemberChatPage {
 
       this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.gid)).valueChanges().subscribe((data : IBizGroupData) => {
         this.groupMainColor = data.team_color;
+        this.selectBizGroupData = data;
         // 그룹 탈퇴 당할시 채팅방을 닫는다.
         // ...
       })
@@ -362,7 +365,9 @@ export class MemberChatPage {
     if(file.target.files.length === 0 ){
       return;
     }
-    if(file.target.files[0].size > this.maxFileSize){
+    const maxFileSize = this.selectBizGroupData.maxFileSize == null ? this.maxFileSize : this.selectBizGroupData.maxFileSize;
+
+    if(file.target.files[0].size > maxFileSize){
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
     } else {
       const attachedFile  = file.target.files[0];

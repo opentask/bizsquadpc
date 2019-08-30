@@ -40,7 +40,7 @@ export class SquadChatPage {
   selectSquad : IChat;
   ipc : any;
 
-  maxFileSize = 5000000; // max file size = 5mb;
+  maxFileSize = 20000000; // max file size = 5mb;
   maxChatLength = 1000;
 
   start : any;
@@ -53,6 +53,7 @@ export class SquadChatPage {
   chatForm : FormGroup;
   chatLengthError: string;
 
+  private selectBizGroupData : IBizGroupData;
 
   private addedMessages$ = new Subject<any>();
   private addedMessages: IMessage[];
@@ -151,9 +152,11 @@ export class SquadChatPage {
 
       // 그룹 데이터
       this.bizFire.afStore.doc(Commons.groupPath(this.selectSquad.data.gid))
-        .get().subscribe(doc => {
+        .valueChanges().subscribe((data : IBizGroupData) => {
 
-          const group : IBizGroup = BizGroupBuilder.buildWithData(this.selectSquad.data.gid,doc.data(),this.bizFire.uid);
+          const group : IBizGroup = BizGroupBuilder.buildWithData(this.selectSquad.data.gid,data,this.bizFire.uid);
+
+          this.selectBizGroupData = group.data;
 
           if(group.data.members[this.bizFire.uid] === true && group.data.status === true) {
             this.bizFire.onBizGroupSelected.next(group);
@@ -357,7 +360,9 @@ export class SquadChatPage {
     if(file.target.files.length === 0 ){
       return;
     }
-    if(file.target.files[0].size > this.maxFileSize){
+    const maxFileSize = this.selectBizGroupData.maxFileSize == null ? this.maxFileSize : this.selectBizGroupData.maxFileSize;
+
+    if(file.target.files[0].size > maxFileSize){
       this.electron.showErrorMessages("Failed to send file.","sending files larger than 10mb.");
     } else {
       const attachedFile  = file.target.files[0];

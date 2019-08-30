@@ -7,7 +7,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { Subject,combineLatest, BehaviorSubject } from 'rxjs';
 import { NotificationService } from '../../../providers/notification.service';
 import { AlertProvider } from '../../../providers/alert/alert';
-import {IBizGroup, INotification, INotificationItem} from "../../../_models";
+import {IBizGroup, INotification, INotificationItem, IUserData} from "../../../_models";
 @IonicPage({
   name: 'page-menu',
   segment: 'menu',
@@ -42,6 +42,12 @@ export class MenuPage {
   private _unsubscribeAll;
 
   isListShown : boolean = true;
+
+
+  get filterGroup(): IBizGroup {
+    return this.filterGroup$.getValue();
+  }
+
 
   private filterGroup$ = new BehaviorSubject<IBizGroup>(null);
 

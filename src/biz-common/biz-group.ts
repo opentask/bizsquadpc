@@ -13,6 +13,11 @@ export class BizGroup extends GroupBase implements IBizGroup {
     this.data = this.filterFalseMembers(data);
     this.uid = uid;
     this.ref = ref;
+
+    // set default max size
+    if(this.data.maxFileSize == null){
+      this.data.maxFileSize = 20 * 1000 * 1000; // 20MB
+    }
   }
 }
 
