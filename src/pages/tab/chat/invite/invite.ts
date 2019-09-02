@@ -25,8 +25,9 @@ import {CacheService} from "../../../../providers/cache/cache";
 })
 export class InvitePage {
 
-  serachValue : string;
   private _unsubscribeAll;
+
+  serachValue : string;
   currentGroup: IBizGroup;
   isChecked : IUser[] = [];
   groupMainColor: string;
@@ -57,11 +58,8 @@ export class InvitePage {
   ngOnInit(): void {
 
     this.bizFire.onBizGroupSelected
-    .pipe(
-        filter(g=>g!=null),
-        takeUntil(this._unsubscribeAll))
+    .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
     .subscribe((group) => {
-
       this.currentGroup = group;
       this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
       this.userList$ = this.cacheService.resolvedUserList(this.currentGroup.getMemberIds(false), Commons.userInfoSorter);
@@ -72,8 +70,6 @@ export class InvitePage {
   setUserName(userData : IUserData) : string {
     return Commons.initialChars(userData);
   }
-
-
 
   makeUserStatus(userData : IUserData) {
     return Commons.makeUserStatus(userData);
@@ -123,14 +119,11 @@ export class InvitePage {
   }
 
   closePopup(){
-    this.viewCtrl.dismiss().then(() => {
-      this.isChecked.forEach(u => {
-        u.data.isChecked = false;
-      })
-    });
+    this.viewCtrl.dismiss();
   }
 
   ngOnDestroy(): void {
+    this.isChecked.forEach(u => u.data.isChecked = false);
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }

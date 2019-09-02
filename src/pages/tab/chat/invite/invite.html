@@ -20,12 +20,12 @@
       <ng-container *ngFor="let user of userList">
         <ion-item class="userList" no-lines *ngIf="!serachValue || user.data.displayName.indexOf(serachValue.trim())>-1;">
             <ion-avatar item-start *ngIf="user && user.data.photoURL">
-                <img class="photoURL" src="{{ user.data.photoURL }}">
-                <ion-badge class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></ion-badge>
+              <img class="photoURL" src="{{ user.data.photoURL }}">
+              <div class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></div>
             </ion-avatar>
             <ion-avatar [style.background-color]="currentGroup.data.team_color" class="notPhoto" item-start *ngIf="user && user.data.photoURL == null">
-                <span class="displayName">{{ setUserName(user.data) }}</span>
-                <ion-badge class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></ion-badge>
+              <span class="displayName">{{ setUserName(user.data) }}</span>
+              <div class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></div>
             </ion-avatar>
             <ion-label *ngIf="user.data.displayName != null">{{ user.data.displayName }}</ion-label>
             <ion-label *ngIf="user.data.displayName == null">{{ user.data.email }}</ion-label>

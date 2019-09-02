@@ -106,6 +106,11 @@ export class TabsPage {
     .pipe(filter(d=>d!=null),takeUntil(this._unsubscribeAll),
         switchMap(group => {
 
+          // 그룹에서 탈퇴당하거나 그룹이 비활성화 되면...
+          if(!group.data.members[this.bizFire.uid] && group.data.status === false) {
+            this.goGroupList();
+          }
+
             //* have group changed?
             let reloadGroup = true;
             if(this.group != null){

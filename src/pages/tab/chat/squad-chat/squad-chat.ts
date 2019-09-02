@@ -35,7 +35,6 @@ export class SquadChatPage {
 
   roomCount : number;
   opacity = 100;
-  squadMainColor: any;
 
   selectSquad : IChat;
   ipc : any;
@@ -145,7 +144,6 @@ export class SquadChatPage {
     console.log("selectSquadselectSquad",this.selectSquad);
 
     if(this.selectSquad != null) {
-      this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
 
       //메세지 30개 가져오기
       this.getMessages();
@@ -175,7 +173,6 @@ export class SquadChatPage {
         if(snap.payload.exists) {
           this.selectSquad = new Chat(snap.payload.id,snap.payload.data(),this.bizFire.uid,snap.payload.ref);
 
-          this.squadMainColor = this.groupColorProvider.makeSquadColor(this.selectSquad.data);
           if(this.selectSquad.data.type === 'private'){
             this.roomCount = Object.keys(this.selectSquad.data.members).length;
           }

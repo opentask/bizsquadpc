@@ -12,10 +12,11 @@ import {BehaviorSubject, Observable, Subject, timer} from 'rxjs';
 import { Commons } from "./../../../../biz-common/commons";
 import {LangService} from "../../../../providers/lang-service";
 import {IChat, IChatData, IMessage, IMessageData, MessageBuilder} from "../../../../_models/message";
-import {IBizGroupData, IUser, IUserData} from "../../../../_models";
+import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../_models";
 import {Chat} from "../../../../biz-common/chat";
 import {ToastProvider} from "../../../../providers/toast/toast";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {BizGroupBuilder} from "../../../../biz-common/biz-group";
 
 @IonicPage({
   name: 'page-member-chat',
@@ -187,10 +188,17 @@ export class MemberChatPage {
       });
 
       this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.gid)).valueChanges().subscribe((data : IBizGroupData) => {
-        this.groupMainColor = data.team_color;
-        this.selectBizGroupData = data;
-        // 그룹 탈퇴 당할시 채팅방을 닫는다.
-        // ...
+
+        const group : IBizGroup = BizGroupBuilder.buildWithData(this.chatroom.data.gid,data,this.bizFire.uid);
+
+        this.selectBizGroupData = group.data;
+
+        if(group.data.members[this.bizFire.uid] === true && group.data.status === true) {
+          this.bizFire.onBizGroupSelected.next(group);
+        } else {
+          this.windowClose();
+        }
+
       })
     } else {
       this.electron.windowClose();

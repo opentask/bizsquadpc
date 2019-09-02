@@ -22,12 +22,13 @@
           <ng-container *ngIf="observableRoom.members[member.data.uid] == null">
             <ion-item class="userList" no-lines *ngIf="!serachValue || member.data.displayName.indexOf(serachValue.trim())>-1">
                 <ion-avatar item-start *ngIf="member && member.data.photoURL">
-                    <img class="photoURL" src="{{ member.data.photoURL }}">
-                    <ion-badge class="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
+                  <img class="photoURL" src="{{ member.data.photoURL }}">
+                  <div class="statusBadge" [style.background-color]="makeUserStatus(member.data)"></div>
                 </ion-avatar>
                 <ion-avatar class="notPhoto" [style.background-color]="currentGroup.team_color" item-start *ngIf="member && member.data.photoURL == null">
-                    <span class="displayName">{{ member.data.user_icon }}</span>
-                    <ion-badge class="statusBadge" [style.background-color]="member.data.user_onlineColor"></ion-badge>
+                  <span class="displayName"> {{ setUserName(member.data) }} </span>
+                  <div class="statusBadge" [style.background-color]="makeUserStatus(member.data)"></div>
+
                 </ion-avatar>
                 <!-- <h2 class="user-name" *ngIf="member.data.displayName != null">{{ member.data.displayName }}</h2>
                 <h2 class="user-name" *ngIf="member.data.displayName == null">{{ member.data.email }}</h2> -->

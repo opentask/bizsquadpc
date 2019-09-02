@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { BizFireService } from '../../../../../../providers';
 import { Commons } from '../../../../../../biz-common/commons';
-import { Subject } from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import { filter, takeUntil, map } from 'rxjs/operators';
 import { AccountService } from '../../../../../../providers/account/account';
 import { GroupColorProvider } from '../../../../../../providers/group-color';
-import {IBizGroupData, IUser} from "../../../../../../_models";
-import {IChatData, IroomData} from "../../../../../../_models/message";
+import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../../../_models";
+import {IChat, IChatData, IroomData} from "../../../../../../_models/message";
 import {ChatService} from "../../../../../../providers/chat.service";
+import {CacheService} from "../../../../../../providers/cache/cache";
 
 @IonicPage({
   name: 'page-invite-room',
@@ -24,14 +25,17 @@ export class InviteRoomPage {
   private _unsubscribeAll;
 
   serachValue : string;
-  allCollectedUsers: IUser[];
+  currentGroup: IBizGroup;
+
   isChecked : IUser[] = [];
-  currentGroup : IBizGroupData;
   groupMainColor: string;
 
-  roomData : IroomData;
+  roomData : IChat;
   observableRoom : IChatData;
-  members = [];
+
+  userList$: Observable<IUser[]>;
+
+  langPack: any;
 
   constructor(
     public navCtrl: NavController,
@@ -40,81 +44,44 @@ export class InviteRoomPage {
     public bizFire : BizFireService,
     public groupColorProvider: GroupColorProvider,
     public chatService : ChatService,
-    public accountService: AccountService) {
+    private cacheService : CacheService) {
 
       this._unsubscribeAll = new Subject<any>();
+
+      this.bizFire.onLang
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((l: any) => {
+          this.langPack = l.pack();
+      });
   }
 
   ngOnInit(): void {
-    console.log('ionViewDidLoad InviteRoomPage');
+
     this.roomData = this.navParams.get('roomData');
     console.log(this.roomData);
 
     this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.gid,this.roomData.cid)).valueChanges()
     .pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRoom : IChatData) => {
       this.observableRoom = chatRoom;
-    })
+    });
 
-    this.bizFire.afStore.doc(Commons.groupPath(this.roomData.data.gid)).valueChanges().pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((group : IBizGroupData) => {
-      this.currentGroup = group;
-      if(this.currentGroup){
-        this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.team_color);
-        let allUsers;
-        const members = this.currentGroup.members;
-        if(members){
-          // get all true users' id.
-          allUsers = Object.keys(members)
-          .filter(uid => members[uid] === true)
-          .filter(uid => uid != this.bizFire.currentUID)
-          .map(uid => uid);
-          console.log("valueChanges1",members);
-          console.log("valueChanges1",allUsers);
-        }
-        if (allUsers && allUsers.length > 0) {
-          this.accountService.getAllUserInfos(allUsers)
-              .pipe(filter(l => {
-                  //null check
-                  // getAllUserInfos returns, [null, null, {}, {}...];
-                  let ret;
-                  ret = l.filter(ll => ll != null).length === allUsers.length;
-                  return ret;
-                  }))
-              .subscribe(all => {
-                  this.allCollectedUsers = all;
-                  all.forEach(user => {
-                    const newData = user.data;
-                    newData['isChecked'] = user.data.isChecked = false;
+    this.bizFire.onBizGroupSelected
+      .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
+      .subscribe((group) => {
+        this.currentGroup = group;
+        this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
+        this.userList$ = this.cacheService.resolvedUserList(this.currentGroup.getMemberIds(false), Commons.userInfoSorter);
+    });
 
-                    if(user.data.displayName == null || user.data.displayName.length == 0){
-                      newData['user_icon'] = user.data.email.substr(0, 2);
-                    } else {
-                      let count = 2;
-                      if(user.data.displayName.length === 1){
-                        count = 1;
-                      }
-                      newData['user_icon'] = user.data.displayName.substr(0,count);
-                      newData['user_onlineColor'] = '#C7C7C7';
-                    }
-                    switch(user.data.onlineStatus){
-                      case 'online':
-                        newData['user_onlineColor'] = '#32db64';
-                        break;
-                      case 'offline':
-                        newData['user_onlineColor'] = '#C7C7C7';
-                        break;
-                      case 'wait':
-                        newData['user_onlineColor'] = '#FFBF00';
-                        break;
-                      case 'busy':
-                        newData['user_onlineColor'] = '#f53d3d';
-                        break;
-                    }
-                  })
-              });
-        }
-      }
-    })
+
+  }
+
+  setUserName(userData : IUserData) : string {
+    return Commons.initialChars(userData);
+  }
+
+  makeUserStatus(userData : IUserData) {
+    return Commons.makeUserStatus(userData);
   }
 
   invite(){
@@ -132,14 +99,14 @@ export class InviteRoomPage {
     })
   }
 
-  selectedUser() {
-    this.isChecked =this.allCollectedUsers.filter(u => u.data.isChecked == true);
+  selectedUser(users : IUser[]) {
+    this.isChecked = users.filter(u => u.data.isChecked == true);
     console.log(this.isChecked)
   }
 
-  badgeMember(member : IUser) {
-    member.data.isChecked = false;
-    this.isChecked =this.allCollectedUsers.filter(u => u.data.isChecked == true);
+  badgeMember(user : IUser) {
+    user.data.isChecked = false;
+    this.isChecked = this.isChecked.filter(u => u.data.isChecked == true);
     console.log(this.isChecked)
   }
 

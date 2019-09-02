@@ -17,7 +17,7 @@
       </ng-container>
 
       <div class="chatName-frame">
-        <h2 class="chatName" *ngIf="roomCount > 1">{{ chatTitle | slice : 0 : chatTitle.length - 1 }}</h2>
+        <h2 class="chatName" *ngIf="roomCount > 1">{{ chatTitle }}</h2>
         <h2 class="chatName" *ngIf="roomCount === 1">No conversation member</h2>
         <p class="members"><ion-icon name="person"></ion-icon> {{this.roomCount}} </p>
       </div>
@@ -73,7 +73,7 @@
           </ng-container>
 
           <ng-container *ngIf="getUserObserver(msg.data) | async; let user">
-            <ion-avatar class="notPhoto" [style.background-color]="groupMainColor"
+            <ion-avatar class="notPhoto" [style.background-color]="selectBizGroupData.team_color"
             item-start *ngIf="user.data.photoURL == null && msg.data.sender != this.bizFire.uid && !msg.data.isNotice">
               <span class="senderName">{{ user.data.displayName | slice:0:2 }}</span>
             </ion-avatar>
