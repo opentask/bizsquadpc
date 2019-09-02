@@ -9,11 +9,17 @@
     <ng-container *ngFor="let group of groups;">
       <ng-container *ngIf="groupNotify(group.gid)">
         <ion-item class="group-list-item" no-lines (click)="notifyFilter(group)">
-          <ion-avatar class="hoverAvatar" item-start *ngIf="!group.data.photoURL" [style.background-color]="group.data.team_color">
+          <ion-avatar class="hoverAvatar" item-start
+            *ngIf="!group.data.photoURL"
+            [style.background-color]="group.data.team_color"
+            [ngClass]="{'select-group' : filterGroup === group}">
             {{ group.data.team_name | slice:0:2 }}
             <ion-badge *ngIf="groupCountBadge(group.gid)" class="groupBadge">{{ groupCountBadge(group.gid) }}</ion-badge>
           </ion-avatar>
-          <ion-avatar class="hoverAvatar" *ngIf="group.data.photoURL" item-start [style.background-color]="group.data.team_color">
+          <ion-avatar class="hoverAvatar" item-start
+            *ngIf="group.data.photoURL"
+            [style.background-color]="group.data.team_color"
+            [ngClass]="{'select-group' : filterGroup === group}">
               <img style="border-radius: 15%;" src="{{ group.data.photoURL }}">
             <ion-badge *ngIf="groupCountBadge(group.gid)" class="groupBadge">{{ groupCountBadge(group.gid) }}</ion-badge>
           </ion-avatar>

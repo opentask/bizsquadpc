@@ -27,7 +27,7 @@ let history;
 let chatRooms;
 let selectChatRoom;
 let testRooms = {};
-let devMode = false;
+let devMode = true;
 
 // Electron 으로 Desktop 앱을 만드는 과정에서 자꾸 Tray 아이콘이 사라지는 현상이 발생하는 경우가 있는데, 이런 경우는 아래와 같이 수정하면 대부분 해결됩니다.
 let tray = null;

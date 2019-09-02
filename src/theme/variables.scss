@@ -32,27 +32,23 @@ $app-direction: ltr;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #3f51b5,
   secondary:  #32db64,
   danger:     #f53d3d,
   light:      #f4f4f4,
-  dark:       #666,
+
   // orange:     #FEA926,
   // 그룹별 지정 컬러
-  skyblue: #5b9ced,
+  default: #5b9ced,
   grey: grey,
-  orange: #f44336,
-  yellow: orange,
-  pink: #ff4081,
-  navy: #3f51b5,
-  blue: blue,
-  green: green,
-  lightskyblue: lightskyblue,
-  brown: brown,
-  darkolivegreen: darkolivegreen,
   warn: #f44336,
   accent: #ff4081,
-  default: #5b9ced,
+  primary: #3f51b5,
+  facebook: #3b5998,
+  green: green,
+  lightskyblue: lightskyblue,
+  dark: #111111,
+  forestgreen: forestgreen,
+  blue: blueviolet,
 );
 
 ::-webkit-scrollbar { display: none; }

@@ -169,7 +169,7 @@ export const language = {
       "online": {
         "ko": "온라인",
         "en": "online",
-        "ja": "終了"
+        "ja": "オンライン"
       },
       "wait": {
         "ko": "자리비움",

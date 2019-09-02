@@ -28,8 +28,6 @@ export class ChatPage extends TakeUntil{
   groupMainColor: string;
   group: IBizGroup;
 
-  unreadList: any[];
-
   langPack: any;
 
   memberUnreadTotalCount = 0;
@@ -54,6 +52,10 @@ export class ChatPage extends TakeUntil{
       .pipe(this.takeUntil)
       .subscribe((l: any) => {
         this.langPack = l.pack();
+    });
+
+    this.bizFire.onBizGroupSelected.pipe(this.takeUntil).subscribe((group : IBizGroup) => {
+      this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
     });
 
     // unread count map
@@ -81,9 +83,6 @@ export class ChatPage extends TakeUntil{
         console.log(this.memberUnreadTotalCount, this.squadUnreadTotalCount);
 
     });
-
-    this.groupMainColor = this.groupColorProvider.makeGroupColor(this.bizFire.onBizGroupSelected.getValue().data.team_color);
-    this.group = this.bizFire.onBizGroupSelected.getValue();
 
     // 멤버 채팅방
     this.chatService.onChatRoomListChanged

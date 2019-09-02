@@ -3,13 +3,14 @@ import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
 import { BizFireService } from './../biz-fire/biz-fire';
 import { takeUntil, filter } from 'rxjs/operators';
 import {IUser} from "../../_models";
+import {CacheService} from "../cache/cache";
 
 @Injectable()
 export class AccountService {
 
   private userObserverMap:{[uid: string]: BehaviorSubject<any>} = {};
 
-  constructor(private bizFire: BizFireService) {
+  constructor(private bizFire: BizFireService,private cacheService: CacheService) {
     this.bizFire.onUserSignOut.subscribe(()=>{
         //clear all map.
          Object.keys(this.userObserverMap).forEach(obj => {
@@ -33,9 +34,11 @@ export class AccountService {
                     if(d.payload.exists){
                         newUser.next({uid: d.payload.id, data: d.payload.data()} as IUser);
                     } else {
+                        newUser.next(null);
                         console.error(`user[${uid}] data not found from /users/${uid}`);
-
                     }
+                },error => {
+                  newUser.next(null);
                 });
 
             this.userObserverMap[uid] = newUser;
@@ -57,7 +60,8 @@ export class AccountService {
             const push = [];
 
             uids.forEach(uid => {
-                push.push(this.getUserObserver(uid));
+              push.push(this.cacheService.userGetObserver(uid));
+                // push.push(this.getUserObserver(uid));
             });
 
             return combineLatest(push);

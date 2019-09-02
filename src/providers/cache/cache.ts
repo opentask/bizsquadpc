@@ -336,39 +336,32 @@ export class CacheService {
   resolvedUserList(userIdList: string[], sorter?: any){
 
     return new Observable<IUser[]>( observer => {
-      const datas = [];
-      if(userIdList){
 
-        let totalTargetCount = userIdList.length;
-
-        userIdList.forEach(uid => {
-          this.userGetObserver(uid)
-            .pipe(take(1))
-            .subscribe((user: IUser) => {
-              if(user){
-                datas.push(user);
-                //console.log(datas);
-
-                if(datas.length === totalTargetCount){
-                  // all userdata received.
-                  if(sorter){
-                    datas.sort(sorter);
-                  }
-                  // emit event
-                  timer(0).subscribe(()=> {
-                    observer.next(datas);
-                    observer.complete();
-                  });
-                }
-              } else {
-                console.error('resolvedUserList found deleted user.', uid);
-                totalTargetCount --;
-              }
-            });
-        });
-      } else {
-        observer.next(datas);
+      if(userIdList == null || userIdList.length === 0){
+        observer.next([]);
+        observer.complete();
+        return;
       }
+
+      const datas = [];
+
+      let totalTargetCount = userIdList.length; // not using now...
+
+      userIdList.forEach(async (uid: string) => {
+
+        this.userGetObserver(uid).subscribe(user => {
+          totalTargetCount --;
+          if(user){
+            datas.push(user);
+          }
+
+          if(totalTargetCount === 0){
+            observer.next(datas);
+            observer.complete();
+          }
+        });
+      });
+
     });
   }
 

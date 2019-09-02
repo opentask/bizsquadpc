@@ -6,11 +6,13 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { BizFireService } from '../../../../providers';
 import { filter, takeUntil, map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import deepEqual from 'deep-equal';
 import {LangService} from "../../../../providers/lang-service";
-import {IBizGroup, IUser} from "../../../../_models";
+import {IBizGroup, IUser, IUserData} from "../../../../_models";
 import {IChat} from "../../../../_models/message";
+import {Commons} from "../../../../biz-common/commons";
+import {CacheService} from "../../../../providers/cache/cache";
 
 @IonicPage({
   name: 'page-invite',
@@ -26,15 +28,12 @@ export class InvitePage {
   serachValue : string;
   private _unsubscribeAll;
   currentGroup: IBizGroup;
-  gid: string;
-  allCollectedUsers: IUser[];
-  mydata: IUser;
   isChecked : IUser[] = [];
-  selectedNum :number = 0;
   groupMainColor: string;
-  groupButtonColor: string;
 
   langPack: any;
+
+  userList$: Observable<IUser[]>;
 
   constructor(
     public navCtrl: NavController,
@@ -43,7 +42,7 @@ export class InvitePage {
     public viewCtrl: ViewController,
     public chatService: ChatService,
     public electron : Electron,
-    public accountService: AccountService,
+    private cacheService : CacheService,
     private langService : LangService,
     public groupColorProvider: GroupColorProvider) {
       this._unsubscribeAll = new Subject<any>();
@@ -56,92 +55,30 @@ export class InvitePage {
   }
 
   ngOnInit(): void {
+
     this.bizFire.onBizGroupSelected
     .pipe(
         filter(g=>g!=null),
         takeUntil(this._unsubscribeAll))
     .subscribe((group) => {
-        //console.log('onBizGroupSelected', group.gid);
-        // set selected group to
-        this.currentGroup = group;
-        this.groupMainColor = group.data.team_color;
-        this.groupButtonColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
-        this.gid = this.currentGroup.gid;
+
+      this.currentGroup = group;
+      this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
+      this.userList$ = this.cacheService.resolvedUserList(this.currentGroup.getMemberIds(false), Commons.userInfoSorter);
     });
 
-    this.bizFire.onBizGroups
-    .pipe(filter(g=>g!=null)
-    ,takeUntil(this._unsubscribeAll))
-    .subscribe(groups => {
-      if(this.gid && groups.length > 0){
-        this.currentGroup = groups.find(g => g.gid === this.gid);
-        if(this.currentGroup){
-
-          let allUsers;
-          const members = this.currentGroup.data.members;
-          if (members) {
-            // get all true users' id.
-            allUsers = Object.keys(members)
-                .filter(uid => members[uid] === true)
-                .filter(uid => uid != this.bizFire.currentUID)
-                .map(uid => uid);
-            console.log("allUsers",allUsers)
-          }
-          // * get ALL USERS DATA !
-          if (allUsers && allUsers.length > 0) {
-            this.accountService.getAllUserInfos(allUsers)
-                .pipe(filter(l => {
-                    //null check
-                    // getAllUserInfos returns, [null, null, {}, {}...];
-                    let ret;
-                    ret = l.filter(ll => ll != null).length === allUsers.length;
-                    return ret;
-                    })
-                    ,
-                    takeUntil(this._unsubscribeAll)
-                    )
-                .subscribe(all => {
-                    this.allCollectedUsers = all;
-                    this.allCollectedUsers.filter(u => u.uid == this.bizFire.currentUID)
-                    .forEach(user =>{
-                      this.mydata = user;
-                    });
-                    all.forEach(user => {
-                      const newData = user.data;
-                      newData['isChecked'] = user.data.isChecked = false;
-
-                      if(user.data.displayName == null || user.data.displayName.length == 0){
-                        newData['user_icon'] = user.data.email.substr(0, 2);
-                      } else {
-                        let count = 2;
-                        if(user.data.displayName.length === 1){
-                          count = 1;
-                        }
-                        newData['user_icon'] = user.data.displayName.substr(0,count);
-                        newData['user_onlineColor'] = '#C7C7C7';
-                      }
-                      switch(user.data.onlineStatus){
-                        case 'online':
-                          newData['user_onlineColor'] = '#32db64';
-                          break;
-                        case 'offline':
-                          newData['user_onlineColor'] = '#C7C7C7';
-                          break;
-                        case 'wait':
-                          newData['user_onlineColor'] = '#FFBF00';
-                          break;
-                        case 'busy':
-                          newData['user_onlineColor'] = '#f53d3d';
-                          break;
-                      }
-                    })
-                });
-          }
-        }
-      }
-
-    })
   }
+
+  setUserName(userData : IUserData) : string {
+    return Commons.initialChars(userData);
+  }
+
+
+
+  makeUserStatus(userData : IUserData) {
+    return Commons.makeUserStatus(userData);
+  }
+
   invite(){
     let chatRooms = this.chatService.getChatRooms();
     console.log("chatRooms",chatRooms);
@@ -175,18 +112,22 @@ export class InvitePage {
     }
   }
 
-  selectedUser() {
-    this.isChecked =this.allCollectedUsers.filter(u => u.data.isChecked == true);
+  selectedUser(users : IUser[]) {
+    this.isChecked = users.filter(u => u.data.isChecked == true);
     console.log(this.isChecked)
   }
-  badgeMember(member : IUser) {
-    member.data.isChecked = false;
-    this.isChecked =this.allCollectedUsers.filter(u => u.data.isChecked == true);
+  badgeMember(user : IUser) {
+    user.data.isChecked = false;
+    this.isChecked = this.isChecked.filter(u => u.data.isChecked == true);
     console.log(this.isChecked)
   }
 
   closePopup(){
-    this.viewCtrl.dismiss();
+    this.viewCtrl.dismiss().then(() => {
+      this.isChecked.forEach(u => {
+        u.data.isChecked = false;
+      })
+    });
   }
 
   ngOnDestroy(): void {

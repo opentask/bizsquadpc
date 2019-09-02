@@ -68,18 +68,10 @@ export class MemberPage {
 
   ngOnInit(): void {
     this.bizFire.onBizGroupSelected
-    .pipe(
-        filter(g=>g!=null),
-        takeUntil(this._unsubscribeAll))
+    .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
     .subscribe((group) => {
-        //console.log('onBizGroupSelected', group.gid);
-        // set selected group to
-      console.log("그룹데이터 변경 :", group);
-        this.currentGroup = group;
-        if(this.currentGroup) {
-          this.filteredList = this.currentGroup.getMemberIds(true);
-        }
-        this.groupMainColor = group.data.team_color;
+      this.currentGroup = group;
+      this.filteredList = this.currentGroup.getMemberIds(true);
     });
   }
   // 자신 프로필 사진 클릭시 프로필보기.
@@ -118,23 +110,7 @@ export class MemberPage {
 
 
   makeUserStatus(userData : IUserData) {
-    switch(userData.onlineStatus) {
-      case 'online':
-        return '#32db64';
-        break;
-      case 'wait':
-        return '#FFBF00';
-        break;
-      case 'busy':
-        return '#f53d3d';
-        break;
-      case 'offline':
-        return '#C7C7C7';
-        break;
-      case undefined :
-        return '#C7C7C7';
-        break;
-    }
+    return Commons.makeUserStatus(userData);
   }
 
   ngOnDestroy(): void {
