@@ -47,13 +47,6 @@ export class BizFireService {
 
   ipc: any;
 
-  // * one and only login feature.
-  // * Do not use BehaviorSubject
-  public _authState: BehaviorSubject<any>;
-  get authState(): Observable<IUserState| null > {
-      return this._authState.asObservable();
-  }
-
   // * Push only user logged out.
   onUserSignOut: Subject<boolean>;
 
@@ -129,9 +122,6 @@ export class BizFireService {
 
         this.onUserSignOut = new Subject<boolean>();
 
-        // one and only
-        this._authState = new BehaviorSubject<any>(this.userState);
-
         this._lang.onLangMap.subscribe( (totalLanguageMap: any) => {
           // resolved when load lang.ts finished.
           this._onLang.next(this._lang);
@@ -202,9 +192,8 @@ export class BizFireService {
         this.userState.autoSignIn = false;
 
         this.afAuth.auth.signInWithEmailAndPassword(email, password).then(user => {
-            firebase.database().goOnline();
-            resolve(user);
-
+          resolve(user);
+          firebase.database().goOnline();
         }).catch(err => {
             // reset to original. needed?
             this.userState.autoSignIn = true;
@@ -308,6 +297,9 @@ export class BizFireService {
 
     signOut(): Promise<boolean> {
 
+        this._currentUser.next(null);
+        firebase.database().goOffline();
+
         // yes.
         if(this.bizGroupSub){
             this.bizGroupSub();
@@ -315,7 +307,6 @@ export class BizFireService {
         }
         this.userState.user = null;
         this.userState.status = 'signOut';
-        this._authState.next(this.userState);
 
         // * called ONLY user signed Out from signIn.
         this.onUserSignOut.next(true);
@@ -327,9 +318,6 @@ export class BizFireService {
         this.userCustomLinks.next(null);
 
         this._userCustomToken.next(null);
-        this._currentUser.next(null);
-
-        firebase.database().goOffline();
 
         return this.afAuth.auth.signOut().then(()=> {
 

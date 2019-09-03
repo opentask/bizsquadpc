@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {BizFireService} from "./biz-fire/biz-fire";
 import firebase from 'firebase';
 import {HttpClient} from "@angular/common/http";
+import {takeUntil} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class UserStatusProvider {
 
     connectedRef.on('value', (snapshot) => {
 
-      if(this.bizFire.currentUserValue) {
+      if(this.bizFire.currentUserValue == null) {
         connectedRef.off();
       }
 

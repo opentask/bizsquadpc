@@ -24,7 +24,6 @@ app.setAsDefaultProtocolClient('bizsquad');
 
 let win;
 let history;
-let chatRooms;
 let selectChatRoom;
 let testRooms = {};
 let devMode = true;
