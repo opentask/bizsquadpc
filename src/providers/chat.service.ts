@@ -386,21 +386,4 @@ export class ChatService {
       })
   }
 
-  reloadTitle(users : IUser[]) {
-    let chatTitle = '';
-    users.forEach(u => {
-      if(chatTitle.length > 0){
-        chatTitle += ',';
-      }
-      chatTitle += u.data.displayName;
-    });
-
-    if(users.length === 0){
-      // no user left only me.
-      // add no user
-      chatTitle = 'No user';
-    }
-    return chatTitle;
-  }
-
 }
