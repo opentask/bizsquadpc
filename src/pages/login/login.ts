@@ -70,13 +70,8 @@ export class LoginPage implements OnInit {
       if(roomData != null) {
         this.hideForm = false;
         this.loading.show();
-        if(roomData.data.type == "member"){
-          this.navCtrl.setRoot('page-member-chat',{roomData : roomData});
-          console.log("룸데이터가있습니다.",roomData); // "select member data" 출력)
-        } else {
-          console.log("스쿼드채팅입니다.",roomData);
-          this.navCtrl.setRoot('page-squad-chat',{roomData : roomData});
-        }
+        this.navCtrl.setRoot('page-chat-frame',{roomData : roomData});
+        this.loading.hide();
       } else {
         this.hideForm = true;
       }
