@@ -171,7 +171,9 @@ export class SquadChatPage {
       this.bizFire.afStore.doc(Commons.chatSquadPath(this.selectSquad.data.gid,this.selectSquad.cid))
       .snapshotChanges().subscribe((snap:any) => {
         if(snap.payload.exists) {
+          console.log("selectSquadthis.selectSquad",snap.payload.data());
           this.selectSquad = new Chat(snap.payload.id,snap.payload.data(),this.bizFire.uid,snap.payload.ref);
+          console.log("this.selectSquadthis.selectSquad",this.selectSquad);
 
           if(this.selectSquad.data.type === 'private'){
             this.roomCount = Object.keys(this.selectSquad.data.members).length;

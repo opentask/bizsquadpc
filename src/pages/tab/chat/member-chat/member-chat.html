@@ -17,9 +17,8 @@
       </ng-container>
 
       <div class="chatName-frame">
-        <h2 class="chatName" *ngIf="roomCount > 1">{{ chatTitle }}</h2>
-        <h2 class="chatName" *ngIf="roomCount === 1">No conversation member</h2>
-        <p class="members"><ion-icon name="person"></ion-icon> {{this.roomCount}} </p>
+        <h2 class="chatName">{{ chatTitle }}</h2>
+        <p class="members"><ion-icon name="person"></ion-icon> {{ roomCount }} </p>
       </div>
       <div class="header-menu">
 <!--        <button ion-button clear icon-only small color="dark">-->

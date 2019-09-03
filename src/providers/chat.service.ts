@@ -386,20 +386,21 @@ export class ChatService {
       })
   }
 
-  // newMessageGroupChat() {
-  //     this.bizFire.afStore.collectionGroup('chat', ref => {
-  //       ref = ref.where('type','==','chat');
-  //       ref = ref.where(`members.${this.bizFire.uid}`,'==',true);
-  //       ref = ref.where('created','>', this.bizFire.currentUserValue.lastPcLogin);
-  //       return ref;
-  //     }).stateChanges().subscribe((s) => {
-  //       if(s.length > 0) {
-  //         s.forEach(d => {
-  //           if(d.payload.doc.exists){
-  //             console.log(d.payload.doc.data());
-  //           }
-  //         });
-  //       }
-  //     })
-  // };
+  reloadTitle(users : IUser[]) {
+    let chatTitle = '';
+    users.forEach(u => {
+      if(chatTitle.length > 0){
+        chatTitle += ',';
+      }
+      chatTitle += u.data.displayName;
+    });
+
+    if(users.length === 0){
+      // no user left only me.
+      // add no user
+      chatTitle = 'No user';
+    }
+    return chatTitle;
+  }
+
 }

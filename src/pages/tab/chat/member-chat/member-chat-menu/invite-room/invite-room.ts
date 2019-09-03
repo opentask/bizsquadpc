@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { BizFireService } from '../../../../../../providers';
 import { Commons } from '../../../../../../biz-common/commons';
-import {Observable, Subject} from 'rxjs';
-import { filter, takeUntil, map } from 'rxjs/operators';
-import { AccountService } from '../../../../../../providers/account/account';
+import {combineLatest, Observable, Subject, zip} from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { GroupColorProvider } from '../../../../../../providers/group-color';
 import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../../../_models";
 import {IChat, IChatData, IroomData} from "../../../../../../_models/message";
@@ -31,7 +30,6 @@ export class InviteRoomPage {
   groupMainColor: string;
 
   roomData : IChat;
-  observableRoom : IChatData;
 
   userList$: Observable<IUser[]>;
 
@@ -57,23 +55,19 @@ export class InviteRoomPage {
 
   ngOnInit(): void {
 
-    this.roomData = this.navParams.get('roomData');
-    console.log(this.roomData);
-
-    this.bizFire.afStore.doc(Commons.chatDocPath(this.roomData.data.gid,this.roomData.cid)).valueChanges()
-    .pipe(takeUntil(this._unsubscribeAll)).subscribe((chatRoom : IChatData) => {
-      this.observableRoom = chatRoom;
-    });
-
-    this.bizFire.onBizGroupSelected
-      .pipe(filter(g=>g!=null),takeUntil(this._unsubscribeAll))
-      .subscribe((group) => {
+    combineLatest(this.chatService.onSelectChatRoom,this.bizFire.onBizGroupSelected)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(([chat,group]) => {
+        this.roomData = chat;
         this.currentGroup = group;
-        this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
-        this.userList$ = this.cacheService.resolvedUserList(this.currentGroup.getMemberIds(false), Commons.userInfoSorter);
-    });
+        this.groupMainColor = this.groupColorProvider.makeGroupColor(this.currentGroup.data.team_color);
 
+        const inviteUids = this.currentGroup.getMemberIds(false)
+          .filter(uid => Object.keys(this.roomData.data.members)
+          .find(cUid => cUid === uid) == null);
 
+        this.userList$ = this.cacheService.resolvedUserList(inviteUids, Commons.userInfoSorter);
+      });
   }
 
   setUserName(userData : IUserData) : string {
@@ -115,7 +109,7 @@ export class InviteRoomPage {
   }
 
   ngOnDestroy(): void {
-    console.log("구독종료");
+    this.isChecked.forEach(u => u.data.isChecked = false);
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
   }

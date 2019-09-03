@@ -1,41 +1,39 @@
 <ng-container *ngIf="currentGroup">
-
   <ion-header>
       <!-- 선택된 멤버가 없으면 텍스트 출력 -->
-      <p *ngIf="isChecked.length == 0" class="title" [style.background-color]="currentGroup.team_color" no-margin>Select the member<br> you want to chat with in the list.</p>
+      <p *ngIf="isChecked.length == 0" class="title" [style.background-color]="currentGroup.data.team_color" no-margin>Select the member<br> you want to chat with in the list.</p>
       <ion-scroll class="scrollable" scrollY="true">
-        <div *ngIf="isChecked && isChecked.length > 0" class="badge-memberCon" [style.background-color]="currentGroup.team_color">
-          <ng-container *ngFor="let member of allCollectedUsers;">
-            <button *ngIf="member.data.isChecked" class="memberList-button" ion-button icon-end round color="light" (click)="badgeMember(member)">
-                {{ member.data.displayName }}
+        <div *ngIf="isChecked && isChecked.length > 0" class="badge-memberCon" [style.background-color]="currentGroup.data.team_color">
+          <ng-container *ngFor="let user of isChecked;">
+            <button *ngIf="user.data.isChecked" class="memberList-button" ion-button icon-end round color="light" (click)="badgeMember(user)">
+                {{ user.data.displayName }}
                 <ion-icon name="close"></ion-icon>
             </button>
           </ng-container>
         </div>
       </ion-scroll>
-      <ion-searchbar [style.background-color]="currentGroup.team_color" [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
+      <ion-searchbar [style.background-color]="currentGroup.data.team_color" [(ngModel)]="serachValue" mode="ios"></ion-searchbar>
     </ion-header>
 
     <ion-content no-padding>
       <ion-scroll class="scrollable" scrollY="true">
-        <ion-list no-margin *ngFor="let member of allCollectedUsers;">
-          <ng-container *ngIf="observableRoom.members[member.data.uid] == null">
-            <ion-item class="userList" no-lines *ngIf="!serachValue || member.data.displayName.indexOf(serachValue.trim())>-1">
-                <ion-avatar item-start *ngIf="member && member.data.photoURL">
-                  <img class="photoURL" src="{{ member.data.photoURL }}">
-                  <div class="statusBadge" [style.background-color]="makeUserStatus(member.data)"></div>
+        <ion-list no-margin *ngIf="userList$ | async as userList">
+          <ng-container *ngFor="let user of userList">
+            <ng-container>
+              <ion-item class="userList" no-lines *ngIf="!serachValue || user.data.displayName.indexOf(serachValue.trim())>-1">
+                <ion-avatar item-start *ngIf="user && user.data.photoURL">
+                  <img class="photoURL" src="{{ user.data.photoURL }}">
+                  <div class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></div>
                 </ion-avatar>
-                <ion-avatar class="notPhoto" [style.background-color]="currentGroup.team_color" item-start *ngIf="member && member.data.photoURL == null">
-                  <span class="displayName"> {{ setUserName(member.data) }} </span>
-                  <div class="statusBadge" [style.background-color]="makeUserStatus(member.data)"></div>
-
+                <ion-avatar class="notPhoto" [style.background-color]="currentGroup.data.team_color" item-start *ngIf="user && user.data.photoURL == null">
+                  <span class="displayName"> {{ setUserName(user.data) }} </span>
+                  <div class="statusBadge" [style.background-color]="makeUserStatus(user.data)"></div>
                 </ion-avatar>
-                <!-- <h2 class="user-name" *ngIf="member.data.displayName != null">{{ member.data.displayName }}</h2>
-                <h2 class="user-name" *ngIf="member.data.displayName == null">{{ member.data.email }}</h2> -->
-                <ion-label *ngIf="member.data.displayName != null">{{ member.data.displayName }}</ion-label>
-                <ion-label *ngIf="member.data.displayName == null">{{ member.data.email }}</ion-label>
-                <ion-checkbox slot="end" [(ngModel)]="member.data.isChecked" mode="ios" (click)="selectedUser()"></ion-checkbox>
-            </ion-item>
+                <ion-label *ngIf="user.data.displayName != null">{{ user.data.displayName }}</ion-label>
+                <ion-label *ngIf="user.data.displayName == null">{{ user.data.email }}</ion-label>
+                <ion-checkbox slot="end" [color]="groupMainColor" [(ngModel)]="user.data.isChecked" mode="ios" (click)="selectedUser(userList)"></ion-checkbox>
+              </ion-item>
+            </ng-container>
           </ng-container>
         </ion-list>
       </ion-scroll>

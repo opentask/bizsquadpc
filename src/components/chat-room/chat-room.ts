@@ -131,6 +131,9 @@ export class ChatRoomComponent extends TakeUntil {
             }
             this.chatTitle += u.data.displayName;
           });
+          if(users.length === 0) {
+            this.chatTitle = this.langPack['no_members'];
+          }
         });
 
       this.userCount = this.room.getMemberCount();

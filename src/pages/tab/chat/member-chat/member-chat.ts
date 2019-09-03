@@ -68,6 +68,8 @@ export class MemberChatPage {
 
   private oldScrollHeight : number;
 
+  userList$: Observable<IUser[]>;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -166,24 +168,23 @@ export class MemberChatPage {
       this.bizFire.afStore.doc(Commons.chatDocPath(this.chatroom.data.gid,this.chatroom.cid))
       .snapshotChanges().subscribe((snap : any) => {
         if(snap.payload.exists) {
-          const newSquadData = new Chat(snap.payload.id,snap.payload.data(),this.bizFire.uid,snap.payload.ref);
+          this.chatroom = new Chat(snap.payload.id,snap.payload.data(),this.bizFire.uid,snap.payload.ref);
 
-          if(Object.keys(newSquadData.data.members).length !== this.roomCount) {
-            this.cacheService.resolvedUserList(newSquadData.getMemberIds(false),Commons.userInfoSorter)
-              .pipe(take(1))
-              .subscribe((users :IUser[]) => {
-                this.chatTitle = '';
-                users.forEach(u => {
-                  if(this.chatTitle.length > 0){
-                    this.chatTitle += ',';
-                  }
-                  this.chatTitle += u.data.displayName;
-               });
+          timer(0).subscribe(() => {
+            this.cacheService.resolvedUserList(this.chatroom.getMemberIds(false), Commons.userInfoSorter)
+            .pipe(take(1))
+            .subscribe((users: IUser[]) => {
+              this.chatTitle = '';
+              users.forEach(u => {
+                if (this.chatTitle.length > 0) {
+                  this.chatTitle += ',';
+                }
+                this.chatTitle += u.data.displayName;
+              });
             });
-          }
-          this.chatroom = newSquadData;
-          this.members = this.chatroom.data.members;
-          this.roomCount = Object.keys(this.chatroom.data.members).length;
+            this.chatService.onSelectChatRoom.next(this.chatroom);
+            this.roomCount = Object.keys(this.chatroom.data.members).length;
+          });
         }
       });
 
@@ -198,8 +199,8 @@ export class MemberChatPage {
         } else {
           this.windowClose();
         }
-
       })
+
     } else {
       this.electron.windowClose();
     }
@@ -418,7 +419,7 @@ export class MemberChatPage {
     this.electron.windowMimimize();
   }
   presentPopover(ev): void {
-    let popover = this.popoverCtrl.create('page-member-chat-menu',{roomData : this.chatroom}, {cssClass: 'page-member-chat-menu'});
+    let popover = this.popoverCtrl.create('page-member-chat-menu',{}, {cssClass: 'page-member-chat-menu'});
     popover.present({ev: ev});
   }
 
