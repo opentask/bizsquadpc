@@ -207,6 +207,23 @@ export class Commons {
         return ret;
       }
 
+      static isImageFile(file: any): boolean {
+        let ret = file.type === 'image/png';
+        if(!ret){
+          ret = file.type === 'image/jpg';
+        }
+        if(!ret){
+          ret = file.type === 'image/jpeg';
+        }
+        if(!ret){
+          ret = file.type === 'image/gif';
+        }
+        if(!ret){
+          ret = file.type.indexOf('image/') != -1;
+        }
+        return ret;
+      }
+
       static makeUserStatus(userData : IUserData) {
         switch(userData.onlineStatus) {
           case 'online':

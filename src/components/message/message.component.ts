@@ -1,20 +1,19 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {BizFireService} from '../../biz-fire/biz-fire.service';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {IFile, IMessage, IUser} from '../../_models';
-import {filter, map, takeUntil} from 'rxjs/operators';
-import {MessageService} from '../../core/message.service';
+import {filter, takeUntil} from 'rxjs/operators';
 import {ActivatedRoute, Router} from '@angular/router';
-import {CacheService} from '../../core/cache/cache.service';
 import {DomSanitizer} from '@angular/platform-browser';
-import {Commons} from '../commons';
+import {IMessage} from "../../_models/message";
+import {IUser} from "../../_models";
+import {BizFireService} from "../../providers";
+import {CacheService} from "../../providers/cache/cache";
+import {Commons} from "../../biz-common/commons";
 
 @Component({
   selector: 'app-message',
-  templateUrl: './message.component.html',
-  styleUrls: ['./message.component.scss'],
-  //encapsulation: ViewEncapsulation.None,
+  templateUrl: 'message.component.html'
 })
+
 export class MessageComponent implements OnInit, OnDestroy {
 
   // show delete/edit menu
@@ -56,7 +55,7 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   @Output()
   onMenu = new EventEmitter<any>();
-  
+
   // css my message style.
   isMyMessage = false;
 
@@ -66,7 +65,6 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   constructor(public bizFire: BizFireService,
               private domSanitizer: DomSanitizer,
-              private messageService: MessageService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
               private cacheService: CacheService,
@@ -87,19 +85,19 @@ export class MessageComponent implements OnInit, OnDestroy {
     * show comment count if this is not in comment mode.
     * */
     if(this.comment === true){
-      
+
       if(this.message.ref){
         this.bizFire.afStore.doc(this.message.ref.path).collection('chat')
           .snapshotChanges()
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe(changes => this.commentCount = changes.length);
-        
+
       } else {
-        
+
         console.error('this.message.ref is null.');
       }
     }
-    
+
   }
 
   ngOnDestroy(): void {
@@ -118,19 +116,19 @@ export class MessageComponent implements OnInit, OnDestroy {
 
     // async get user's info include me.
     const uid = this._message.data.sender;
-    
+
 
     if(uid){
       // get photoURL
       this.isMyMessage = uid === this.bizFire.currentUID;
 
       if(this.isMyMessage){
-        
+
         const userData = this.bizFire.currentUserValue;
         this.setUserInfo({uid: this.bizFire.currentUID, data: userData});
 
       } else {
-        
+
         this.cacheService.userGetObserver(uid)
           .pipe(takeUntil(this._unsubscribeAll), takeUntil(this.bizFire.onUserSignOut))
           .subscribe(user =>{
@@ -145,8 +143,8 @@ export class MessageComponent implements OnInit, OnDestroy {
           });
       }
     }
-    
-    
+
+
   }
 
   private convertMessage(message: IMessage): string {
@@ -259,6 +257,6 @@ export class MessageComponent implements OnInit, OnDestroy {
 
     return this.noticeMessageSubject.asObservable();
   }
-  
-  
+
+
 }

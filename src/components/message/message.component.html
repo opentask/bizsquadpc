@@ -1,5 +1,4 @@
-<div class=" message-frame d-flex text-biz-dark mb-3"
-     *ngIf="message">
+<div class=" message-frame d-flex text-biz-dark mb-3" *ngIf="message">
 
   <ng-container *ngIf="!message.data.isNotice; else notice">
 
@@ -7,7 +6,6 @@
     <div class="flex-shrink-0">
       <app-avatar-button [user]="currentUserData" [displayNameOn]="false" [emailOn]="false"></app-avatar-button>
     </div>
-
 
     <!--CENTER-->
     <div class="flex-grow-1 message-content d-flex flex-column flex-shrink-1" style="word-break: break-word;">
