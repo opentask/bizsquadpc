@@ -1,5 +1,4 @@
-<ion-header>
-  <ion-item class="drag listBorder" no-margin no-padding no-lines>
+ <ion-item class="drag listBorder" no-margin no-padding no-lines>
     <div class="electron-menu">
       <ion-item class="opacity">
         <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="electron.setOpacity(opacity)"></ion-range>
@@ -15,10 +14,9 @@
       <h2 class="chatName">{{ chatTitle }}</h2>
       <p class="members"><ion-icon name="person"></ion-icon> {{ userCount }} </p>
     </div>
-    <div class="header-menu">
+    <div class="header-menu" *ngIf="isMemberChat">
       <button ion-button clear icon-only small color="dark" (tap)="presentPopover($event)">
         <ion-icon name="menu"></ion-icon>
       </button>
     </div>
   </ion-item>
-</ion-header>

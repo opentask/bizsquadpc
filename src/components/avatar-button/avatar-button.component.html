@@ -1,0 +1,32 @@
+<div class="d-flex flex-row align-items-center" *ngIf="userData">
+
+  <div class="flex-shrink-0">
+    <!--AVATAR IMAGE -->
+    <div class="avatar-button mr-2" *ngIf="photoURL">
+      <img class="avatar-photo-image" src="{{photoURL}}" [ngClass]="{'smallIcon': smallIcon}" >
+    </div>
+    <!--ROUND TEXT NAME -->
+    <div class="avatar-button mr-2" *ngIf="!photoURL">
+      <div class="text-white font-14 mat-elevation-z avatar-photo-image d-flex justify-content-center align-items-center"
+              [ngClass]="{'smallIcon': smallIcon}"
+              [ngStyle]="{'background-color': isMyMessage? defaultMyColor : team_color}">
+        {{shortName}}
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="displayNameOn && userData.displayName" class="d-flex flex-column justify-content-around">
+
+    <!--DISPLAY NAME-->
+    <div class="font-14" *ngIf="userData.displayName">
+      <a class="avatar-displayName " (click)="onNameClick()">{{userData.displayName}}</a>
+    </div>
+
+    <!--EMAIL-->
+    <div class="d-flex text-biz-gray font-12" *ngIf="userData.email && emailOn">
+      <div>{{userData.email}}</div>
+    </div>
+  </div>
+
+</div>
+

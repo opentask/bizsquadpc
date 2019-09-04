@@ -11,7 +11,7 @@
 // Shared Sass variables, which can be used to adjust Ionic's
 // default Sass variables, belong in "theme/variables.scss".
 //
-
+@import '../quill/quill.scss';
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
@@ -157,3 +157,66 @@ ion-item:hover a {
   }
 }
 
+.font-16{
+  font-size: 16px;
+}
+.font-15{
+  font-size: 15px;
+}
+.font-14{
+  font-size: 14px;
+}
+
+.font-13{
+  font-size: 13px;
+}
+
+.font-12{
+  font-size: 12px;
+}
+.font-11{
+  font-size: 11px;
+}
+
+.bg-biz-blue {
+  background-color:  #5b9ced;
+  color: white;
+}
+.avatar-photoURL {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.soft-black {
+  color:#666;
+}
+.onFavorites{
+  color: rgb(239, 214, 52);
+}
+
+.overflow-auto {
+  overflow: auto !important;
+}
+
+.text-biz-gray {
+  //color: #717a82 !important;
+  color: #6C757D !important; //text-muted
+}
+
+.text-biz-dark {
+  color: #1a1a1a !important;
+  //color: #3b5998 !important;
+}
+
+.text-facebook {
+  color: #3b5998 !important;
+}
+
+.font-weight-500 {
+  font-weight: 500;
+}
+
+.ql-editor-custom .ql-editor{
+  padding: 0px !important;
+}

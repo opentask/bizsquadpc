@@ -1,0 +1,14 @@
+<div *ngIf="file" class="">
+  <ng-container>
+
+    <a target="_blank" href="{{file.url}}" [hidden]="showSpinner">
+      <img src="{{downloadImage}}" class="default-frame" (load)="onLoad($event)">
+    </a>
+
+    <div class="d-flex justify-content-center align-items-center default-frame bg-white" *ngIf="showSpinner" >
+      <img src="imgs/loading_5.gif">
+    </div>
+
+  </ng-container>
+
+</div>

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule} from '@angular/core';
 import { ProgressBarComponent } from './progress-bar/progress-bar';
 import { ChatRoomComponent } from './chat-room/chat-room';
 import {CommonModule} from "@angular/common";
@@ -8,6 +8,9 @@ import {IonicModule} from "ionic-angular";
 import {LastMessageComponent} from "./last-message/last-message.component";
 import { ChatHeaderComponent } from './chat-header/chat-header';
 import {MessageComponent} from "./message/message.component";
+import {QuillModule} from 'ngx-quill';
+import {AvatarButtonComponent} from "./avatar-button/avatar-button.component";
+import {ImgComponent} from "./img/img.component";
 
 @NgModule({
 	declarations: [
@@ -15,13 +18,17 @@ import {MessageComponent} from "./message/message.component";
     ChatRoomComponent,
     LastMessageComponent,
     ChatHeaderComponent,
-    MessageComponent
+    MessageComponent,
+    AvatarButtonComponent,
+    ImgComponent
   ],
   imports: [
     CommonModule,
     NgbModule,
     PipesModule,
-    IonicModule
+    IonicModule,
+    //QuillEditor
+    QuillModule.forRoot(),
 
   ],
   exports: [
@@ -30,7 +37,9 @@ import {MessageComponent} from "./message/message.component";
     LastMessageComponent,
     NgbModule,
     ChatHeaderComponent,
-    MessageComponent
+    MessageComponent,
+    AvatarButtonComponent,
+    ImgComponent
   ]
 })
-export class ComponentsModule {}
+export class ComponentsModule { }

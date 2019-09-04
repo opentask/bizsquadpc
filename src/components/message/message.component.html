@@ -13,22 +13,21 @@
       <!--NAME + TITLE-->
       <div class="d-flex align-items-center justify-content-between"
            [ngClass]="{'font-weight-bold': isMyMessage}">
-        <span class="font-14 text-facebook mr-2"  >{{displayName}} </span>
-        <span class="font-12 text-biz-gray"> {{message.data.created | timestampToDate | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+        <span class="font-14 text-facebook mr-2">{{displayName}} </span>
+        <span class="font-12 text-biz-gray"> {{message.data.created | timestampToDate | date: 'yyyy-MM-dd HH:mm'}}</span>
       </div>
 
       <!--TITLE-->
       <div class="font-16 text-biz-dark font-weight-500 pb-2 post-title" *ngIf="message.data.title">{{message.data.title}}</div>
 
       <!--quill.snow.css have 12px 15px padding-->
-      <div class="ql-editor-custom pb-3">
+      <div class="ql-editor-custom pb-4">
         <quill-editor
           [theme]="'bubble'"
           [format]="'html'"
           [(ngModel)]="text"
           [readOnly]="true"
-          [modules]="{toolbar: false}"
-        >
+          [modules]="{toolbar: false}">
         </quill-editor>
       </div>
       <!--
@@ -81,28 +80,28 @@
 
 
     <!--RIGHT MENU BUTTON-->
-    <div class="flex-shrink-0 " style="width: 40px;" *ngIf="menu">
+<!--    <div class="flex-shrink-0 " style="width: 40px;" *ngIf="menu">-->
 
-      <div *ngIf="message.data.sender === bizFire.currentUID">
+<!--      <div *ngIf="message.data.sender === bizFire.currentUID">-->
 
-        <button mat-icon-button [matMenuTriggerFor]="messageMenu" class="squad-menu-button">
-          <mat-icon class="text-secondary">more_vert</mat-icon>
-        </button>
-        <mat-menu #messageMenu="matMenu" class="big-menu">
+<!--        <button mat-icon-button [matMenuTriggerFor]="messageMenu" class="squad-menu-button">-->
+<!--          <mat-icon class="text-secondary">more_vert</mat-icon>-->
+<!--        </button>-->
+<!--        <mat-menu #messageMenu="matMenu" class="big-menu">-->
 
-          <!--EDIT MESSAGE -->
-          <button mat-menu-item (click)="onEditMessage()" >
-            <span> {{langPack['edit']}} </span>
-          </button>
+<!--          &lt;!&ndash;EDIT MESSAGE &ndash;&gt;-->
+<!--          <button mat-menu-item (click)="onEditMessage()" >-->
+<!--            <span> {{langPack['edit']}} </span>-->
+<!--          </button>-->
 
-          <!--DELETE-->
-          <button mat-menu-item (click)="onDeleteMessageClick()" >
-            <span class="text-danger"> {{langPack['delete']}} </span>
-          </button>
+<!--          &lt;!&ndash;DELETE&ndash;&gt;-->
+<!--          <button mat-menu-item (click)="onDeleteMessageClick()" >-->
+<!--            <span class="text-danger"> {{langPack['delete']}} </span>-->
+<!--          </button>-->
 
-        </mat-menu>
-      </div>
-    </div>
+<!--        </mat-menu>-->
+<!--      </div>-->
+<!--    </div>-->
 
   </ng-container>
 

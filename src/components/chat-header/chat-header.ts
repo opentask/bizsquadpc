@@ -21,6 +21,8 @@ export class ChatHeaderComponent {
 
   private langPack : any;
 
+  public isMemberChat: boolean;
+
   @Input()
   set chat(room: IChat) {
     if(room) {
@@ -72,6 +74,7 @@ export class ChatHeaderComponent {
     console.log(this.langPack);
 
     if(this.room.data.type === 'member') {
+      this.isMemberChat = true;
       this.cacheService.resolvedUserList(this.room.getMemberIds(false), Commons.userInfoSorter)
         .subscribe((users :IUser[]) => {
           this.chatTitle = '';
@@ -92,6 +95,7 @@ export class ChatHeaderComponent {
 
     } else {
       // 스쿼드 채팅.
+      this.isMemberChat = false;
       this.chatTitle = this.room.data.name;
       this.userCount = this.room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : this.room.getMemberCount();
     }

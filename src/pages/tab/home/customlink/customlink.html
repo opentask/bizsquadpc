@@ -1,6 +1,6 @@
 
 <ion-header>
-  <p no-margin class="title" [style.background-color]="groupMainColor">
+  <p no-margin class="title" [style.background-color]="currentGroup.data.team_color">
     Add Link
   </p>
 </ion-header>
@@ -11,7 +11,7 @@
           <ion-label stacked>Title <span style="color:#FF6767">(Limit the Length is 10)</span></ion-label>
           <ion-input type="text" maxlength="10"></ion-input>
         </ion-item>
-      
+
         <ion-item formControlName="linkUrl" style="width:90%" class="mg-left-16" no-padding>
           <ion-label stacked>Url</ion-label>
           <ion-input type="text"></ion-input>

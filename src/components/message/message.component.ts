@@ -1,8 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
-import {ActivatedRoute, Router} from '@angular/router';
-import {DomSanitizer} from '@angular/platform-browser';
 import {IMessage} from "../../_models/message";
 import {IUser} from "../../_models";
 import {BizFireService} from "../../providers";
@@ -40,7 +38,7 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   private _unsubscribeAll;
   shortName; // 'YO'
-  displayName;
+  displayName ='';
   photoURL;
   text: string;
 
@@ -64,9 +62,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   private noticeMessageSubject = new BehaviorSubject<string>('hello');
 
   constructor(public bizFire: BizFireService,
-              private domSanitizer: DomSanitizer,
-              private router: Router,
-              private activatedRoute: ActivatedRoute,
               private cacheService: CacheService,
   ) {
     this._unsubscribeAll = new Subject<any>();
@@ -81,9 +76,6 @@ export class MessageComponent implements OnInit, OnDestroy {
         this.langPack = l.pack('squad');
       });
 
-    /*
-    * show comment count if this is not in comment mode.
-    * */
     if(this.comment === true){
 
       if(this.message.ref){
@@ -120,31 +112,21 @@ export class MessageComponent implements OnInit, OnDestroy {
 
     if(uid){
       // get photoURL
-      this.isMyMessage = uid === this.bizFire.currentUID;
+      this.isMyMessage = uid === this.bizFire.uid;
 
-      if(this.isMyMessage){
-
-        const userData = this.bizFire.currentUserValue;
-        this.setUserInfo({uid: this.bizFire.currentUID, data: userData});
-
-      } else {
-
-        this.cacheService.userGetObserver(uid)
-          .pipe(takeUntil(this._unsubscribeAll), takeUntil(this.bizFire.onUserSignOut))
-          .subscribe(user =>{
-            if(user){
-              this.setUserInfo(user);
-            } else {
-              // user not found from Firestore.
-              this.photoURL = null;
-              this.shortName = 'U';
-              this.displayName = 'unknown user';
-            }
-          });
-      }
+      this.cacheService.userGetObserver(uid)
+        .pipe(takeUntil(this._unsubscribeAll), takeUntil(this.bizFire.onUserSignOut))
+        .subscribe(user =>{
+          if(user){
+            this.setUserInfo(user);
+          } else {
+            // user not found from Firestore.
+            this.photoURL = null;
+            this.shortName = 'U';
+            this.displayName = 'unknown user';
+          }
+        });
     }
-
-
   }
 
   private convertMessage(message: IMessage): string {
@@ -152,36 +134,6 @@ export class MessageComponent implements OnInit, OnDestroy {
     let ret: string = '';
     if(message.data.message && message.data.message.text){
       let text = message.data.message.text;
-      //ret = this.domSanitizer.bypassSecurityTrustHtml(text);
-
-      // replace https to <a>
-      /*
-      if(text.indexOf('https://') !== -1){
-
-        const index = text.indexOf('https://');
-        const space = text.indexOf(' ', index);
-        if(space !== -1){
-          ret = text.substring(index, space);
-        } else {
-          ret = text.substring(index, text.indexOf('</p>'));
-        }
-        const newStr = `<a href="${ret}" target="_blank">${ret}</a>`;
-        text = text.replace(ret, newStr);
-      }
-      if(text.indexOf('http://') !== -1){
-
-        const index = text.indexOf('http://');
-
-        const space = text.indexOf(' ', index);
-        if(space !== -1){
-          ret = text.substring(index, space);
-        } else {
-          ret = text.substring(index, text.indexOf('</p>'));
-        }
-        const newStr = `<a href="${ret}" target="_blank">${ret}</a>`;
-        text = text.replace(ret, newStr);
-      }
-       */
 
       ret = text;
 
@@ -196,20 +148,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   private setUserInfo(user: IUser){
     this.currentUserData = user;
     this.displayName = user.data.displayName || user.data.email || '';
-  }
-
-  onShowComment(){
-    this.onComment.emit(this._message);
-  }
-
-  onDeleteMessageClick(){
-    if(this.message != null && this.message.data.sender === this.bizFire.currentUID){
-      this.onMenu.emit({type: 'delete', message: this._message});
-    }
-  }
-
-  onEditMessage(){
-    this.onMenu.emit({type: 'edit', message: this._message});
   }
 
   makeNoticeMessage(): Observable<string> {

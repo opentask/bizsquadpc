@@ -1,0 +1,28 @@
+app-avatar-button{
+  .avatar-button {
+    button {
+      color: white;
+    }
+    .avatar-photo-image {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      &.smallIcon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        font-size: 11px;
+      }
+    }
+  }
+
+  a.avatar-displayName {
+    color: #1a1a1a;
+    &:hover{
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+}
+

@@ -105,22 +105,6 @@ export class MemberChatPage {
           this.chatLengthError = null;
         }
     });
-      // esc 버튼 클릭시 채팅창 닫기. node_module keycode
-      document.addEventListener('keyup', event => {
-        if(event.key === 'Escape' || event.keyCode === 27){
-          this.electron.windowClose();
-        }
-      });
-
-       this.bizFire.currentUser.subscribe((user : IUserData) => {
-        if(user) {
-          this.langService.onLangMap
-            .pipe(takeUntil(this.bizFire.onUserSignOut))
-            .subscribe((l: any) => {
-              this.langPack = l;
-          });
-        }
-      });
       this.ipc = electron.ipc;
     }
 
@@ -150,55 +134,6 @@ export class MemberChatPage {
 
   ngOnInit(): void {
 
-    this.chatroom = this.navParams.get('roomData');
-
-    console.log(this.chatroom);
-
-    if(this.chatroom != null) {
-      //메세지 30개 가져오기
-      this.getMessages();
-
-      // 채팅방 정보 갱신. (초대,나가기)
-      this.bizFire.afStore.doc(Commons.chatDocPath(this.chatroom.data.gid,this.chatroom.cid))
-      .snapshotChanges().subscribe((snap : any) => {
-        if(snap.payload.exists) {
-          this.chatroom = new Chat(snap.payload.id,snap.payload.data(),this.bizFire.uid,snap.payload.ref);
-
-          timer(0).subscribe(() => {
-            this.cacheService.resolvedUserList(this.chatroom.getMemberIds(false), Commons.userInfoSorter)
-            .pipe(take(1))
-            .subscribe((users: IUser[]) => {
-              this.chatTitle = '';
-              users.forEach(u => {
-                if (this.chatTitle.length > 0) {
-                  this.chatTitle += ',';
-                }
-                this.chatTitle += u.data.displayName;
-              });
-            });
-            this.chatService.onSelectChatRoom.next(this.chatroom);
-            this.roomCount = Object.keys(this.chatroom.data.members).length;
-          });
-        }
-      });
-
-      this.bizFire.afStore.doc(Commons.groupPath(this.chatroom.data.gid)).valueChanges().subscribe((data : IBizGroupData) => {
-
-        const group : IBizGroup = BizGroupBuilder.buildWithData(this.chatroom.data.gid,data,this.bizFire.uid);
-
-        this.selectBizGroupData = group.data;
-
-        if(group.data.members[this.bizFire.uid] === true && group.data.status === true) {
-          this.bizFire.onBizGroupSelected.next(group);
-        } else {
-          this.windowClose();
-        }
-      })
-
-    } else {
-      this.electron.windowClose();
-    }
-
     this.chatService.fileUploadProgress.subscribe(per => {
       if(per === 100) {
 
@@ -219,7 +154,6 @@ export class MemberChatPage {
 
     this.addedMessages$.pipe(debounceTime(2000))
     .subscribe(()=>{
-
       try {
         const batch = this.bizFire.afStore.firestore.batch();
         let added = 0;
@@ -260,59 +194,6 @@ export class MemberChatPage {
 
       // clear processed messages
       this.addedMessages = [];
-    });
-  }
-
-  // 최초 메세지 30개만 가져오고 이 후 작성하는 채팅은 statechanges로 배열에 추가해 줍니다.
-  getMessages() {
-
-    const msgPath = Commons.chatMsgPath(this.chatroom.data.gid,this.chatroom.cid);
-
-    this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created','desc').limit(20))
-    .get().subscribe(async (snapshots) => {
-      if(snapshots && snapshots.docs) {
-        this.start = snapshots.docs[snapshots.docs.length - 1];
-
-        await this.getNewMessages(msgPath, this.start);
-
-        this.loading.show();
-
-        timer(3000).subscribe(() => {
-          // call ion-content func
-          this.showContent = true;
-          this.contentArea.scrollToBottom(0);
-          this.loading.hide();
-        });
-      }
-    })
-  }
-
-  getNewMessages(msgPath,start) {
-    this.bizFire.afStore.collection(msgPath,ref => ref.orderBy('created')
-      .startAt(start))
-      .stateChanges()
-      .pipe(
-        map((snaps : any[]) => snaps.filter(s => s.type === 'added')),
-        filter(snaps => snaps && snaps.length > 0),
-        map(MessageBuilder.mapBuildSnapShot()))
-      .subscribe((list : IMessage[]) => {
-
-        this.addAddedMessages(list);
-
-        list.forEach((message : IMessage) => {
-          this.messages.push(message);
-          if(!this.chatService.scrollBottom(this.contentArea) && message.data.sender !== this.bizFire.uid) {
-            this.toastProvider.showToast(this.langPack['new_message']);
-          }
-        });
-
-        // scroll to bottom
-        if(this.chatService.scrollBottom(this.contentArea)) {
-          timer(100).subscribe(() => {
-            // call ion-content func
-            this.contentArea.scrollToBottom(0);
-          });
-        }
     });
   }
 
@@ -385,10 +266,6 @@ export class MemberChatPage {
     }
   }
 
-  userGetObserver(uid : string): Observable<IUser> {
-    return this.cacheService.userGetObserver(uid);
-  }
-
   // return Observer of senderId
   getUserObserver(msg: IMessageData): Observable<IUser>{
     if(!msg.isNotice) {
@@ -399,22 +276,6 @@ export class MemberChatPage {
   downloadFile(path) {
     console.log(path);
     this.ipc.send('loadGH',path);
-  }
-
-  opacityChanges(v) {
-    this.electron.setOpacity(v);
-  }
-
-  windowClose() {
-    this.electron.windowClose();
-  }
-
-  windowMimimize() {
-    this.electron.windowMimimize();
-  }
-  presentPopover(ev): void {
-    let popover = this.popoverCtrl.create('page-member-chat-menu',{}, {cssClass: 'page-member-chat-menu'});
-    popover.present({ev: ev});
   }
 
   private addAddedMessages(list: IMessage[]){
