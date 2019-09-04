@@ -51,7 +51,8 @@ export interface IFiles {
   size:number,
   type:string,
   storagePath:string,
-  url:string
+  url:string,
+  thumbUrl?: string
 }
 
 export interface IroomData{

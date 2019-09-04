@@ -35,7 +35,7 @@
   </ion-header>
   <ion-header class="progress-Header" *ngIf="loadProgress > 0">
     <progress-bar [progress]="loadProgress"></progress-bar>
-  </ion-header>
+</ion-header>
 
    <ion-content #scrollMe (ionScroll)="scrollHandler($event)">
       <div *ngIf="!showContent" class="loading-content"></div>

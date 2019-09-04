@@ -6,12 +6,14 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {PipesModule} from "../pipes/pipes.module";
 import {IonicModule} from "ionic-angular";
 import {LastMessageComponent} from "./last-message/last-message.component";
+import { ChatHeaderComponent } from './chat-header/chat-header';
 
 @NgModule({
 	declarations: [
 	  ProgressBarComponent,
     ChatRoomComponent,
-    LastMessageComponent
+    LastMessageComponent,
+    ChatHeaderComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +26,8 @@ import {LastMessageComponent} from "./last-message/last-message.component";
 	  ProgressBarComponent,
     ChatRoomComponent,
     LastMessageComponent,
-    NgbModule
+    NgbModule,
+    ChatHeaderComponent
   ]
 })
 export class ComponentsModule {}

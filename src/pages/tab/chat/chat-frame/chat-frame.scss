@@ -1,3 +1,60 @@
 page-chat-frame {
+  // 자식포함 + (header)
+  ion-item {
+    background-color: map-get($colors, light) !important;
+  }
+
+  // chat body Frame Design
+  .loading-content{
+    background-color: #C9DBE5;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    position: fixed;
+  }
+  .message-wrap {
+    padding: 0 10px;
+  }
+
+
+
+  // chat input Design
+  .input-menu {
+    padding: 0 5px;
+    display: flex;
+    height: 35px;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .input-wrap {
+    padding: 5px;
+    display: flex;
+    height: 90px;
+    form {
+      height: 90px;
+      flex: 1;
+    }
+    textarea {
+      flex: 1;
+      border: 0;
+      height: 80px;
+    }
+  }
+  textarea {
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    background-color: #fff;
+    font-size: 14px;
+    resize: none;
+    border: none;
+  }
+  .sendButton{
+    height: auto;
+    opacity: 0.8;
+    border-radius: 7px;
+    text-transform: capitalize;
+    width:80px;
+  }
+
 
 }

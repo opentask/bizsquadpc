@@ -29,20 +29,17 @@ export class MemberChatMenuPage {
 
   ngOnInit(): void {
 
-    this.roomData = this.navParams.get('roomData');
+
+
   }
 
   Invite(ev){
-    console.log(this.roomData);
-    let popover = this.popoverCtrl.create('page-invite-room',{roomData : this.roomData}, {cssClass: 'page-invite-room'});
+    let popover = this.popoverCtrl.create('page-invite-room',{}, {cssClass: 'page-invite-room'});
     popover.present({ev: ev}).then(() => this.viewCtrl.dismiss());
   }
 
   leaveChatRoom(){
     this.viewCtrl.dismiss();
     this.alertCtrl.leaveRoomAlert(this.roomData.uid,this.roomData.data.gid,this.roomData.cid)
-  }
-  close(){
-    this.viewCtrl.dismiss();
   }
 }

@@ -21,9 +21,6 @@
         <p class="members"><ion-icon name="person"></ion-icon> {{ roomCount }} </p>
       </div>
       <div class="header-menu">
-<!--        <button ion-button clear icon-only small color="dark">-->
-<!--          <ion-icon name="search"></ion-icon>-->
-<!--        </button>-->
         <button ion-button clear icon-only small color="dark" (tap)="presentPopover($event)">
           <ion-icon name="menu"></ion-icon>
         </button>
@@ -33,6 +30,7 @@
 <ion-header class="progress-Header" *ngIf="loadProgress > 0">
   <progress-bar [progress]="loadProgress"></progress-bar>
 </ion-header>
+
  <ion-content #scrollMe (ionScroll)="scrollHandler($event)">
       <div *ngIf="!showContent" class="loading-content"></div>
       <div class="message-wrap">

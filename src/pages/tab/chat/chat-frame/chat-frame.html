@@ -1,1 +1,25 @@
+<chat-header [chat]="newChatRoom"></chat-header>
 
+<ion-content #scrollContent (ionScroll)="scrollHandler($event)">
+  <div *ngIf="false" class="loading-content"></div>
+  <div class="message-wrap">
+
+  </div>
+</ion-content>
+
+
+<ion-footer no-border>
+  <div class="input-menu d-flex justify-content-between align-items-center">
+    <button ion-button clear icon-only small color="dark" (click)="fileAttach.click()">
+      <ion-icon name="attach"></ion-icon>
+    </button>
+    <input #fileAttach type="file" style="display: none;" #fileAttach accept="image/jpeg,image/gif,image/png">
+  </div>
+  <div class="input-wrap">
+      <textarea>
+      </textarea>
+    <button type="submit" color="dark" class="sendButton" ion-button item-right>
+      send
+    </button>
+  </div>
+</ion-footer>

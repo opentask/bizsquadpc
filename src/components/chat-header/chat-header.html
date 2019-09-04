@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-item class="drag listBorder" no-margin no-padding no-lines>
+    <div class="electron-menu">
+      <ion-item class="opacity">
+        <ion-range [(ngModel)]="opacity" color="dark" (ionChange)="electron.setOpacity(opacity)"></ion-range>
+      </ion-item>
+      <button ion-button icon-only clear small color="light" (click)="electron.windowMimimize()">
+        <ion-icon class="login-top-menu windowMimimize" name="md-remove"></ion-icon>
+      </button>
+      <button ion-button icon-only clear small color="light" (click)="electron.windowClose()">
+        <ion-icon class="login-top-menu" name="md-close"></ion-icon>
+      </button>
+    </div>
+    <div class="chatName-frame">
+      <h2 class="chatName">{{ chatTitle }}</h2>
+      <p class="members"><ion-icon name="person"></ion-icon> {{ userCount }} </p>
+    </div>
+    <div class="header-menu">
+      <button ion-button clear icon-only small color="dark" (tap)="presentPopover($event)">
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </div>
+  </ion-item>
+</ion-header>

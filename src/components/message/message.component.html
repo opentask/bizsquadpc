@@ -1,0 +1,170 @@
+<div class=" message-frame d-flex text-biz-dark mb-3"
+     *ngIf="message">
+
+  <ng-container *ngIf="!message.data.isNotice; else notice">
+
+    <!--LEFT AVATAR-->
+    <div class="flex-shrink-0">
+      <app-avatar-button [user]="currentUserData" [displayNameOn]="false" [emailOn]="false"></app-avatar-button>
+    </div>
+
+
+    <!--CENTER-->
+    <div class="flex-grow-1 message-content d-flex flex-column flex-shrink-1" style="word-break: break-word;">
+
+      <!--NAME + TITLE-->
+      <div class="d-flex align-items-center justify-content-between"
+           [ngClass]="{'font-weight-bold': isMyMessage}">
+        <span class="font-14 text-facebook mr-2"  >{{displayName}} </span>
+        <span class="font-12 text-biz-gray"> {{message.data.created | timestampToDate | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+      </div>
+
+      <!--TITLE-->
+      <div class="font-16 text-biz-dark font-weight-500 pb-2 post-title" *ngIf="message.data.title">{{message.data.title}}</div>
+
+      <!--quill.snow.css have 12px 15px padding-->
+      <div class="ql-editor-custom pb-3">
+        <quill-editor
+          [theme]="'bubble'"
+          [format]="'html'"
+          [(ngModel)]="text"
+          [readOnly]="true"
+          [modules]="{toolbar: false}"
+        >
+        </quill-editor>
+      </div>
+      <!--
+      <div [innerHTML]="text | sanitizingHtml" class="overflow-hidden font-13 text-biz-dark ">
+      </div>
+      -->
+
+      <!--SHOW FILES-->
+      <div class="msg-file-frame " *ngIf="message.data.message.files &&  message.data.message.files.length > 0">
+
+        <div class = "msg-file" *ngFor="let file of message.data.message.files">
+
+          <!--IMAGE-->
+          <div class="msg-file-image" *ngIf="isImageFile(file) === true">
+
+            <biz-img [file]="file"></biz-img>
+
+            <div class="font-13">
+              <a target="_blank" href="{{file.url}}">{{file.name}}({{file.size / 1000 |number:'1.0-0'}}kb)</a>
+            </div>
+
+          </div>
+
+          <!--BINARY-->
+          <div class="mb-2" *ngIf="isImageFile(file) === false">
+            <div style="word-wrap: break-word">
+              <a target="_blank" href="{{file.url}}" class="text-primary font-13">{{file.name}} ({{file.size / 1000 | number: '1.0-0'}}kb)</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--COMMENT BUTTON-->
+      <div class="d-flex justify-content-between align-items-center " *ngIf="comment">
+        <div>
+          <!--VIEW COMMENT BUTTON-->
+          <a  (click)="onShowComment()" class="text-primary font-12" style="cursor: pointer">
+            <span *ngIf="commentCount > 0">{{commentCount}} comments</span>
+
+            <span *ngIf="commentCount === 0" class="text-primary">comment</span>
+          </a>
+        </div>
+
+        <div>
+          <!--ICON -->
+        </div>
+      </div>
+
+    </div>
+
+
+    <!--RIGHT MENU BUTTON-->
+    <div class="flex-shrink-0 " style="width: 40px;" *ngIf="menu">
+
+      <div *ngIf="message.data.sender === bizFire.currentUID">
+
+        <button mat-icon-button [matMenuTriggerFor]="messageMenu" class="squad-menu-button">
+          <mat-icon class="text-secondary">more_vert</mat-icon>
+        </button>
+        <mat-menu #messageMenu="matMenu" class="big-menu">
+
+          <!--EDIT MESSAGE -->
+          <button mat-menu-item (click)="onEditMessage()" >
+            <span> {{langPack['edit']}} </span>
+          </button>
+
+          <!--DELETE-->
+          <button mat-menu-item (click)="onDeleteMessageClick()" >
+            <span class="text-danger"> {{langPack['delete']}} </span>
+          </button>
+
+        </mat-menu>
+      </div>
+    </div>
+
+  </ng-container>
+
+
+</div>
+
+
+
+<ng-template #notice>
+
+  <div class="w-100 d-flex justify-content-center align-items-center px-3 py-2 bg-light font-14 border">
+
+    <ng-container *ngIf="message.data.message.notice">
+
+      <!--notice.type 으로 판명-->
+      <ng-container *ngIf="message.data.message.notice.type != null">
+        <ng-container [ngSwitch]="message.data.message.notice.type">
+
+          <!--START 누가 시작함.-->
+          <ng-container *ngSwitchCase="'init'">
+            <div class="text-secondary" >
+              {{langPack['create_chat_room']}}
+            </div>
+          </ng-container>
+
+          <!--EXIT 채팅방에서 누가 나감-->
+          <ng-container *ngSwitchCase="'exit'">
+            <div class="text-secondary" >
+              {{makeNoticeMessage() | async}}
+            </div>
+          </ng-container>
+
+          <!--INVITE 누가 들어옴.-->
+          <ng-container *ngSwitchCase="'invite'">
+            <div class="text-secondary">
+              {{makeNoticeMessage() | async}}
+            </div>
+          </ng-container>
+
+
+        </ng-container>
+      </ng-container>
+
+      <!--notice.type 은 없고, notice.langKey만 있다.-->
+      <ng-container *ngIf="message.data.message.notice.type == null && message.data.message.notice.langKey">
+        <div class="text-secondary">
+          {{langPack[message.data.message.notice.langKey]}}
+        </div>
+      </ng-container>
+
+    </ng-container>
+
+
+    <!--notice 없이 text 만 있다.-->
+    <ng-container *ngIf="!message.data.message.notice && message.data.message.text">
+      <div class="text-secondary">
+        {{message.data.message.text}}
+      </div>
+    </ng-container>
+
+  </div>
+
+</ng-template>

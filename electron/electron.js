@@ -261,23 +261,14 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
 
         chatWindowState.manage(testRooms[chatRoomId]);
     }
-
-    // 개발자 도구를 엽니다. 개발완료 시 주석.
-    if(devMode) {
-      testRooms[chatRoomId].webContents.openDevTools();
-    }
-
-    // 창이 닫히면 호출됩니다.fㄴㅇㅇㄴㅁ
-    testRooms[chatRoomId].on('closed', () => {
-        testRooms[chatRoomId] = null;
-    });
-
     const menuTemplate = [{
       label: "Application",
       submenu: [
         { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
         { type: "separator" },
-        { label: "Quit", accelerator: "Command+Q", click: function() { testRooms[chatRoomId] = null; }}
+        { label: "Quit",
+          accelerator: "Escape",
+          click: () => testRooms[chatRoomId].close()}
       ]}, {
       label: "Edit",
       submenu: [
@@ -292,6 +283,16 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
     ];
 
     Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
+
+    // 개발자 도구를 엽니다. 개발완료 시 주석.
+    if(devMode) {
+      testRooms[chatRoomId].webContents.openDevTools();
+    }
+
+    // 창이 닫히면 호출됩니다.
+    testRooms[chatRoomId].on('closed', () => {
+        testRooms[chatRoomId] = null;
+    });
 
 });
 

@@ -550,6 +550,11 @@ export const language = {
         "en": "Close",
         "ja": "終了"
       }
+      ,"loading": {
+        "ko": "데이터를 불러오는중입니다...",
+        "en": "Loading data...",
+        "ja": "データロード中"
+      }
       ,"previous": {
         "ko": "이전",
         "en": "Previous",

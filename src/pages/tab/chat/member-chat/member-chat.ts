@@ -105,12 +105,6 @@ export class MemberChatPage {
           this.chatLengthError = null;
         }
     });
-
-      this.afAuth.authState.subscribe((user: User | null) => {
-        if(user == null){
-          this.windowClose();
-        }
-      });
       // esc 버튼 클릭시 채팅창 닫기. node_module keycode
       document.addEventListener('keyup', event => {
         if(event.key === 'Escape' || event.keyCode === 27){

@@ -1,7 +1,6 @@
 import { GroupColorProvider } from './../../../../providers/group-color';
 import { Electron } from './../../../../providers/electron/electron';
 import { ChatService } from './../../../../providers/chat.service';
-import { AccountService } from './../../../../providers/account/account';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { BizFireService } from '../../../../providers';
