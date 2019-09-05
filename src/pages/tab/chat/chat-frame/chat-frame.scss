@@ -4,6 +4,11 @@ page-chat-frame {
     background-color: map-get($colors, light) !important;
   }
 
+  //스크롤 컨텐츠 배경색
+  ion-content .scroll-content {
+    background-color: #EDF4F8;
+  }
+
   //프로그래스바
   .progress-Header{
     background-color:#f4f4f4;

@@ -21,8 +21,7 @@
       <div class="font-16 text-biz-dark font-weight-500 pb-2 post-title" *ngIf="message.data.title">{{message.data.title}}</div>
 
       <!--quill.snow.css have 12px 15px padding-->
-      <div class="ql-editor-custom pb-4 textdrag">
-        <span [innerHTML]="text"></span>
+<!--      <div class="ql-editor-custom pb-2 textdrag">-->
 <!--        <quill-editor-->
 <!--          [theme]="'bubble'"-->
 <!--          [format]="'html'"-->
@@ -30,11 +29,9 @@
 <!--          [readOnly]="true"-->
 <!--          [modules]="{toolbar: false}">-->
 <!--        </quill-editor>-->
-      </div>
-      <!--
-      <div [innerHTML]="text | sanitizingHtml" class="overflow-hidden font-13 text-biz-dark ">
-      </div>
-      -->
+<!--      </div>-->
+      <div [innerHTML]="text | sanitizingHtml" class="overflow-hidden font-13 text-biz-dark "></div>
+
 
       <!--SHOW FILES-->
       <div class="msg-file-frame " *ngIf="message.data.message.files &&  message.data.message.files.length > 0">
