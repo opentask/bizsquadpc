@@ -44,6 +44,10 @@ export class ProfilePage {
 
   private _unsubscribeAll;
 
+  private maxFileSize = 1000000; // 1MB
+
+  public langPack : any;
+
   private displayNameValidator: ValidatorFn = Validators.compose([
     Validators.required,
     Validators.maxLength(20)
@@ -65,6 +69,12 @@ export class ProfilePage {
     public chatService: ChatService) {
 
       this._unsubscribeAll = new Subject<any>();
+
+      this.bizFire.onLang
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((l: any) => {
+          this.langPack = l.pack();
+      });
   }
 
   ngOnInit(): void {
@@ -116,31 +126,37 @@ export class ProfilePage {
       const file = event.target.files[0];
       this.attachFile = file;
 
-      this.loading.show();
-      const reader = new FileReader();
-      reader.onload = (e: any) => this.imageSrc = e.target.result;
+      if(this.attachFile.size > this.maxFileSize) {
+        const error = `${this.langPack['error_file_size_too_big']} (max: ${this.maxFileSize/1000000}MB)`;
+        this.alertCtrl.failedEditProfile(error);
+        this.attachFile = null;
+      } else {
+        this.loading.show();
+        const reader = new FileReader();
+        reader.onload = (e: any) => this.imageSrc = e.target.result;
 
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
 
-      this.uploadProfile().then(url => {
+        this.uploadProfile().then(url => {
           const updateProfileData = {
-              displayName: this.editProfileForm.value['displayName'],
-              photoURL: url
+            displayName: this.editProfileForm.value['displayName'],
+            photoURL: url
           };
           this.bizFire.afAuth.auth.currentUser.updateProfile(updateProfileData).then(()=>{
-              this.bizFire.afStore.doc(`users/${this.bizFire.currentUID}`).update({
-                  displayName: this.editProfileForm.value['displayName'],
-                  photoURL: url
-              }).then(()=>{
-                  this.closePopover().then(()=>{
-                    this.alertCtrl.successEditProfile();
-                  })
-                  // clear old value
-                  this.attachFile = null;
-                  this.loading.hide();
-              }).catch(err => {console.error(err);this.loading.hide()});
+            this.bizFire.afStore.doc(`users/${this.bizFire.currentUID}`).update({
+              displayName: this.editProfileForm.value['displayName'],
+              photoURL: url
+            }).then(()=>{
+              this.closePopover().then(()=>{
+                this.alertCtrl.successEditProfile();
+              });
+              // clear old value
+              this.attachFile = null;
+              this.loading.hide();
+            }).catch(err => {console.error(err);this.loading.hide()});
           }).catch(err => {console.error(err);this.loading.hide()});
-      }).catch(err => {console.error(err);this.loading.hide()});
+        }).catch(err => {console.error(err);this.loading.hide()});
+      }
     }
   }
   uploadProfile(): Promise<string>{

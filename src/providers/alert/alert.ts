@@ -41,6 +41,15 @@ export class AlertProvider {
     alert.present();
   }
 
+  failedEditProfile(text) {
+    const alert = this.alertCtrl.create({
+      title: this.langPack['fail'],
+      subTitle: text,
+      buttons: [this.langPack['ok']]
+    });
+    alert.present();
+  }
+
   groupInviteAlert(msg : INotificationItem) {
     const alert = this.alertCtrl.create({
       title: this.langPack['invitation'],

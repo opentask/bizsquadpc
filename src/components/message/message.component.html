@@ -22,13 +22,14 @@
 
       <!--quill.snow.css have 12px 15px padding-->
       <div class="ql-editor-custom pb-4 textdrag">
-        <quill-editor
-          [theme]="'bubble'"
-          [format]="'html'"
-          [(ngModel)]="text"
-          [readOnly]="true"
-          [modules]="{toolbar: false}">
-        </quill-editor>
+        <span [innerHTML]="text"></span>
+<!--        <quill-editor-->
+<!--          [theme]="'bubble'"-->
+<!--          [format]="'html'"-->
+<!--          [(ngModel)]="text"-->
+<!--          [readOnly]="true"-->
+<!--          [modules]="{toolbar: false}">-->
+<!--        </quill-editor>-->
       </div>
       <!--
       <div [innerHTML]="text | sanitizingHtml" class="overflow-hidden font-13 text-biz-dark ">

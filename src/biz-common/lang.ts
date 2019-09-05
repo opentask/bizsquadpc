@@ -540,6 +540,11 @@ export const language = {
         "en": "Save",
         "ja": "登録"
       }
+      ,"error_file_size_too_big": {
+        "ko": "파일 크기가 너무 큽니다.",
+        "en": "Sorry. Size is too big.",
+        "ja": "サイズが大きすぎます。"
+      }
       ,"cancel": {
         "ko": "취소",
         "en": "Cancel",
@@ -1111,6 +1116,16 @@ export const language = {
         "ko": "완료",
         "en": "complete",
         "ja": "完了"
+      }
+      ,"fail": {
+        "ko": "에러",
+        "en": "error",
+        "ja": "エラー"
+      }
+      ,"notice_1mb_image": {
+        "ko": "1MB이하의 이미지만 첨부 가능합니다.",
+        "en": "Only images smaller than 1MB can be attached.",
+        "ja": "1MB以下の画像のみが可能です。"
       }
       ,"profile_update_success": {
         "ko": "프로필이 업데이트 되었습니다.",

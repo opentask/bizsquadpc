@@ -139,4 +139,13 @@ export class AvatarButtonComponent extends TakeUntil implements OnInit {
     // this object. Not a class.
     this.onClick.emit({uid: this.currentUserId, data: this.userData} as IUser);
   }
+
+  /*
+  * 썸네일이 없을시 에러.
+  */
+
+  onError(e){
+    console.error('아바타버튼 썸네일 로딩 실패',this.userData.displayName, this.thumbUrl);
+    this.thumbUrl = this.userData.photoURL;
+  }
 }
