@@ -3,7 +3,7 @@
   <div class="flex-shrink-0">
     <!--AVATAR IMAGE -->
     <div class="avatar-button mr-2" *ngIf="photoURL">
-      <img class="avatar-photo-image" src="{{photoURL}}" [ngClass]="{'smallIcon': smallIcon}" >
+      <img class="avatar-photo-image" src="{{thumbUrl}}" [ngClass]="{'smallIcon': smallIcon}" (error)="onError($event)">
     </div>
     <!--ROUND TEXT NAME -->
     <div class="avatar-button mr-2" *ngIf="!photoURL">

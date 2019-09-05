@@ -61,6 +61,9 @@ export class AvatarButtonComponent extends TakeUntil implements OnInit {
   shortName: string;
   photoURL: string;
 
+  // thumbUrl 이 있으면 표시. 없으면 photoURL 표시.
+  thumbUrl: string;
+
   constructor(private bizFire: BizFireService,
               private cacheService: CacheService
   ) {
@@ -96,6 +99,12 @@ export class AvatarButtonComponent extends TakeUntil implements OnInit {
     this.userData = userData;
     if(userData != null){
       this.photoURL = userData.photoURL;
+      if(this.photoURL){
+        if(this.photoURL.indexOf('profile.jpeg') !== -1){
+          //photoURL 을 그대로 쓰지않고 썸네일을 표시한다.
+          this.thumbUrl = this.photoURL.replace('profile.jpeg', 'thumb_512_profile.jpeg');
+        }
+      }
       if (this.photoURL == null || this.photoURL.length === 0) {
         this.shortName = Commons.initialChars(userData);
       }

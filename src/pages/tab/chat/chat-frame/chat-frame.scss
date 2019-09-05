@@ -4,6 +4,13 @@ page-chat-frame {
     background-color: map-get($colors, light) !important;
   }
 
+  //프로그래스바
+  .progress-Header{
+    background-color:#f4f4f4;
+    position: relative !important;
+    top: 80px;
+  }
+
   // chat body Frame Design
   .message-wrap {
     padding: 10px;

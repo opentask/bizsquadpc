@@ -62,6 +62,8 @@ export class ChatPage extends TakeUntil{
     this.chatService.unreadCountMap$
       .pipe(this.takeUntil)
       .subscribe((list: IUnreadItem[]) => {
+
+
         // temp array for counting.
         const typeMember = [];
         const typeSquad = [];

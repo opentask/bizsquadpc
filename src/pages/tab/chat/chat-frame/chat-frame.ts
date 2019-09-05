@@ -13,6 +13,7 @@ import {debounceTime, filter, map, take, takeUntil} from "rxjs/operators";
 import {LangService} from "../../../../providers/lang-service";
 import {ToastProvider} from "../../../../providers/toast/toast";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {TakeUntil} from "../../../../biz-common/take-until";
 
 
 @IonicPage({
@@ -25,7 +26,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
   templateUrl: 'chat-frame.html',
 })
 
-export class ChatFramePage {
+export class ChatFramePage extends TakeUntil{
 
   // 스크롤 컨텐츠
   @ViewChild('scrollContent') contentArea: Content;
@@ -68,6 +69,9 @@ export class ChatFramePage {
   //언어 팩
   langPack : any;
 
+  //프로그래스바
+  loadProgress : number = 0;
+
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private electron : Electron,
@@ -78,6 +82,8 @@ export class ChatFramePage {
               private chatService : ChatService,
               private fb: FormBuilder,)
   {
+    super();
+
     this.getChatroom = this.navParams.get("roomData");
 
     this.bizFire.currentUser.subscribe((user : IUserData) => {
@@ -115,9 +121,32 @@ export class ChatFramePage {
 
   ngOnInit() {
     if(this.getChatroom) {
+
       this.onWindowChat(this.getChatroom);
 
-      this.addedMessages$.pipe(debounceTime(2000))
+      //파일 업로드 프로그레스바
+      this.chatService.fileUploadProgress.subscribe(per => {
+        if(per === 100) {
+
+          // 용량이 작을때 프로그레스 바가 안나오므로..
+          this.loadProgress = per;
+
+          // 1.5초 뒤 값을 초기화한다.
+          timer(1500).subscribe(() => {
+            this.chatService.fileUploadProgress.next(null);
+            this.loadProgress = 0;
+            this.contentArea.scrollToBottom(0);
+          })
+        } else {
+          this.loadProgress = per;
+        }
+        console.log(per);
+      });
+
+      //메세지 읽음,안읽음 처리
+      this.addedMessages$.pipe(
+        this.takeUntil,
+        debounceTime(2000))
       .subscribe(()=>{
 
         try {
@@ -164,6 +193,7 @@ export class ChatFramePage {
     } else {
       this.electron.windowClose();
     }
+
   }
 
   keydown(e : any) {

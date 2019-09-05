@@ -121,9 +121,6 @@ export class TabsPage {
             this.groupMainColor = this.groupColorProvider.makeGroupColor(this.group.data.team_color);
             this.isPartner = this.bizFire.isPartner(group);
 
-            // delete old other gid's data.
-            this.clear();
-
             console.log("언리드 모니터 시작");
             // 모든 채팅의 UNREAD COUNT 를 모니터
             this.unreadCounter = new UnreadCounter(this.group.gid, this.bizFire.uid);
@@ -263,6 +260,7 @@ export class TabsPage {
   }
 
   ngOnDestroy(): void {
+    this.clear();
     this._unsubscribeAll.next();
     this._unsubscribeAll.complete();
     this.squadNewMessage = 0;

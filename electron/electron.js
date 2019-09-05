@@ -1,16 +1,11 @@
 'use strict';
+
 const electron = require('electron');
+const { app,Tray,Menu,ipcMain,dialog,shell } = require('electron');
 const windowStateKeeper = require('electron-window-state');
-const { ipcMain,dialog } = require('electron');
-const { shell } = require('electron');
 const url = require('url');
 const path = require('path');
 const contextMenu = require('electron-context-menu');
-
-// const {dialog} = require('electron');
-
-// Module to control application life.
-const { app,Tray,Menu } = require('electron');
 
 // Module to create native browser window.
 const { BrowserWindow } = electron;
@@ -18,6 +13,8 @@ const { BrowserWindow } = electron;
 // auto update //
 const { autoUpdater } = require("electron-updater");
 const logger = require('electron-log');
+
+const defaultMenu = require('electron-default-menu');
 
 
 app.setAppUserModelId("com.bizsquad.ionic-electron");
@@ -27,32 +24,9 @@ let win;
 let history;
 let selectChatRoom;
 let testRooms = {};
-let devMode = true;
+let devMode = false;
 
-const menuTemplate = [{
-  label: "Application",
-  submenu: [
-    { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
-    { type: "separator" },
-    {
-      label: 'Quit',
-      accelerator: 'CmdOrCtrl+Q',
-      role:'quit',
-    },
-  ]}, {
-  label: "Edit",
-  submenu: [
-    { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-    { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-    { type: "separator" },
-    { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-    { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-    { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-    { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
-  ]}
-];
-
-Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
+const mainMenuTemplate = defaultMenu(app,shell);
 
 // Electron 으로 Desktop 앱을 만드는 과정에서 자꾸 Tray 아이콘이 사라지는 현상이 발생하는 경우가 있는데, 이런 경우는 아래와 같이 수정하면 대부분 해결됩니다.
 let tray = null;
@@ -171,7 +145,10 @@ function createWindow() {
             history = null;
     });
 
-    win.once('focus', () => win.flashFrame(false));
+    win.on('focus', () => {
+      Menu.setApplicationMenu(Menu.buildFromTemplate(mainMenuTemplate));
+      win.flashFrame(false);
+    });
 
     // x버튼 클릭시 작은 아이콘으로 표시.
     tray = new Tray(path.join(__dirname,'logo16.png'));
@@ -198,7 +175,7 @@ if(!gotTheLock) {
             if(win.isMinimized()) win.restore();
             win.show();
         }
-    })
+    });
 
     app.on('ready', function(){
         createWindow();
@@ -251,7 +228,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
 
     if(testRooms[chatRoomId]) {
 
-        testRooms[chatRoomId].focus();
+      testRooms[chatRoomId].focus();
 
     } else {
         selectChatRoom = chatRoom;
@@ -285,8 +262,35 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
             slashes: true,
         }));
 
+        const menuTemplate = Menu.buildFromTemplate([
+          {
+            label: "Quit",
+            submenu: [
+              { label: "Quit",
+                accelerator: "Escape",
+                click: () => testRooms[chatRoomId].close()
+              }
+            ]},
+          {
+            label: "Edit",
+            submenu: [
+              { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+              { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+              { type: "separator" },
+              { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+              { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+              { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+              { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+            ]}
+        ]);
+
+        testRooms[chatRoomId].on('focus', () => {
+          Menu.setApplicationMenu(menuTemplate);
+        });
+
         chatWindowState.manage(testRooms[chatRoomId]);
     }
+
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     if(devMode) {
       testRooms[chatRoomId].webContents.openDevTools();
@@ -294,7 +298,7 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
 
     // 창이 닫히면 호출됩니다.
     testRooms[chatRoomId].on('closed', () => {
-        testRooms[chatRoomId] = null;
+      testRooms[chatRoomId] = null;
     });
 
 });
@@ -358,7 +362,7 @@ autoUpdater.on('update-downloaded', (event,releaseName) => {
         detail: 'Do you want to restart now?',
         icon: path.join(__dirname, 'logo512.png'),
         noLink : true
-    }
+    };
     dialog.showMessageBox(dialogOpts, (response) => {
         if (response === 0) autoUpdater.quitAndInstall();
         })

@@ -72,13 +72,14 @@ export class GroupListPage {
                   }
                 }
             });
-            this.groups = bizGroups.sort((a,b) => {
-              if(a.data.created && b.data.created) {
-                return a.data.created > b.data.created ? -1 : 1;
-              } else {
-                return 0;
-              }
-            });
+            this.groups = bizGroups;
+            //   .sort((a,b) => {
+            //   if(a.data.created && b.data.created) {
+            //     return a.data.created > b.data.created ? -1 : 1;
+            //   } else {
+            //     return 0;
+            //   }
+            // });
         });
   }
 

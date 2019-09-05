@@ -1,6 +1,6 @@
 {
   "name": "bizsquad",
-  "version": "3.0.69",
+  "version": "3.0.70",
   "author": {
     "name": "kimtaehwan",
     "email": "skyzard1@gmail.com",
@@ -42,6 +42,7 @@
     "bootstrap": "^4.3.1",
     "deep-equal": "^1.0.1",
     "electron-context-menu": "^0.12.1",
+    "electron-default-menu": "^1.0.1",
     "electron-log": "^3.0.1",
     "electron-push-receiver": "^2.1.2",
     "electron-updater": "^4.0.6",

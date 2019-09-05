@@ -2,6 +2,10 @@
   <chat-header [chat]="newChatRoom"></chat-header>
 </ion-header>
 
+<ion-header class="progress-Header" *ngIf="loadProgress > 0">
+  <progress-bar [progress]="loadProgress"></progress-bar>
+</ion-header>
+
 <ion-content #scrollContent (ionScroll)="scrollHandler($event)">
   <div class="message-wrap">
     <app-message [menu]="false" [comment]="false" [message]="message" *ngFor="let message of chatContent"></app-message>
