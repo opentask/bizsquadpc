@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { InviteRoomPage } from './invite-room';
-import { AccountService } from '../../../../../../providers/account/account';
+import { AccountService } from '../../../../../providers/account/account';
 
 @NgModule({
   declarations: [

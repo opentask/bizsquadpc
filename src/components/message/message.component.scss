@@ -23,6 +23,10 @@ app-message {
 
   }
 
+  .textdrag{
+    -webkit-user-select: text;
+  }
+
   // 안먹음...
   .ql-editor-custom .ql-editor{
     padding: 0 !important;

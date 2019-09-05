@@ -8,6 +8,7 @@ const path = require('path');
 const contextMenu = require('electron-context-menu');
 
 // const {dialog} = require('electron');
+
 // Module to control application life.
 const { app,Tray,Menu } = require('electron');
 
@@ -26,7 +27,32 @@ let win;
 let history;
 let selectChatRoom;
 let testRooms = {};
-let devMode = false;
+let devMode = true;
+
+const menuTemplate = [{
+  label: "Application",
+  submenu: [
+    { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+    { type: "separator" },
+    {
+      label: 'Quit',
+      accelerator: 'CmdOrCtrl+Q',
+      role:'quit',
+    },
+  ]}, {
+  label: "Edit",
+  submenu: [
+    { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+    { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+    { type: "separator" },
+    { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+    { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+    { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+    { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+  ]}
+];
+
+Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
 
 // Electron 으로 Desktop 앱을 만드는 과정에서 자꾸 Tray 아이콘이 사라지는 현상이 발생하는 경우가 있는데, 이런 경우는 아래와 같이 수정하면 대부분 해결됩니다.
 let tray = null;
@@ -261,34 +287,6 @@ ipcMain.on('createChatRoom', (event, chatRoom) => {
 
         chatWindowState.manage(testRooms[chatRoomId]);
     }
-    const menuTemplate = [{
-      label: "Application",
-      submenu: [
-        { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
-        { type: "separator" },
-        { label: "Quit",
-          accelerator: "Escape",
-          click: () => {
-            if(testRooms[chatRoomId]) {
-              testRooms[chatRoomId].close();
-            }
-          }
-        }
-      ]}, {
-      label: "Edit",
-      submenu: [
-        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
-      ]}
-    ];
-
-    Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
-
     // 개발자 도구를 엽니다. 개발완료 시 주석.
     if(devMode) {
       testRooms[chatRoomId].webContents.openDevTools();

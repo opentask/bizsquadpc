@@ -59,7 +59,7 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   // notice message observer
   // use to display notice
-  private noticeMessageSubject = new BehaviorSubject<string>('hello');
+  private noticeMessageSubject = new BehaviorSubject<string>('loading...');
 
   constructor(public bizFire: BizFireService,
               private cacheService: CacheService,

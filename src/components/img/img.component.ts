@@ -5,6 +5,7 @@ import {TakeUntil} from "../../biz-common/take-until";
 import {IFiles} from "../../_models/message";
 import {Commons} from "../../biz-common/commons";
 import {BizFireService} from "../../providers";
+import {Electron} from "../../providers/electron/electron";
 
 @Component({
   selector: 'biz-img',
@@ -88,7 +89,10 @@ export class ImgComponent extends TakeUntil implements OnInit {
   imgLoad$ = new Subject<any>();
   //timer$;
 
-  constructor(private bizFire: BizFireService) {
+  constructor(
+    private bizFire: BizFireService,
+    private electron: Electron
+  ) {
     super();
   }
 

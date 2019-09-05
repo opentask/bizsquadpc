@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { BizFireService } from '../../../../../../providers';
-import { Commons } from '../../../../../../biz-common/commons';
+import { BizFireService } from '../../../../../providers';
+import { Commons } from '../../../../../biz-common/commons';
 import {combineLatest, Observable, Subject, zip} from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { GroupColorProvider } from '../../../../../../providers/group-color';
-import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../../../_models";
-import {IChat, IChatData, IroomData} from "../../../../../../_models/message";
-import {ChatService} from "../../../../../../providers/chat.service";
-import {CacheService} from "../../../../../../providers/cache/cache";
+import { GroupColorProvider } from '../../../../../providers/group-color';
+import {IBizGroup, IBizGroupData, IUser, IUserData} from "../../../../../_models";
+import {IChat, IChatData, IroomData} from "../../../../../_models/message";
+import {ChatService} from "../../../../../providers/chat.service";
+import {CacheService} from "../../../../../providers/cache/cache";
 
 @IonicPage({
   name: 'page-invite-room',

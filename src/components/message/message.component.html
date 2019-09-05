@@ -11,7 +11,7 @@
     <div class="flex-grow-1 message-content d-flex flex-column flex-shrink-1" style="word-break: break-word;">
 
       <!--NAME + TITLE-->
-      <div class="d-flex align-items-center justify-content-between"
+      <div class="d-flex align-items-center justify-content-between textdrag"
            [ngClass]="{'font-weight-bold': isMyMessage}">
         <span class="font-14 text-facebook mr-2">{{displayName}} </span>
         <span class="font-12 text-biz-gray"> {{message.data.created | timestampToDate | date: 'yyyy-MM-dd HH:mm'}}</span>
@@ -21,7 +21,7 @@
       <div class="font-16 text-biz-dark font-weight-500 pb-2 post-title" *ngIf="message.data.title">{{message.data.title}}</div>
 
       <!--quill.snow.css have 12px 15px padding-->
-      <div class="ql-editor-custom pb-4">
+      <div class="ql-editor-custom pb-4 textdrag">
         <quill-editor
           [theme]="'bubble'"
           [format]="'html'"
@@ -59,52 +59,9 @@
           </div>
         </div>
       </div>
-
-      <!--COMMENT BUTTON-->
-      <div class="d-flex justify-content-between align-items-center " *ngIf="comment">
-        <div>
-          <!--VIEW COMMENT BUTTON-->
-          <a  (click)="onShowComment()" class="text-primary font-12" style="cursor: pointer">
-            <span *ngIf="commentCount > 0">{{commentCount}} comments</span>
-
-            <span *ngIf="commentCount === 0" class="text-primary">comment</span>
-          </a>
-        </div>
-
-        <div>
-          <!--ICON -->
-        </div>
-      </div>
-
     </div>
 
-
-    <!--RIGHT MENU BUTTON-->
-<!--    <div class="flex-shrink-0 " style="width: 40px;" *ngIf="menu">-->
-
-<!--      <div *ngIf="message.data.sender === bizFire.currentUID">-->
-
-<!--        <button mat-icon-button [matMenuTriggerFor]="messageMenu" class="squad-menu-button">-->
-<!--          <mat-icon class="text-secondary">more_vert</mat-icon>-->
-<!--        </button>-->
-<!--        <mat-menu #messageMenu="matMenu" class="big-menu">-->
-
-<!--          &lt;!&ndash;EDIT MESSAGE &ndash;&gt;-->
-<!--          <button mat-menu-item (click)="onEditMessage()" >-->
-<!--            <span> {{langPack['edit']}} </span>-->
-<!--          </button>-->
-
-<!--          &lt;!&ndash;DELETE&ndash;&gt;-->
-<!--          <button mat-menu-item (click)="onDeleteMessageClick()" >-->
-<!--            <span class="text-danger"> {{langPack['delete']}} </span>-->
-<!--          </button>-->
-
-<!--        </mat-menu>-->
-<!--      </div>-->
-<!--    </div>-->
-
   </ng-container>
-
 
 </div>
 

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, PopoverController } from 'ionic-angular';
-import { Electron } from '../../../../../providers/electron/electron';
-import { AlertProvider } from '../../../../../providers/alert/alert';
-import {IChat} from "../../../../../_models/message";
+import { Electron } from '../../../../providers/electron/electron';
+import { AlertProvider } from '../../../../providers/alert/alert';
+import {IChat} from "../../../../_models/message";
 import {takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
-import {ChatService} from "../../../../../providers/chat.service";
-import {BizFireService} from "../../../../../providers";
+import {ChatService} from "../../../../providers/chat.service";
+import {BizFireService} from "../../../../providers";
 
 @IonicPage({
   name: 'page-member-chat-menu',

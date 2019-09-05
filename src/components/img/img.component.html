@@ -1,7 +1,7 @@
 <div *ngIf="file" class="">
   <ng-container>
 
-    <a target="_blank" href="{{file.url}}" [hidden]="showSpinner">
+    <a class="cursor-pointer" [hidden]="showSpinner" (click)="electron.goLink(file.url)">
       <img src="{{downloadImage}}" class="default-frame" (load)="onLoad($event)">
     </a>
 
