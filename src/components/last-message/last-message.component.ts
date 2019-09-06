@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {DocumentChangeAction} from '@angular/fire/firestore';
 import {IChat, IMessageData} from "../../_models/message";
@@ -23,6 +23,9 @@ export class LastMessageComponent extends TakeUntil implements OnInit {
   get room(): IChat {
     return this._room;
   }
+
+  @Output()
+  updated = new EventEmitter<IMessageData>();
 
   set room(value: IChat) {
     if(value.ref){
@@ -66,6 +69,7 @@ export class LastMessageComponent extends TakeUntil implements OnInit {
 
           // show html
           this.lastMessage$.next(data);
+          this.updated.emit(data);
         });
 
 

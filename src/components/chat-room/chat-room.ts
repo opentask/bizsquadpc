@@ -5,7 +5,7 @@ import {Commons} from "../../biz-common/commons";
 import {BizFireService} from "../../providers";
 import {ISquad} from "../../providers/squad.service";
 import {TakeUntil} from "../../biz-common/take-until";
-import {IChat} from "../../_models/message";
+import {IChat, IMessageData} from "../../_models/message";
 import {IUnreadItem, IUser} from "../../_models";
 import {ChatService} from "../../providers/chat.service";
 import {filter, map, takeUntil} from "rxjs/operators";
@@ -30,6 +30,9 @@ export class ChatRoomComponent extends TakeUntil {
   _squadChat: boolean;
 
   langPack: any;
+
+  @Output()
+  updated = new EventEmitter<any>();
 
   @Input()
   set squadChat(type : boolean) {
@@ -146,6 +149,13 @@ export class ChatRoomComponent extends TakeUntil {
       this.userCount = this.room.isPublic() ? this.bizFire.currentBizGroup.getMemberCount() : this.room.getMemberCount();
 
     }
+  }
+
+  /*
+  * last message 가 갱신되면 불린다.
+  * */
+  onLastMessageChanged(data: IMessageData){
+    this.updated.emit({room: this.room, data: data});
   }
 
 }

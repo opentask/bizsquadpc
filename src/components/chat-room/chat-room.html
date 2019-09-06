@@ -27,6 +27,6 @@
 
 </div>
 <!--   라스트메세지    -->
-<biz-last-message [room]="room" [useLastMessage]="false"></biz-last-message>
+<biz-last-message [room]="room" [useLastMessage]="false" (updated)="onLastMessageChanged($event)"></biz-last-message>
 
 </div>

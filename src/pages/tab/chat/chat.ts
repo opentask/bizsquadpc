@@ -4,11 +4,12 @@ import { ChatService } from './../../../providers/chat.service';
 import { BizFireService } from './../../../providers/biz-fire/biz-fire';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, PopoverController } from 'ionic-angular';
-import { filter } from 'rxjs/operators';
-import {IChat} from '../../../_models/message';
+import {distinctUntilChanged, filter} from 'rxjs/operators';
+import {IChat, IMessageData} from '../../../_models/message';
 import { SquadService, ISquad } from '../../../providers/squad.service';
 import {TakeUntil} from "../../../biz-common/take-until";
 import {IBizGroup, IUnreadItem, IUser} from "../../../_models";
+import {Subject} from "rxjs";
 
 @IonicPage({
   name: 'page-chat',
@@ -33,6 +34,9 @@ export class ChatPage extends TakeUntil{
   memberUnreadTotalCount = 0;
   squadUnreadTotalCount = 0;
 
+  // sort distinct and debounce subject
+  sortChatRooms$ = new Subject<string>();
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -52,10 +56,6 @@ export class ChatPage extends TakeUntil{
       .pipe(this.takeUntil)
       .subscribe((l: any) => {
         this.langPack = l.pack();
-    });
-
-    this.bizFire.onBizGroupSelected.pipe(this.takeUntil).subscribe((group : IBizGroup) => {
-      this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
     });
 
     // unread count map
@@ -86,54 +86,60 @@ export class ChatPage extends TakeUntil{
 
     });
 
+    this.bizFire.onBizGroupSelected.pipe(this.takeUntil).subscribe((group : IBizGroup) => {
+      this.groupMainColor = this.groupColorProvider.makeGroupColor(group.data.team_color);
+    });
+
     // 멤버 채팅방
     this.chatService.onChatRoomListChanged
     .pipe(filter(d=>d!=null),this.takeUntil)
     .subscribe((rooms : IChat[]) => {
-
-      console.log("룸데이터변경",rooms);
-
-      rooms.forEach(r => {
-        const newData = r.data;
-        if(!r.data.lastMessageTime) {
-          newData['lastMessageTime'] = 1;
-        }
-      });
-
-      this.chatRooms = rooms.sort((a,b): number => {
-        if(a.data.lastMessageTime && b.data.lastMessageTime) {
-          return this.chatService.TimestampToDate(b.data.lastMessageTime) - this.chatService.TimestampToDate(a.data.lastMessageTime);
-        } else {
-          return 0;
-        }
-      });
+      this.chatRooms = rooms;
     });
 
     // 스쿼드 채팅방
     this.squadService.onSquadListChanged
-      .pipe(filter(d=>d != null),this.takeUntil)
-      .subscribe((squad : IChat[]) => {
+    .pipe(filter(d=>d != null),this.takeUntil)
+    .subscribe((squad : IChat[]) => {
+      this.squadChatRooms = squad;
+    });
 
-        squad.forEach(squad =>{
-          const newData = squad.data;
 
-          if(!squad.data.lastMessageTime) {
-            newData['lastMessageTime'] = 1;
+    /*
+    * sort 채팅방
+    * 마지막 메시지가 도착한 순으로 소팅
+    * */
+    this.sortChatRooms$
+      .pipe(
+        this.takeUntil,
+        distinctUntilChanged() // 같은 채팅창이면 이미 소팅되어있으므로 무시
+      )
+      .subscribe((cid: string) => {
+        let target;
+        if(this.chatRooms){
+          if(this.chatRooms.findIndex(c => c.cid === cid) !== -1) {
+            // cid goes to top.
+            target = this.chatRooms;
           }
-
-          newData['member_count'] = Object.keys(squad.data.members).filter(uid => squad.data.members[uid] === true).length;
-        });
-
-        this.squadChatRooms = squad.sort((a,b): number => {
-          if(a.data.lastMessageTime && b.data.lastMessageTime) {
-            return this.chatService.TimestampToDate(b.data.lastMessageTime) - this.chatService.TimestampToDate(a.data.lastMessageTime);
-          } else {
-            return 0;
+        }
+        if(!target && this.squadChatRooms){
+          if(this.squadChatRooms.findIndex(c => c.cid === cid) !== -1) {
+            target = this.squadChatRooms;
           }
-        });
-
+        }
+        console.log(target);
+        if(target){
+          target.sort( (a: IChat, b: IChat) => {
+            let ret = 0;
+            if(a.cid === cid){
+              ret = -1; //a up
+            } else if(b.cid === cid){
+              ret = 1;//b up
+            }
+            return ret;
+          });
+        }
       });
-
   }
 
   gotoRoom(value:IChat){
@@ -151,5 +157,15 @@ export class ChatPage extends TakeUntil{
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-invite',{}, {cssClass: 'page-invite'});
     popover.present({ev: ev});
+  }
+
+  onLastMessageChanged(value) {
+    if(value == null)return;
+
+    const room: IChat = value.room;
+    const data: IMessageData = value.data;
+    console.log('onLastMessageChanged,', room.cid, data.message.text);
+
+    this.sortChatRooms$.next(room.cid);
   }
 }

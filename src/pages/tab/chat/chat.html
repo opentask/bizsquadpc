@@ -14,7 +14,7 @@
             <!-- 1:1채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'chatRoom'" scrollY="true">
               <ng-container *ngFor="let room of chatRooms">
-                <chat-room [chat]="room" (onClick)="gotoRoom(room)"></chat-room>
+                <chat-room [chat]="room" (onClick)="gotoRoom(room)" (updated)="onLastMessageChanged($event)"></chat-room>
               </ng-container>
               <ion-fab right bottom>
                   <button class="fab-button"  ion-fab [color]="groupMainColor" (tap)="presentPopover($event)"><ion-icon name="customNewRoom"></ion-icon></button>
@@ -24,9 +24,9 @@
             <!-- 스쿼드 채팅 폼 -->
             <ion-list class="marginB56" *ngSwitchCase="'squadChatRoom'" scrollY="true">
                 <ng-container *ngFor="let room of squadChatRooms">
-                  <chat-room [chat]="room"  (onClick)="gotoSquadRoom(room)"></chat-room>
+                  <chat-room [chat]="room"  (onClick)="gotoSquadRoom(room)" (updated)="onLastMessageChanged($event)"></chat-room>
                 </ng-container>
-            </ion-list>
+          </ion-list>
         </div>
     </ion-scroll>
 </ion-content>
