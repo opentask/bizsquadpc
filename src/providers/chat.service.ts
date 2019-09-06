@@ -140,8 +140,11 @@ export class ChatService {
       const members = currentChat.isPublic() ? this.bizFire.currentBizGroup.data.members : currentChat.data.members;
 
       const msg = await this.addMessage(text,currentChat.ref,members,files);
+      const pushData = { cid: currentChat.cid, type: currentChat.data.type, gid: currentChat.data.gid };
 
-      this.sendPush(Commons.memberUID(members),this.bizFire.currentUserValue.displayName,this.convertMessage(text));
+      console.log("pushDatapushData",pushData);
+
+      this.sendPush(Commons.memberUID(members),this.convertMessage(text),pushData);
 
       return msg;
     }
@@ -254,7 +257,7 @@ export class ChatService {
         });
     }
 
-    async sendPush(targetUids: any[], msgTitle:string, msgBody:string){
+    async sendPush(targetUids: any[], msg:string, data: any){
 
       return new Promise<any>(resolve => {
         const headers = {
@@ -265,8 +268,13 @@ export class ChatService {
 
         const payload = {
           notification: {
-            title: msgTitle,
-            body: msgBody,
+            title: '',
+            body: msg,
+          },
+          data: {
+            cid: data.cid,
+            type: data.type,
+            gid: data.gid
           }
         };
 
