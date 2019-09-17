@@ -287,7 +287,7 @@ export class ChatService {
         };
         this.http.post(path, body, headers)
           .subscribe((result: any) => {
-            console.log(result);
+            console.log("resultresult",result);
             resolve(result);
           },(error => {
             console.error("sendPush error",error);

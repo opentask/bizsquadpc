@@ -18,7 +18,7 @@
       </div>
 
       <!--TITLE-->
-      <div class="font-16 text-biz-dark font-weight-500 pb-2 post-title" *ngIf="message.data.title">{{message.data.title}}</div>
+      <div class="font-16 text-biz-dark font-weight-500 pb-2 post-title textdrag" *ngIf="message.data.title">{{message.data.title}}</div>
 
       <!--quill.snow.css have 12px 15px padding-->
 <!--      <div class="ql-editor-custom pb-2 textdrag">-->
@@ -30,7 +30,7 @@
 <!--          [modules]="{toolbar: false}">-->
 <!--        </quill-editor>-->
 <!--      </div>-->
-      <div [innerHTML]="text | sanitizingHtml" class="overflow-hidden font-13 text-biz-dark "></div>
+      <div [innerHTML]="text | sanitizingHtml" class="overflow-hidden font-13 text-biz-dark textdrag"></div>
 
 
       <!--SHOW FILES-->
