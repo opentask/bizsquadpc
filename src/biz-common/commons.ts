@@ -13,6 +13,8 @@ export const STRINGS = {
     MANAGER: 'manager',
     PARTNER: 'partners'
   },
+  GROUP_CHAT: 'groupChat',
+  SQUAD_CHAT: 'squadChat',
 
   COLOR: {
     BIZ_COLOR: '#5b9ced'

@@ -141,7 +141,7 @@ export class ChatService {
 
       const msg = await this.addMessage(text,currentChat.ref,members,files);
       const pushData = { cid: currentChat.cid, type: currentChat.data.type, gid: currentChat.data.gid };
-
+      pushData.type = 'member' ? STRINGS.GROUP_CHAT : STRINGS.SQUAD_CHAT;
       console.log("pushDatapushData",pushData);
 
       this.sendPush(Commons.memberUID(members),this.convertMessage(text),pushData);
@@ -277,6 +277,8 @@ export class ChatService {
             gid: data.gid
           }
         };
+
+        console.log("payloadpayloadpayload :",payload);
 
         const path = `${environment.bizServerUri}/sendFCM`;
         let body = {
