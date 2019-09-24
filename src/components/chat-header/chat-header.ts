@@ -6,6 +6,7 @@ import {Commons} from "../../biz-common/commons";
 import {IUser} from "../../_models";
 import {CacheService} from "../../providers/cache/cache";
 import {BizFireService} from "../../providers";
+import {MembersPopoverComponent} from "../members-popover/members-popover";
 
 /**
  * Generated class for the ChatHeaderComponent component.
@@ -106,6 +107,12 @@ export class ChatHeaderComponent {
   //Chat invite Popover
   presentPopover(ev): void {
     let popover = this.popoverCtrl.create('page-member-chat-menu',{}, {cssClass: 'page-member-chat-menu'});
+    popover.present({ev: ev});
+  }
+
+  //chat member list
+  chatMemberList(ev): void {
+    let popover = this.popoverCtrl.create(MembersPopoverComponent,{}, {cssClass: 'members-popover'});
     popover.present({ev: ev});
   }
 }

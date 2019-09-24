@@ -10,6 +10,7 @@ import { SquadService, ISquad } from '../../../providers/squad.service';
 import {TakeUntil} from "../../../biz-common/take-until";
 import {IBizGroup, IUnreadItem, IUser} from "../../../_models";
 import {Subject} from "rxjs";
+import {Commons} from "../../../biz-common/commons";
 
 @IonicPage({
   name: 'page-chat',
@@ -80,8 +81,8 @@ export class ChatPage extends TakeUntil{
           }
         });
 
-        this.memberUnreadTotalCount = typeMember.length > 99 ? 99 : typeMember.length;
-        this.squadUnreadTotalCount = typeSquad.length > 99 ? 99 : typeSquad.length;
+        this.memberUnreadTotalCount = typeMember.length;
+        this.squadUnreadTotalCount = typeSquad.length;
         console.log(this.memberUnreadTotalCount, this.squadUnreadTotalCount);
 
     });
@@ -94,14 +95,14 @@ export class ChatPage extends TakeUntil{
     this.chatService.onChatRoomListChanged
     .pipe(filter(d=>d!=null),this.takeUntil)
     .subscribe((rooms : IChat[]) => {
-      this.chatRooms = rooms;
+      this.chatRooms = rooms.sort(Commons.sortDataByCreated());
     });
 
     // 스쿼드 채팅방
     this.squadService.onSquadListChanged
     .pipe(filter(d=>d != null),this.takeUntil)
     .subscribe((squad : IChat[]) => {
-      this.squadChatRooms = squad;
+      this.squadChatRooms = squad.sort(Commons.sortDataByCreated());
     });
 
 
@@ -166,6 +167,6 @@ export class ChatPage extends TakeUntil{
     const data: IMessageData = value.data;
     console.log('onLastMessageChanged,', room.cid, data.message.text);
 
-    this.sortChatRooms$.next(room.cid);
+    // this.sortChatRooms$.next(room.cid);
   }
 }

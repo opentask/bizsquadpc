@@ -2,11 +2,11 @@
     <ion-segment [(ngModel)]="defaultSegment">
         <ion-segment-button value="chatRoom" class="d-flex justify-content-center align-items-center">
             {{ langPack['chatroom'] }}
-            <ion-badge class="msg-badge" *ngIf="memberUnreadTotalCount" color="danger">{{ memberUnreadTotalCount }}</ion-badge>
+            <ion-badge class="ml-2 msg-badge" *ngIf="memberUnreadTotalCount" color="danger">{{ memberUnreadTotalCount | badgeLimit: 999 }}</ion-badge>
         </ion-segment-button>
         <ion-segment-button value="squadChatRoom" class="d-flex justify-content-center align-items-center">
             {{ langPack['squad_chatroom'] }}
-            <ion-badge class="msg-badge" *ngIf="squadUnreadTotalCount" color="danger">{{ squadUnreadTotalCount }}</ion-badge>
+            <ion-badge class="ml-2 msg-badge" *ngIf="squadUnreadTotalCount" color="danger">{{ squadUnreadTotalCount | badgeLimit: 999 }}</ion-badge>
         </ion-segment-button>
     </ion-segment>
     <ion-scroll class="scrollable" scrollY="true">
@@ -16,7 +16,7 @@
               <ng-container *ngFor="let room of chatRooms">
                 <chat-room [chat]="room" (onClick)="gotoRoom(room)" (updated)="onLastMessageChanged($event)"></chat-room>
               </ng-container>
-              <ion-fab right bottom>
+              <ion-fab right bottom style="opacity: 0.8">
                   <button class="fab-button"  ion-fab [color]="groupMainColor" (tap)="presentPopover($event)"><ion-icon name="customNewRoom"></ion-icon></button>
               </ion-fab>
             </ion-list>

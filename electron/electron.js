@@ -24,7 +24,7 @@ let win;
 let history;
 let selectChatRoom;
 let testRooms = {};
-let devMode = true;
+let devMode = false;
 
 const mainMenuTemplate = defaultMenu(app,shell);
 

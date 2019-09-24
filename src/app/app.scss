@@ -75,6 +75,17 @@ ion-item:hover a {
 }
 
 // chat page invite popover - popover template
+
+.members-popover {
+  .popover-content{
+    top: 65px !important;
+    border: 3px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+}
 .page-invite{
     .popover-content{
         top: inherit !important;
@@ -82,7 +93,7 @@ ion-item:hover a {
         right:25px !important;
         left: auto !important;
         width: 280px;
-        height: 400px;
+        height: 410px;
         border: 3px;
         background-color: #f6f6f6 !important;
         border-top-left-radius: 5px;
@@ -96,7 +107,7 @@ ion-item:hover a {
         right: 15px !important;
         left: auto !important;
         width: 280px;
-        height: 400px;
+        height: 410px;
         border: 3px;
         background-color: #f6f6f6 !important;
         border-top-left-radius: 5px;

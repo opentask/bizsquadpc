@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
-
 //electron
 import { Electron } from '../providers/electron/electron';
 
@@ -23,6 +22,8 @@ import { CacheService } from '../providers/cache/cache';
 import { ToastProvider } from '../providers/toast/toast';
 import {UserStatusProvider} from "../providers/user-status";
 
+import {ComponentsModule} from "../components/components.module";
+
 @NgModule({
   declarations: [
     MyApp,
@@ -35,6 +36,7 @@ import {UserStatusProvider} from "../providers/user-status";
     AngularFireStorageModule,
     AngularFireAuthModule,
     HttpClientModule,
+    ComponentsModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

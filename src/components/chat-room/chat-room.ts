@@ -107,7 +107,7 @@ export class ChatRoomComponent extends TakeUntil {
       list = list.filter(i=> i.cid === this.room.cid);
 
       //console.log('unread datas:', this.room.cid,  list.length);
-      this.unreadCount = list.length > 99 ? 99 : list.length;
+      this.unreadCount = list.length;
     });
 
 

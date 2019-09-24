@@ -7,8 +7,9 @@ import { BizFireService, LoadingProvider } from '../../../../providers';
 import { FormGroup, ValidatorFn, Validators, FormBuilder } from '@angular/forms';
 import { takeUntil } from 'rxjs/operators';
 import { ChatService } from '../../../../providers/chat.service';
-import {IUser} from "../../../../_models";
+import {IBizGroup, IUser} from "../../../../_models";
 import {IChat} from "../../../../_models/message";
+import {STRINGS} from "../../../../biz-common/commons";
 
 
 @IonicPage({
@@ -31,15 +32,14 @@ export class ProfilePage {
 
   // 변경된 값이 있는지
   checkProfile: boolean = false;
-
   targetValue : IUser;
 
-  checkManager: boolean = false;
+
   notImg : string = '';
   imageSrc : string = '';
-  displayName: string;
-  groupColor: string;
 
+  displayName: string;
+  group: IBizGroup;
   attachFile: File;
 
   private _unsubscribeAll;
@@ -81,20 +81,17 @@ export class ProfilePage {
 
     // 본인선택시 본인프로필값 / 유저선택시 유저 프로필값 가져옴.
     this.targetValue = this.navParams.get('target');
-    this.groupColor = this.navParams.get('groupColor');
+    this.group = this.navParams.get('group');
 
-    console.log(this.targetValue);
 
+    console.log("targetValue ::",this.targetValue);
 
     if(this.targetValue){
 
       this.loadUserData();
 
-      this.checkManager = this.bizFire.isManager(this.targetValue.data.uid);
-
       // 본인인가, 유저인가
       this.who = this.bizFire.currentUID == this.targetValue.uid;
-      console.log("관리자체크",this.checkManager);
     }
 
     this.editProfileForm = this.formBuilder.group({
@@ -107,6 +104,27 @@ export class ProfilePage {
     .subscribe(data => {
       this.checkProfile = true;
     })
+  }
+
+  getType(uid: string): string {
+
+    let ret = '';
+
+    if(this.bizFire.currentBizGroup.isManager(uid) != undefined) {
+
+      if(this.bizFire.currentBizGroup.isManager(uid) === true) {
+        ret = STRINGS.FIELD.MANAGER;
+      } else if(this.bizFire.currentBizGroup.isMember(uid) === true) {
+        ret = STRINGS.FIELD.MEMBER;
+      }
+    }
+
+    if(this.bizFire.currentBizGroup.isPartner(uid) === true){
+      ret = STRINGS.FIELD.PARTNER;
+    }
+
+    return ret;
+
   }
 
   editProfileShow() {

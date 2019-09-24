@@ -1,0 +1,11 @@
+<ion-content no-padding>
+  <ion-scroll class="scrollable" scrollY="true">
+    <ion-list no-margin *ngIf="userInfos">
+      <ng-container *ngFor="let user of userInfos">
+        <ion-item class="userList" no-lines style="background-color: #f6f6f6">
+          <app-avatar-button [user]="user"></app-avatar-button>
+        </ion-item>
+      </ng-container>
+    </ion-list>
+  </ion-scroll>
+</ion-content>

@@ -17,7 +17,7 @@
           <img class="photoURL" src="{{ imageSrc }}">
       </ion-avatar>
       <!-- 프로필 사진이 없으면 -->
-      <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null" [style.background-color]="groupColor">
+      <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null" [style.background-color]="group.data.team_color">
           <span class="displayName">{{ notImg }}</span>
       </ion-avatar>
     </ion-item>
@@ -33,17 +33,16 @@
     </div>
     <div class="row">
       <div class="col-3 offset-1 profileTitle">auth</div>
-      <div class="col-8 manager" *ngIf="checkManager">Manager</div>
-      <div class="col-8" *ngIf="!checkManager">Member</div>
+      <div class="col-8">{{ getType(this.targetValue.uid) }}</div>
     </div>
     <div class="row mt-3" *ngIf="who">
       <div class="col-6 offset-3">
-        <button class="profile_button" ion-button round full (click)="editProfileShow()" [color]="groupColor">edit Profile</button>
+        <button class="profile_button" ion-button round full (click)="editProfileShow()" [color]="group.data.team_color">edit Profile</button>
       </div>
     </div>
     <div class="row mt-3" *ngIf="!who">
       <div class="col-6 offset-3">
-        <button class="profile_button" ion-button round full (click)="gotoChat()" [color]="groupColor">1:1 Chat</button>
+        <button class="profile_button" ion-button round full (click)="gotoChat()" [color]="group.data.team_color">1:1 Chat</button>
       </div>
     </div>
   </ion-list>
@@ -58,7 +57,7 @@
             <img class="photoURL" src="{{ imageSrc }}">
         </ion-avatar>
         <!-- 프로필 사진이 없으면 -->
-        <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null">
+        <ion-avatar class="notPhoto" *ngIf="targetValue && targetValue.data.photoURL == null" [style.background-color]="group.data.team_color">
             <span class="displayName">{{ notImg }}</span>
         </ion-avatar>
         <ion-avatar class="icon-camera" (click)="fileAttach.click()">
@@ -83,15 +82,14 @@
       </div>
       <div class="row">
         <div class="profileTitle col-3 offset-1">auth</div>
-        <div class="col-8" *ngIf="checkManager">Manager</div>
-        <div class="col-8" *ngIf="!checkManager">Member</div>
+        <div class="col-8">{{ getType(this.targetValue.uid) }}</div>
       </div>
       <div class="row mt-3">
         <div class="col-5 offset-1">
-            <button class="profile_button" ion-button round full (click)="editSubmit()" [color]="groupColor">ok</button>
+            <button class="profile_button" ion-button round full (click)="editSubmit()" [color]="group.data.team_color">ok</button>
         </div>
         <div class="col-5">
-            <button class="profile_button" ion-button round full (click)="cancelEdit()" [color]="groupColor">cancel</button>
+            <button class="profile_button" ion-button round full (click)="cancelEdit()" color="warn">cancel</button>
         </div>
       </div>
     </form>

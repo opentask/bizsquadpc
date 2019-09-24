@@ -11,6 +11,7 @@ import {MessageComponent} from "./message/message.component";
 import {QuillModule} from 'ngx-quill';
 import {AvatarButtonComponent} from "./avatar-button/avatar-button.component";
 import {ImgComponent} from "./img/img.component";
+import { MembersPopoverComponent } from './members-popover/members-popover';
 
 @NgModule({
 	declarations: [
@@ -20,7 +21,8 @@ import {ImgComponent} from "./img/img.component";
     ChatHeaderComponent,
     MessageComponent,
     AvatarButtonComponent,
-    ImgComponent
+    ImgComponent,
+    MembersPopoverComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +41,12 @@ import {ImgComponent} from "./img/img.component";
     ChatHeaderComponent,
     MessageComponent,
     AvatarButtonComponent,
-    ImgComponent
+    ImgComponent,
+    MembersPopoverComponent
+  ],
+  entryComponents: [
+    ChatHeaderComponent,
+    MembersPopoverComponent
   ]
 })
 export class ComponentsModule { }

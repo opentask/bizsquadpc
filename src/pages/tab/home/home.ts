@@ -90,7 +90,9 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
 
-    this.group = this.bizFire.onBizGroupSelected.getValue();
+    this.bizFire.onBizGroupSelected
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((group :IBizGroup) => this.group = group);
 
     // * current User for RIGHT MENU
     this.bizFire.currentUser

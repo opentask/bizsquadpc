@@ -30,7 +30,7 @@
   </ion-item>
   <div class="popup" *ngIf="menuShow">
     <ul>
-        <li id="profileSetting"(click)="tokenService.makeWebJump('mypage')">{{ langPack['myaccount'] }}</li>
+        <li id="profileSetting" (click)="tokenService.makeWebJump('mypage')">{{ langPack['myaccount'] }}</li>
         <li id="signoutBtn" (click)="logout()">{{ langPack['logout'] }}</li>
         <li id="exitBtn" (click)="windowClose()">{{ langPack['shutdown'] }}</li>
     </ul>
@@ -53,7 +53,7 @@
               </button>
             </li>
             <li>
-              <button [disabled]="isPartner" (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
+              <button (click)="tokenService.makeWebJump('serviceinfo',group.gid)">
                 <img class="circle_icon circle_meeting" src="imgs/meeting_room.svg">
                 <span class="title">{{ langPack['conference'] }}</span>
               </button>

@@ -1,5 +1,6 @@
 import { FormControl } from '@angular/forms';
 import {IUser, IUserData} from "../_models";
+import {ISquad} from "../providers/squad.service";
 
 export const STRINGS = {
   STRING_BIZGROUPS: 'bizgroups',
@@ -244,6 +245,25 @@ export class Commons {
             return '#C7C7C7';
             break;
         }
+      }
+
+
+      static sortDataByCreated(key = 'created', sort = 'asc'){
+        return  (a: any, b: any) => {
+          let ret = 0;
+          if(a.data && a.data[key] && b && b.data && b.data[key]){
+            ret = a.data[key].toMillis() > b.data[key].toMillis() ? -1 : 1;
+          }
+          return ret;
+        }
+      }
+
+      static squadSortByName(a:ISquad, b: ISquad ): number{
+        let ret = 0;
+        if(a.data && a.data.name && b.data && b.data.name ){
+          ret = a.data.name.toLowerCase() > b.data.name.toLowerCase() ? 1 : -1;
+        }
+        return ret;
       }
 
 }

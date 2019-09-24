@@ -50,6 +50,11 @@ chat-header {
     -webkit-app-region: no-drag;
   }
 
+  .members:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   // end header CSS //
 
 

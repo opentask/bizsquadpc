@@ -49,7 +49,7 @@ export class TabsPage {
   // 알람 개수 카운트 - 값이 0일 경우 표시 안됨.
   notification = 0;
   messages: INotification[];
-  badgeCount: number = 0;
+  notifyCount: number = 0;
 
   isPartner = false;
 
@@ -157,7 +157,8 @@ export class TabsPage {
       .subscribe((map: IUnreadItem[]) => {
         if(map){
           //console.log('unread datas:', map);
-          this.chatCount = map.length > 99 ? 99 : map.length;
+          this.chatCount = map.length;
+          console.log("this.chatCountthis.chatCount",this.chatCount);
           this.electron.setAppBadge(this.chatCount);
 
           const lastPcLogin = this.bizFire.currentUserValue.lastPcLogin;
@@ -171,7 +172,7 @@ export class TabsPage {
       if(msgs){
         // get unfinished notification count.
         const unreadNotify = msgs.filter(m => m.data.statusInfo.done !== true).length;
-        this.badgeCount = unreadNotify > 99 ? 99 : unreadNotify;
+        this.notifyCount = unreadNotify;
       }
     });
 

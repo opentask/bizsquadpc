@@ -14,7 +14,7 @@
     <div class="d-flex flex-row align-items-center  ">
       <!--   안읽은 메세지 뱃지 / 방 멤버수   -->
       <div class="msg-badge d-flex text-white mr-2 align-items-center justify-content-center" *ngIf="unreadCount">
-        {{ unreadCount }}
+        {{ unreadCount | badgeLimit: 999 }}
       </div>
 
       <div class="member-count d-flex align-items-center justify-content-between" style="width: 25px">

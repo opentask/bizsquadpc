@@ -81,7 +81,7 @@ export class MemberPage {
     ev.stopPropagation();
     console.log("show my profile");
 
-    let popover = this.popoverCtrl.create('page-profile',{target : target,groupColor : this.groupMainColor}, {cssClass: 'page-profile'});
+    let popover = this.popoverCtrl.create('page-profile',{target : target,group : this.currentGroup}, {cssClass: 'page-profile'});
     popover.present({
       animate: false,
     });

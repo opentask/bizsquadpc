@@ -3,7 +3,7 @@
     <ion-buttons left class="login-top-menu">
       <button ion-button icon-only clear small color="light" (tap)="presentPopover($event)">
         <ion-icon name="notifications" style="font-size: 23px;"></ion-icon>
-        <ion-badge *ngIf="badgeCount" id="badge">{{badgeCount}}</ion-badge>
+        <ion-badge *ngIf="notifyCount" id="badge">{{notifyCount | badgeLimit: 999}}</ion-badge>
       </button>
       <button class="groupName" ion-button icon-end clear small color="light" (click)="goGroupList()">
         <span style="font-size: 15px;">{{group.data.team_name | slice:0:18}}</span>
@@ -24,7 +24,7 @@
     <ion-tab [root]="tab1Root" tabIcon="customHome" tabTitle="{{ langPack['home'] }}"></ion-tab>
     <ion-tab [root]="tab2Root" tabIcon="customSquad" tabTitle="{{langPack['squad']}}"></ion-tab>
     <ion-tab [root]="tab5Root" tabIcon="customMember" tabTitle="{{langPack['members']}}"></ion-tab>
-    <ion-tab [root]="tab3Root" tabIcon="customChat" tabTitle="{{langPack['chat']}}" tabBadgeStyle="danger" [tabBadge]="chatCount"></ion-tab>
+    <ion-tab [root]="tab3Root" tabIcon="customChat" tabTitle="{{langPack['chat']}}" tabBadgeStyle="danger" [tabBadge]="chatCount | badgeLimit : 999"></ion-tab>
     <!-- <ion-tab [root]="tab4Root" tabTitle="Notify" tabIcon="notifications" tabBadgeStyle="danger" [tabBadge]="notification"></ion-tab> -->
     <!-- 그룹별 알림 표시 양식 -->
 </ion-tabs>
