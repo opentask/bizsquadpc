@@ -156,12 +156,8 @@ export class TabsPage {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((map: IUnreadItem[]) => {
         if(map){
-          //console.log('unread datas:', map);
           this.chatCount = map.length;
-          console.log("this.chatCountthis.chatCount",this.chatCount);
           this.electron.setAppBadge(this.chatCount);
-
-          const lastPcLogin = this.bizFire.currentUserValue.lastPcLogin;
       }
     });
 

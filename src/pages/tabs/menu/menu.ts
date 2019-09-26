@@ -90,6 +90,11 @@ export class MenuPage {
       });
   }
 
+  testt(a,b) {
+    console.log("원본 :",a);
+    console.log("make html 가공",b);
+  }
+
   notifyFilter(group) {
     console.log(group);
     this.filterGroup$.next(group);

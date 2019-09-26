@@ -44,6 +44,9 @@ export interface IAlarmConfig {
   post: boolean,
   groupInOut?: boolean, // 그룹에 조인했을때 같은 그룹 사용자들에게 알람.
 
+  /* VIDEO CHAT INVITE*/
+  video?: boolean
+
   /* 다음 버전 */
   comment?: boolean,//다음버전?
   schedule?: boolean, // 다음버전
@@ -80,6 +83,7 @@ export interface INotificationData extends IAlarmConfig {
     type?: string,
     sid?: string,
     mid?: string,
+    vid?: string,
     title?: string,
     comment?: string,
     cid?: string,

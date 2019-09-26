@@ -205,7 +205,10 @@ export class NotificationService {
         if(type === 'bbs') {
           this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=bbs/${gid}/${id}/read`)
           // item.html.link = [`${this.webUrl}${this.customToken}&url=bbs/${data.gid}/${data.info.mid}/read`];
-
+        }
+        if(type === 'video') {
+          this.ipc.send('loadGH',`${environment.webJumpBaseUrl}${token}&url=video/${id}`)
+          // item.html.link = [`${this.webUrl}${this.customToken}&url=bbs/${data.gid}/${data.info.mid}/read`];
         }
     }
 
@@ -216,7 +219,7 @@ export class NotificationService {
 
             return this.makeHtmlInvite(notification);
 
-        } else if(data.post === true || data.bbs === true){
+        } else if(data.post === true || data.bbs === true || data.video === true){
 
             return this.makeHtmlPost(notification);
 
@@ -295,36 +298,36 @@ export class NotificationService {
 
             if (data.post === true) {
 
-            // get squad info
-            const squadObserver = this.cacheService.getObserver(Commons.squadDocPath(gid, info.sid));
+              // get squad info
+              const squadObserver = this.cacheService.getObserver(Commons.squadDocPath(gid, info.sid));
 
-            zip(userObserver, groupObserver, squadObserver)
-                .subscribe(([u, g, s]) => {
+              zip(userObserver, groupObserver, squadObserver)
+                  .subscribe(([u, g, s]) => {
 
-                  let team_name;
-                  let userName;
-                  if(u != null ){
-                    userName = u.data['displayName'] || u.data['email'];
-                    item.html.user = u;
-                  } else {
-                    userName = `deleted user`;
-                  }
-                  if( g != null){
-                    team_name = g['team_name'];
-                    item.html.groupColor = g['team_color'];
-                  } else {
-                    team_name = `deleted BizGroup`;
-                  }
+                    let team_name;
+                    let userName;
+                    if(u != null ){
+                      userName = u.data['displayName'] || u.data['email'];
+                      item.html.user = u;
+                    } else {
+                      userName = `deleted user`;
+                    }
+                    if( g != null){
+                      team_name = g['team_name'];
+                      item.html.groupColor = g['team_color'];
+                    } else {
+                      team_name = `deleted BizGroup`;
+                    }
 
-                // set content
-                item.html.header = ['[post]',`${userName}`, `${info.title}`];
-                item.html.content = [`${info.title}`];
-                item.html.link = ['post',data.gid,info.sid];
-                // item.html.link = [`${this.webUrl}${this.customToken}&url=squad/${data.gid}/${info.sid}/post`];
+                    // set content
+                    item.html.header = ['[post]',`${userName}`, `${info.title}`];
+                    item.html.content = [`${info.title}`];
+                    item.html.link = ['post',data.gid,info.sid];
+                    // item.html.link = [`${this.webUrl}${this.customToken}&url=squad/${data.gid}/${info.sid}/post`];
 
-                resolve.next(item);
+                    resolve.next(item);
 
-                });
+                  });
             }
 
             // is a bbs post ?
@@ -357,6 +360,37 @@ export class NotificationService {
                     resolve.next(item);
 
                     });
+            }
+
+            else if (data.video === true) {
+              zip(userObserver, groupObserver)
+                .subscribe(([u, g]) => {
+
+                  const title = info.message.data.title || '';
+                  let userName;
+
+                  if(u != null ){
+                    userName = u.data['displayName'] || u.data['email'];
+                    item.html.user = u;
+                  } else {
+                    userName = `<span class="text-danger">deleted user</span>`;
+                  }
+
+                  if( g != null){
+                    item.html.groupColor = g['team_color'];
+                  }
+
+                  // set content
+                  item.html.header = [`[video]`,`${userName}`,`${title}`];
+                  item.html.content = [`${userName}님께서 화상채팅을 시작하였습니다.<br>아래 링크를 클릭하면 화상채팅에 참여할 수 있습니다.`];
+
+                  // second array is a routerLink !
+                  item.html.link = ['video',data.gid,data.info.vid];
+
+
+                  resolve.next(item);
+
+                });
             }
 
         });

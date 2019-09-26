@@ -34,7 +34,7 @@
        </button>
        <div *ngFor="let msg of messages">
           <ng-container *ngIf="makeHtml(msg) | async as noticeItem">
-             <div class="cd-timeline-block">
+             <div class="cd-timeline-block" (click)="testt(msg,noticeItem)">
               <ng-container *ngIf="noticeItem.html.user">
                   <div class="cd-timeline-picture text-center white" *ngIf="noticeItem.html.user.data.photoURL != null">
                     <img src="{{ noticeItem.html.user.data.photoURL }}">
